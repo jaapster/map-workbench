@@ -29,6 +29,7 @@ export class App extends React.Component {
 							horizontal
 							max={ 500 }
 							initial={ 300 }
+							collapsed={ true }
 							onResize={ MapControl.resize }
 						>
 							<Panel>
