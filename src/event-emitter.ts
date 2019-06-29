@@ -25,7 +25,7 @@ export class EventEmitter {
         }
     }
 
-    trigger(eventName: string, data: any) {
+    trigger(eventName: string, data?: any) {
         if (this._subscribers[eventName]) {
             this._subscribers[eventName].forEach(fn => fn(data));
         }

@@ -1,13 +1,18 @@
 import bind from 'autobind-decorator';
-import { EventEmitter } from './event-emitter';
+import { EventEmitter } from '../../../event-emitter';
 import * as mapboxgl from 'mapbox-gl';
 
-const log = (...args) => console.log(...args);
+const log = (...args: any[]) => console.log(...args);
 
-const toEvent  = (e: mapboxgl.MapTouchEvent | mapboxgl.MapMouseEvent) => {
+// @ts-ignore
+const toEvent  = (e: mapboxgl.MapTouchEvent | mapboxgl.MapMouseEvent | TouchEvent | MouseEvent) => {
     return {
         ...e,
-        features: e.target.queryRenderedFeatures(e.point)
+        // features: !(e instanceof TouchEvent || e instanceof MouseEvent)
+		features: !(e instanceof MouseEvent)
+			// @ts-ignore
+			? e.target.queryRenderedFeatures(e.point)
+			: []
     };
 };
 
@@ -28,72 +33,97 @@ export class MapPointerEvents extends EventEmitter {
         map.on('touchmove', this._onTouchMove);
         map.on('touchend', this._onTouchEnd);
 
-        map.on('dragstart', this._onDragStart);
-        map.on('drag', this._onDragMove);
-        map.on('dragend', this._onDragEnd);
+        map.on('wheel', this._onWheel);
 
-        map.on('movestart', this._onMoveStart);
-        map.on('move', this._onMove);
-        map.on('moveend', this._onMoveEnd);
+        // todo: add real handler for this
+        map.on('contextmenu', (e: any) => e.originalEvent.preventDefault());
+
+        // document.addEventListener('mouseup', this._onMouseUp);
+		// document.addEventListener('touchend', this._onTouchEnd);
+
+		window.addEventListener('blur', this._onBlur);
     }
 
-    private _timeoutLongPress = null;
-    private _timeoutDblClick = null;
+    private _pointerDown = false;
+    private _timeoutLongPress: any = null;
+    private _timeoutDblClick: any = null;
     private _longPressSincePointerDown = false;
     private _movedSincePointerDown = false;
 
-    private _onPointerDown(e) {
-        log('pointerdown');
+    private _onPointerDown(e: any) {
+        // log('pointerdown');
+		this.trigger('pointerdown', e);
 
+		this._pointerDown = true;
         this._movedSincePointerDown = false;
         this._longPressSincePointerDown = false;
         this._setLongPressTimeout(e);
     }
 
-    private _onPointerMove(e) {
+    private _onPointerMove(e: any) {
         // log('pointermove', e);
-        this._movedSincePointerDown = true;
+		this.trigger('pointermove', e);
+
+		if (this._pointerDown) {
+			if (!this._movedSincePointerDown) {
+				this.trigger('pointerdragstart', e);
+				this._movedSincePointerDown = true;
+			} else {
+				this.trigger('pointerdragmove', e);
+			}
+		}
 
         this._clearLongPressTimeout();
     }
 
-    private _onPointerUp(e) {
+    private _onPointerUp(e: any) {
         if (!this._longPressSincePointerDown) {
-            log('pointerup');
+            // log('pointerup');
+			this.trigger('pointerup', e);
 
             this._clearLongPressTimeout();
 
-            if (this._timeoutDblClick) {
-                this._clearDblClickTimeout();
-                this._onPointerDblClick(e);
-            } else {
-                this._setDblClickTimeout(e);
-            }
+            if (!this._movedSincePointerDown) {
+				if (this._timeoutDblClick) {
+					this._clearDblClickTimeout();
+					this._onPointerDblClick(e);
+				} else {
+					this._setDblClickTimeout(e);
+				}
+			} else {
+				this.trigger('pointerdragend', e);
+			}
         }
+
+		this._pointerDown = false;
     }
 
-    private _onPointerClick(e) {
+    private _onPointerClick(e: any) {
         this._clearDblClickTimeout();
 
         if (this._movedSincePointerDown) {
             return;
         }
 
-        log('pointerclick');
+        // log('pointerclick');
+		this.trigger('pointerclick', e);
     }
 
-    private _onPointerDblClick(e) {
-        log('pointerdblclick');
+    private _onPointerDblClick(e: any) {
+        // log('pointerdblclick');
+		this.trigger('pointerdblclick', e);
     }
 
-    private _onPointerLongPress(e) {
-        log('pointerlongpress');
+    private _onPointerLongPress(e: any) {
+        // log('pointerlongpress');
+		this.trigger('pointerlongpress', e);
 
         this._longPressSincePointerDown = true;
     }
 
     private _onMouseDown(e: mapboxgl.MapMouseEvent) {
         // log('mousedown', e);
+		e.originalEvent.preventDefault();
 
         this._onPointerDown(toEvent(e));
     }
@@ -104,7 +134,7 @@ export class MapPointerEvents extends EventEmitter {
         this._onPointerMove(toEvent(e));
     }
 
-    private _onMouseUp(e: mapboxgl.MapMouseEvent) {
+    private _onMouseUp(e: mapboxgl.MapMouseEvent | MouseEvent) {
         // log('mouseup', e);
 
         this._onPointerUp(toEvent(e));
@@ -122,36 +152,19 @@ export class MapPointerEvents extends EventEmitter {
         this._onPointerMove(toEvent(e));
     }
 
-    private _onTouchEnd(e: mapboxgl.MapTouchEvent) {
+    private _onTouchEnd(e: mapboxgl.MapTouchEvent | TouchEvent) {
         // log('touchend', e);
 
         this._onPointerUp(toEvent(e));
     }
 
-    private _onDragStart(e) {
-        // log('dragstart');
-    }
+    private _onWheel(e: any) {
+    	this.trigger('wheel', e);
+	}
 
-    private _onDragMove(e) {
-        // log('dragmove');
-    }
-
-    private _onDragEnd(e) {
-        // log('dragend');
-    }
-
-    private _onMoveStart(e) {
-        // log('movestart');
-    }
-
-    private _onMove(e) {
-        // log('move');
-    }
-
-    private _onMoveEnd(e) {
-        console.log(e); // remove me
-        // log('moveend');
-    }
+    private _onBlur() {
+		this.trigger('blur');
+	}
 
     private _setDblClickTimeout(e: mapboxgl.MapMouseEvent) {
         this._timeoutDblClick = setTimeout(() => this._onPointerClick(e), 250);
