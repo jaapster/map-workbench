@@ -1,3 +1,5 @@
+import { Co, LngLat } from '../../../types';
+
 export const enableInteractions = (map: any) => {
 	if (map != null) {
 		map.boxZoom.enable();
@@ -17,6 +19,8 @@ export const disableInteractions = (map: any) => {
 		map.doubleClickZoom.disable();
 	}
 };
+
+export const toLngLat = ([lng, lat]: Co): LngLat => ({ lng, lat });
 
 export const add3dBuildings = (map: any) => {
 	if (map != null) {

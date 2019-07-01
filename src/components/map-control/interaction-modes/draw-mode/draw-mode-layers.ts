@@ -1,12 +1,17 @@
 // predicates
 const isSelected = ['==', ['get', 'selected'], true];
-const isVertex = ['==', ['get', 'type'], 'vertex'];
+const isRegular = ['!=', ['get', 'selected'], true];
 const isPolygon = ['==', '$type', 'Polygon'];
+const isVertex = ['==', ['get', 'type'], 'vertex'];
 
 // colors
-const colorSelected = 'orange';
-const colorRegular = 'red';
+const colorSelected = 'orangered';
+const colorRegular = 'grey';
 const color = ['case', isSelected, colorSelected, colorRegular];
+
+// line styles
+const lineStyleRegular = [1, 0];
+const lineStyleSelected = [2, 1];
 
 export const layers = [
 	{
@@ -19,21 +24,38 @@ export const layers = [
 			'fill-opacity': 0.2
 		}
 	},
+	// todo: when mapbox supports data driven dash dasharray
+	// replace the following two layers with one
 	{
-		id: 'draw-line',
+		id: 'draw-line-regular',
 		type: 'line',
 		source: 'draw',
+		filter: isRegular,
 		paint: {
-			'line-color': color
+			'line-width': 1,
+			'line-color': colorRegular,
+			'line-dasharray': lineStyleRegular
+		}
+	},
+	{
+		id: 'draw-line-selected',
+		type: 'line',
+		source: 'draw',
+		filter: isSelected,
+		paint: {
+			'line-width': 2,
+			'line-color': colorSelected,
+			'line-dasharray': lineStyleSelected
 		}
 	},
 	{
 		id: 'draw-vertex',
 		type: 'circle',
 		source: 'draw',
+		filter: isSelected,
 		paint: {
-			'circle-color': color,
-			'circle-radius': 3
+			'circle-color': colorSelected,
+			'circle-radius': 4
 		}
 	},
 	{
@@ -43,7 +65,7 @@ export const layers = [
 		filter: isVertex,
 		paint: {
 			'circle-color': colorSelected,
-			'circle-radius': 5
+			'circle-radius': 6
 		}
 	}
 ];

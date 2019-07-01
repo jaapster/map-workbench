@@ -35,8 +35,8 @@ export const nearest = (
 	}, { coordinate: null, distance: Infinity, index })
 );
 
-export const nearestCoordinate = (pos: Point, data: FeatureCollection, project: (c: LngLat) => Point) => (
-	data.features.reduce((m1: Result, { geometry: { type, coordinates } }: Feature, i: number) => {
+export const nearestVertex = (pos: Point, data: FeatureCollection, project: (c: LngLat) => Point) => (
+	data.features.reduce((m1: Result, { geometry: { type, coordinates } }: Feature<any>, i: number) => {
 		if (type === POINT) {
 			const [lng, lat] = coordinates as Co;
 			const distance = getDistance(pos, project({ lng, lat }));

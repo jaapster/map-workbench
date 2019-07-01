@@ -2,13 +2,20 @@ import {
 	POLYGON,
 	FEATURE,
 	LINE_STRING,
-	MULTI_POLYGON,
-	FEATURE_COLLECTION
+	// MULTI_POLYGON,
+	FEATURE_COLLECTION, POINT
 } from '../../../../services/constants';
 
 export const data = {
 	type: FEATURE_COLLECTION,
 	features: [
+		{
+			type: FEATURE,
+			geometry: {
+				type: POINT,
+				coordinates: [-123.84677582550688, 46.19473437827497]
+			}
+		},
 		{
 			type: FEATURE,
 			geometry: {

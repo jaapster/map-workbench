@@ -20,6 +20,7 @@ const OPTIONS: Options = {
 @bind
 export class NavigationMode extends InteractionMode {
 	private _box: HTMLElement | null = null;
+	private _scr: HTMLElement | null = null;
 	private _boxZoom = false;
 	private _lastPos = new Point(0, 0);
 	private _startPos = new Point(0, 0);
@@ -28,7 +29,6 @@ export class NavigationMode extends InteractionMode {
 		return new	NavigationMode(map, { ...OPTIONS, ...options });
 	}
 
-	// onPointerDown(e: any) {
 	onPointerDragStart(e: any) {
 		this._lastPos = e.point;
 		this._startPos = e.point;
@@ -57,8 +57,14 @@ export class NavigationMode extends InteractionMode {
 		} else if (this._boxZoom || (shiftKey && boxZoom)) {
 			this._boxZoom = true;
 
+			const bounds = this._map.getContainer().getBoundingClientRect();
+
 			if (!this._box) {
 				this._box = DOM.create('div', 'box-zoom', this._el);
+			}
+
+			if (!this._scr) {
+				this._scr = DOM.create('div', 'box-screen', this._box);
 			}
 
 			const pos = e.point;
@@ -71,6 +77,23 @@ export class NavigationMode extends InteractionMode {
 			this._box.style.transform = `translate(${ minX }px, ${ minY }px)`;
 			this._box.style.width = `${ maxX - minX }px`;
 			this._box.style.height = `${ maxY - minY }px`;
+
+			const screenAspect = bounds.width / bounds.height;
+			const boxAspect = (maxX - minX) / (maxY - minY);
+
+			if (screenAspect > boxAspect) {
+				const g = ((maxY - minY) * screenAspect) - (maxX - minX);
+				this._scr.style.height = `${ maxY - minY }px`;
+				this._scr.style.width = `${ (maxY - minY) * screenAspect }px`;
+				this._scr.style.marginLeft = `-${ g / 2 }px`;
+				this._scr.style.marginTop = '-1px';
+			} else {
+				const g = ((maxX - minX) / screenAspect) - (maxY - minY);
+				this._scr.style.width = `${ maxX - minX }px`;
+				this._scr.style.height = `${ (maxX - minX) / screenAspect }px`;
+				this._scr.style.marginTop = `-${ g / 2 }px`;
+				this._scr.style.marginLeft = '-1px';
+			}
 		} else {
 			tr.setLocationAtPoint(tr.pointLocation(this._lastPos), e.point);
 
@@ -86,7 +109,7 @@ export class NavigationMode extends InteractionMode {
 			this._map.fitScreenCoordinates(this._startPos, e.point, this._map.getBearing(), { linear: true });
 		}
 
-		this.reset();
+		this.cleanUp();
 	}
 
 	onPointerDblClick(e: any) {
@@ -121,16 +144,22 @@ export class NavigationMode extends InteractionMode {
 	}
 
 	onBlur() {
-		this.reset();
+		this.cleanUp();
 	}
 
-	reset() {
+	cleanUp() {
 		this._boxZoom = false;
 
 		if (this._box) {
 			DOM.remove(this._box);
 
 			this._box = null;
+		}
+
+		if (this._scr) {
+			DOM.remove(this._scr);
+
+			this._scr = null;
 		}
 	}
 

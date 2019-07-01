@@ -1,11 +1,11 @@
 import bind from 'autobind-decorator';
 import { EventEmitter } from '../../../event-emitter';
-import * as mapboxgl from 'mapbox-gl';
+import mapboxgl from 'mapbox-gl';
 
-const log = (...args: any[]) => console.log(...args);
+// const log = (...args: any[]) => console.log(...args);
 
 // @ts-ignore
-const toEvent  = (e: mapboxgl.MapTouchEvent | mapboxgl.MapMouseEvent | TouchEvent | MouseEvent) => {
+const toEvent = (e: mapboxgl.MapTouchEvent | mapboxgl.MapMouseEvent | TouchEvent | MouseEvent) => {
     return {
         ...e,
         // features: !(e instanceof TouchEvent || e instanceof MouseEvent)
@@ -36,7 +36,7 @@ export class MapPointerEvents extends EventEmitter {
         map.on('wheel', this._onWheel);
 
         // todo: add real handler for this
-        map.on('contextmenu', (e: any) => e.originalEvent.preventDefault());
+        map.on('contextmenu', this._onContextMenu);
 
         // document.addEventListener('mouseup', this._onMouseUp);
 		// document.addEventListener('touchend', this._onTouchEnd);
@@ -55,9 +55,9 @@ export class MapPointerEvents extends EventEmitter {
 		this.trigger('pointerdown', e);
 
 		this._pointerDown = true;
-        this._movedSincePointerDown = false;
-        this._longPressSincePointerDown = false;
-        this._setLongPressTimeout(e);
+		this._movedSincePointerDown = false;
+		this._longPressSincePointerDown = false;
+		this._setLongPressTimeout(e);
     }
 
     private _onPointerMove(e: any) {
@@ -111,12 +111,12 @@ export class MapPointerEvents extends EventEmitter {
 
     private _onPointerDblClick(e: any) {
         // log('pointerdblclick');
-		this.trigger('pointerdblclick', e);
+        this.trigger('pointerdblclick', e);
     }
 
     private _onPointerLongPress(e: any) {
         // log('pointerlongpress');
-		this.trigger('pointerlongpress', e);
+        this.trigger('pointerlongpress', e);
 
         this._longPressSincePointerDown = true;
     }
@@ -160,11 +160,17 @@ export class MapPointerEvents extends EventEmitter {
 
     private _onWheel(e: any) {
     	this.trigger('wheel', e);
-	}
+    }
 
     private _onBlur() {
-		this.trigger('blur');
-	}
+        this.trigger('blur');
+    }
+
+    private _onContextMenu(e: any) {
+        e.originalEvent.preventDefault();
+
+        this.trigger('context', toEvent(e));
+    }
 
     private _setDblClickTimeout(e: mapboxgl.MapMouseEvent) {
         this._timeoutDblClick = setTimeout(() => this._onPointerClick(e), 250);

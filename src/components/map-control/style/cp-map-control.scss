@@ -7,8 +7,25 @@
 }
 
 .box-zoom {
+  box-sizing: border-box;
   position: absolute;
-  border: 1px dashed black;
   pointer-events: none;
-  background: rgba(255, 255, 255, 0.5);
+  border: 1px solid grey;
+}
+
+.box-screen {
+  box-sizing: border-box;
+  position: absolute;
+  pointer-events: none;
+  border: 1px dashed grey;
+}
+
+.center-coordinate {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  z-index: 10;
+  padding: 8px;
+  color: white;
+  background: rgba(0, 0, 0, 0.2);
 }
