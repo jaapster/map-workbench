@@ -15,18 +15,23 @@ import {
 	updateCoordinates } from './update-coordinate';
 import { nearestPointOnLine } from '../../utils/util-math';
 import { InteractionMode } from '../interaction-mode';
-import { Feature, FeatureCollection } from '../../../../types';
+import { Co, Feature, FeatureCollection, LineString } from '../../../../types';
 import {
 	EMPTY,
 	POINT,
 	CIRCLE,
 	FEATURE,
+	POLYGON,
 	RECTANGLE,
 	THRESHOLD,
 	MODIFIERS,
-	MULTI_POINT } from '../../../../services/constants';
+	MULTI_POINT,
+	LINE_STRING,
+	MULTI_POLYGON,
+	MULTI_LINE_STRING
+} from '../../../../services/constants';
 import { data } from './draw-mode-dev-data';
-import { ang, rot } from './util-point';
+import { ang, rot } from '../../utils/util-point';
 
 @bind
 export class DrawMode extends InteractionMode {
@@ -144,6 +149,36 @@ export class DrawMode extends InteractionMode {
 									type: 'selected-vertex'
 								}
 							}
+							: []
+					).concat(
+						this._index.length && ([LINE_STRING, MULTI_LINE_STRING, POLYGON, MULTI_POLYGON].includes(type))
+							? (
+								type === LINE_STRING
+									? [coordinates]
+									: type === MULTI_LINE_STRING || type === POLYGON
+										? coordinates
+										: coordinates.flat(1)
+								)
+								.reduce((m1: any, co1: any, i: number) => {
+									return co1.reduce((m2: any, co2: any, j: number, xs: Co[]) => (
+										j === 0
+											? m2
+											: m2.concat({
+												type: FEATURE,
+												geometry: {
+													type: LINE_STRING,
+													coordinates: [
+														xs[j - 1],
+														co2
+													]
+												},
+												properties: {
+													type: 'lineLabel',
+													text: `${ i }-${ j - 1 }`
+												}
+											})
+									), m1);
+								}, [])
 							: []
 					)
 			});

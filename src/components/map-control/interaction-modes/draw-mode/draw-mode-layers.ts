@@ -54,24 +54,29 @@ export const layers = [
 		id: 'draw-line-selected',
 		type: 'line',
 		source: 'draw-selected',
+		filter: ['!=', 'type', 'lineLabel'],
 		paint: {
 			'line-width': 1,
 			'line-color': colorSelected,
 			'line-dasharray': [3, 3]
 		}
 	},
-	// {
-	// 	id: 'draw-text-selected',
-	// 	type: 'symbol',
-	// 	source: 'draw-selected',
-	// 	filter: isLine,
-	// 	layout: {
-	// 		'symbol-placement': 'line',
-	// 		'text-field': ['get', 'text'],
-	// 		'text-offset': [0, 1],
-	// 		'text-allow-overlap': true
-	// 	}
-	// },
+	{
+		id: 'draw-line-label',
+		type: 'symbol',
+		source: 'draw-selected',
+		filter: ['==', 'type', 'lineLabel'],
+		paint: {
+			'text-color': colorSelected
+		},
+		layout: {
+			'symbol-placement': 'line-center',
+			'text-field': ['get', 'text'],
+			'text-offset': [0, 1],
+			'text-allow-overlap': true,
+			'text-size': 10
+		}
+	},
 	{
 		id: 'draw-fill-selected',
 		type: 'fill',

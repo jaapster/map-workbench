@@ -4,7 +4,7 @@ import {
 	MultiPoint,
 	UnprojectFn } from '../../../types';
 import { lngLatToCo, coToLngLat } from './util-lng-lat-to-co';
-import { dis, rot } from '../interaction-modes/draw-mode/util-point';
+import { dis, rot } from './util-point';
 import { FEATURE, POLYGON } from '../../../services/constants';
 
 export const multiPointToCircle = (
@@ -31,6 +31,7 @@ export const multiPointToCircle = (
 					.map((e, i) => (lngLatToCo(unproject(rot(r, c, a * i)))))
 					.concat([lngLatToCo(unproject(rot(r, c, 0)))])
 			]
-		}
+		},
+		properties: {}
 	};
 };

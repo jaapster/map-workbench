@@ -28,7 +28,7 @@ const _nearest = (p: Point, a: Point, b: Point, constrain: boolean) => {
 	return { x: a.x + atob.x * t, y: a.y + atob.y * t };
 };
 
-export const nearestPointOnSegment = (p: Point, a: Point, b: Point) => {
+export const nearestPointOnSegment = (p: Point, [a, b]: [Point, Point]) => {
 	return _nearest(p, a, b, true);
 };
 

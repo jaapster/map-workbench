@@ -44,7 +44,6 @@ export class MapControl extends React.Component<Props, State> {
 		MapControl.instance.activateNavigationMode();
 	}
 
-
 	private readonly _map: any;
 	private readonly _drawMode: DrawMode;
 	private readonly _navigationMode: NavigationMode;
@@ -59,7 +58,7 @@ export class MapControl extends React.Component<Props, State> {
 			center = [0, 0]
 		} = props;
 
-		const style = styles[5][1];
+		const style = styles[2][1];
 
 		this._map = new mapboxGL.Map({
 			zoom,

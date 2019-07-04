@@ -1,4 +1,4 @@
-import { dis } from './util-point';
+import { dis } from '../../utils/util-point';
 import {
 	Co,
 	Point,

@@ -18,7 +18,7 @@ import {
 	LINE_STRING,
 	MULTI_POLYGON,
 	MULTI_LINE_STRING } from '../../../../services/constants';
-import { add, sub, mul, div, dis, hyp } from './util-point';
+import { add, sub, mul, div, dis, hyp } from '../../utils/util-point';
 
 const roll = (
 	p0: Point,
@@ -32,7 +32,7 @@ const roll = (
 		const distance = getDistanceToSegment(p0, p1, p2);
 
 		if (distance < m.distance) {
-			const { x, y } = nearestPointOnSegment(p0, p1, p2);
+			const { x, y } = nearestPointOnSegment(p0, [p1, p2]);
 
 			return {
 				index: [...index, i],
