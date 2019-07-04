@@ -1,10 +1,10 @@
 import { Point } from 'mapbox-gl';
 import bind from 'autobind-decorator';
-import { InteractionMode } from './interaction-mode';
+import { InteractionMode } from '../interaction-mode';
 import { layers } from './navigation-mode-layers';
-import { DOM } from '../utils/util-dom';
-import { Feature } from '../../../types';
-import { FEATURE_COLLECTION, EMPTY } from '../../../services/constants';
+import { DOM } from '../../utils/util-dom';
+import { Feature } from '../../../../types';
+import { FEATURE_COLLECTION, EMPTY } from '../../../../services/constants';
 
 interface Options {
 	pitch?: boolean;

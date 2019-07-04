@@ -1,4 +1,4 @@
-import { FeatureCollection } from '../../../../types';
+import { FeatureCollection, Co } from '../../../../types';
 import {
 	POLYGON,
 	LINE_STRING,
@@ -11,12 +11,12 @@ const withoutIndex = (index: number) => (m: any[], e: any, i: number) => (
 	i === index ? m : m.concat([e])
 );
 
-const processRing = (_k: number, m1: any[], co1: any) => (
-	_k == null
-		? m1
-		: _k === 0
-			? m1.concat([co1.slice(1, co1.length - 1).concat(co1[1])])
-			: m1.concat([co1.reduce(withoutIndex(_k), [])])
+const processRing = (i: number, m: Co[][], co: Co[]) => (
+	i == null
+		? m
+		: i === 0
+			? m.concat([co.slice(1, co.length - 1).concat(co[1])])
+			: m.concat([co.reduce(withoutIndex(i), [])])
 );
 
 export const deleteAtIndex = (data: FeatureCollection, [_i, _j, _k, _l]: number[]) => (
@@ -25,6 +25,7 @@ export const deleteAtIndex = (data: FeatureCollection, [_i, _j, _k, _l]: number[
 		...data,
 		features: data.features.map((feature, i) => {
 			const { geometry, geometry: { type, coordinates } } = feature;
+
 			return i !== _i
 				? feature
 				: {
@@ -37,19 +38,19 @@ export const deleteAtIndex = (data: FeatureCollection, [_i, _j, _k, _l]: number[
 								: type === LINE_STRING || type === MULTI_POINT
 									? m1
 									: type === POLYGON
-										? processRing(_k, m1, co1)
+										? processRing(_k, m1 as Co[][], co1 as Co[])
 										: type === MULTI_LINE_STRING
 											? _k == null
 												? m1
-												: m1.concat([co1.reduce(withoutIndex(_k), [])])
+												: (m1 as Co[][]).concat([(co1 as Co[]).reduce(withoutIndex(_k), [])])
 											: type === MULTI_POLYGON
 												? _k == null
 													? m1
-													: m1.concat([co1.reduce((m2: any[], co2: any, k: number) => (
+													: (m1 as Co[][][]).concat([(co1 as Co[][]).reduce((m2, co2, k) => (
 														_k !== k
 															? m2.concat([co2])
 															: processRing(_l, m2, co2)
-													), [])])
+													), [] as Co[][])])
 												: m1.concat([co1])
 						), [])
 					}

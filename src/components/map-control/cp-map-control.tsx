@@ -6,7 +6,7 @@ import './style/cp-map-control.scss';
 import { Portal } from '../app/cp-portal';
 import { Button, ButtonGroup } from '../app/cp-button';
 import { DrawMode } from './interaction-modes/draw-mode/draw-mode';
-import { NavigationMode } from './interaction-modes/navigation-mode';
+import { NavigationMode } from './interaction-modes/navigation-mode/navigation-mode';
 import { InteractionMode } from './interaction-modes/interaction-mode';
 import { MapPointerEvents } from './utils/util-map-pointer-events';
 import { ID_MAP_CONTROL, ID_MAP_CONTROL_TOOLS } from '../../services/constants';

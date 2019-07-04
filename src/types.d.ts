@@ -27,17 +27,22 @@ export interface Feature<T> {
 
 export interface LineString extends Geometry {
 	type: 'LineString';
-	coordinates: Co[]
+	coordinates: Co[];
 }
 
 export interface MultiPoint extends Geometry {
 	type: 'MultiPoint';
-	coordinates: Co[]
+	coordinates: Co[];
 }
 
 export interface Polygon extends Geometry {
 	type: 'Polygon';
-	coordinates: Co[][]
+	coordinates: Co[][];
+}
+
+export interface MultiPolygon extends Geometry {
+	type: 'MultiPolygon';
+	coordinates: Co[][][];
 }
 
 export interface FeatureCollection {
