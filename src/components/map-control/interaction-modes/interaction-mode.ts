@@ -45,6 +45,8 @@ export class InteractionMode extends EventEmitter {
 		}
 	}
 
+	engage() {}
+
 	cleanUp() {}
 
 	setOptions(options: Dict<any>) {

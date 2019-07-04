@@ -167,6 +167,7 @@ export class MapControl extends React.Component<Props, State> {
 
 	activateNavigationMode() {
 		this.state.mode.cleanUp();
+		this._navigationMode.engage();
 
 		this.setState({
 			mode: this._navigationMode
@@ -175,6 +176,7 @@ export class MapControl extends React.Component<Props, State> {
 
 	activateDrawMode() {
 		this.state.mode.cleanUp();
+		this._drawMode.engage();
 
 		this.setState({
 			mode: this._drawMode

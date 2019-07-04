@@ -1,4 +1,4 @@
-import { getDistance } from '../../utils/util-math';
+import { dis } from './util-point';
 import {
 	Co,
 	Point,
@@ -31,7 +31,7 @@ export const nearest = (
 ) => (
 	coordinates.reduce((m: any, coordinate: Co, i) => {
 		const [lng, lat] = coordinate;
-		const distance = getDistance(pos, project({ lng, lat }));
+		const distance = dis(pos, project({ lng, lat }));
 
 		return distance < m.distance ? { coordinate, distance, index: [...index, i] } : m;
 	}, { coordinate: null, distance: Infinity, index })
@@ -41,7 +41,7 @@ export const nearestVertex = (pos: Point, data: FeatureCollection, project: (c: 
 	data.features.reduce((m1: Result, { geometry: { type, coordinates }, properties }: Feature<any>, i: number) => {
 		if (type === POINT) {
 			const [lng, lat] = coordinates as Co;
-			const distance = getDistance(pos, project({ lng, lat }));
+			const distance = dis(pos, project({ lng, lat }));
 			return distance < m1.distance ? { coordinate: coordinates, distance, index: [i] } : m1;
 		}
 

@@ -13,12 +13,9 @@ import {
 import {
 	updateCoordinate,
 	updateCoordinates } from './update-coordinate';
-import {
-	angle,
-	rotateAround,
-	nearestPointOnLine } from '../../utils/util-math';
+import { nearestPointOnLine } from '../../utils/util-math';
 import { InteractionMode } from '../interaction-mode';
-import { Feature, FeatureCollection, MultiPoint } from '../../../../types';
+import { Feature, FeatureCollection } from '../../../../types';
 import {
 	EMPTY,
 	POINT,
@@ -29,6 +26,7 @@ import {
 	MODIFIERS,
 	MULTI_POINT } from '../../../../services/constants';
 import { data } from './draw-mode-dev-data';
+import { ang, rot } from './util-point';
 
 @bind
 export class DrawMode extends InteractionMode {
@@ -76,7 +74,7 @@ export class DrawMode extends InteractionMode {
 		return this._map.unproject(a);
 	}
 
-	private _roll(f: Feature<MultiPoint>) {
+	private _roll(f: Feature<any>) {
 		return f.properties.type === CIRCLE
 			? multiPointToCircle(f, this._project, this._unproject)
 			: f;
@@ -107,6 +105,7 @@ export class DrawMode extends InteractionMode {
 
 			const { features } = this._data;
 			const [_i, _j, _k, _l] = this._index;
+			const l = this._index.length;
 			const { geometry: { type, coordinates } } = features[_i];
 
 			this._map.getSource('draw-selected').setData({
@@ -127,17 +126,17 @@ export class DrawMode extends InteractionMode {
 							type: 'vertex'
 						}
 					}).concat(
-						_j != null || type === POINT
+						this._index.length
 							? {
 								type: FEATURE,
 								geometry: {
 									type: POINT,
 									coordinates:
-										type === POINT
+										l === 1
 											? coordinates
-											: _k == null
+											: l === 2
 												? coordinates[_j]
-												: _l == null
+												: l === 3
 													? coordinates[_j][_k]
 													: coordinates[_j][_k][_l]
 								},
@@ -202,6 +201,9 @@ export class DrawMode extends InteractionMode {
 	}
 
 	onPointerDragMove(e: any) {
+		const project = this._project;
+		const unproject = this._unproject;
+
 		if (this._index.length) {
 			const {
 				lngLat,
@@ -229,23 +231,23 @@ export class DrawMode extends InteractionMode {
 					const n2 = [3, 0, 1, 2, 3][nv];
 
 					// get screen positions for the coordinates
-					const p0 = this._project(coToLngLat(cos[n0]));
-					const p1 = this._project(coToLngLat(cos[n1]));
-					const p2 = this._project(coToLngLat(cos[n2]));
-					const p3 = this._project(coToLngLat(cos[nv]));
-					const pv = this._project(lngLat);
+					const p0 = project(coToLngLat(cos[n0]));
+					const p1 = project(coToLngLat(cos[n1]));
+					const p2 = project(coToLngLat(cos[n2]));
+					const p3 = project(coToLngLat(cos[nv]));
+					const pv = project(lngLat);
 
 					if (e.originalEvent[MODIFIERS.ROTATE]) {
 						// Rotation:
 						// get the rotation increment in radians
 						// (bearing from "opposite" to stored coordinates
 						// vs bearing from "opposite" to mouse position)
-						const t = (angle(p0, pv) - angle(p0, p3));
+						const t = (ang(p0, pv) - ang(p0, p3));
 
 						// rotate all points and unproject to lngLat
-						const A = this._unproject(rotateAround(p1, p0, t));
-						const B = this._unproject(rotateAround(p2, p0, t));
-						const C = this._unproject(rotateAround(p3, p0, t));
+						const A = unproject(rot(p1, p0, t));
+						const B = unproject(rot(p2, p0, t));
+						const C = unproject(rot(p3, p0, t));
 
 						// update the coordinates in the feature collection
 						this._data = updateCoordinates(
@@ -260,8 +262,8 @@ export class DrawMode extends InteractionMode {
 						// Resizing:
 						// get the new positions of the two neighbouring points
 						// and unproject to lngLat
-						const A = this._unproject(nearestPointOnLine(pv, [p1, p0]));
-						const B = this._unproject(nearestPointOnLine(pv, [p2, p0]));
+						const A = unproject(nearestPointOnLine(pv, [p1, p0]));
+						const B = unproject(nearestPointOnLine(pv, [p2, p0]));
 
 						// update the coordinates in the feature collection
 						this._data = updateCoordinates(
@@ -293,8 +295,8 @@ export class DrawMode extends InteractionMode {
 							this._index,
 							movementX,
 							movementY,
-							this._project,
-							this._unproject
+							project,
+							unproject
 						);
 					}
 				} else {
@@ -312,8 +314,8 @@ export class DrawMode extends InteractionMode {
 					this._index,
 					movementX,
 					movementY,
-					this._project,
-					this._unproject
+					project,
+					unproject
 				);
 			}
 
@@ -326,9 +328,19 @@ export class DrawMode extends InteractionMode {
 
 		if (e.key === 'Backspace' && this._index.length) {
 			this._data = deleteAtIndex(this._data, this._index);
-			this._index = this._index.slice(0, this._index.length - 1);
+			// this._index = this._index.slice(0, this._index.length - 1);
+
+			this._index = this._index.length === 1
+				? []
+				: [this._index[0]];
+
 			this._render();
 		}
+	}
+
+	engage() {
+		// as we need to project to screen coordinates the map needs to be 2d
+		this._map.setPitch(0);
 	}
 
 	cleanUp() {

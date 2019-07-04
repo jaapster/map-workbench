@@ -1,4 +1,3 @@
-import { oc } from 'ts-optchain';
 import {
 	Co,
 	Point,
@@ -6,7 +5,6 @@ import {
 	UnprojectFn,
 	FeatureCollection } from '../../../../types';
 import {
-	getDistance,
 	getDistanceToSegment,
 	nearestPointOnSegment } from '../../utils/util-math';
 import {
@@ -20,6 +18,7 @@ import {
 	LINE_STRING,
 	MULTI_POLYGON,
 	MULTI_LINE_STRING } from '../../../../services/constants';
+import { add, sub, mul, div, dis, hyp } from './util-point';
 
 const roll = (
 	p0: Point,
@@ -56,9 +55,9 @@ export const nearestPointOnGeometry = (
 		const { geometry: { type, coordinates }, properties } = feature;
 
 		if (type === POINT) {
-			const distance = getDistance(p0, project(coToLngLat(coordinates as Co)));
-			return distance < m1.distance
-				? { distance, index: [i], coordinate: [] }
+			const d = dis(p0, project(coToLngLat(coordinates as Co)));
+			return d < m1.distance
+				? { distance: d, index: [i], coordinate: [] }
 				: m1;
 		}
 
@@ -68,23 +67,16 @@ export const nearestPointOnGeometry = (
 
 				const p1 = project(coToLngLat(co1));
 				const p2 = project(coToLngLat(co2));
+				const p3 = sub(p0, p1);
 
-				const r = getDistance(p1, p2);
-				const v = { x: p0.x - p1.x, y: p0.y - p1.y };
-				const l = Math.sqrt(v.x ** 2 + v.y ** 2);
-
-				const inter = {
-					x: (v.x / l) * r + p1.x,
-					y: (v.y / l) * r + p1.y
-				};
-
-				const distance = getDistance(p0, inter);
+				const px = add(mul(div(p3, hyp(p3)), dis(p1, p2)), p1);
+				const distance = dis(p0, px);
 
 				return distance < m1.distance
 					? {
 						index: [i],
 						distance,
-						coordinate: lngLatToCo(unproject(inter))
+						coordinate: lngLatToCo(unproject(px))
 					}
 					: m1;
 			}

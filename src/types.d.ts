@@ -1,9 +1,5 @@
 export type Dict<T> = { [key: string]: T };
 
-export type Co = number[];
-
-export type Cos = Co | Co[] | Co[][] | Co[][][];
-
 export interface Point {
 	x: number;
 	y: number;
@@ -14,15 +10,21 @@ export interface LngLat {
 	lat: number;
 }
 
+export type ProjectFn = (c: LngLat) => Point;
+export type UnprojectFn = (p: Point) => LngLat;
+
+export type Co = number[];
+
+export type Cos = Co | Co[] | Co[][] | Co[][][];
+
 export interface Geometry {
 	type: string;
 	coordinates: Cos;
 }
 
-export interface Feature<T> {
-	type: string;
-	geometry: T;
-	properties: Dict<any>;
+export interface GeometryCollection {
+	type: 'GeometryCollection';
+	geometries: Geometry[];
 }
 
 export interface LineString extends Geometry {
@@ -45,10 +47,13 @@ export interface MultiPolygon extends Geometry {
 	coordinates: Co[][][];
 }
 
+export interface Feature<T> {
+	type: string;
+	geometry: T;
+	properties: Dict<any>;
+}
+
 export interface FeatureCollection {
 	type: string;
 	features: Feature[];
 }
-
-export type ProjectFn = (c: LngLat) => Point;
-export type UnprojectFn = (p: Point) => LngLat;

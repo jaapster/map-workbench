@@ -1,5 +1,6 @@
 // predicates
-const isPoint = ['==', 'type', 'Point'];
+// const isLine = ['==', '$type', 'LineString'];
+const isPoint = ['==', '$type', 'Point'];
 const isPolygon = ['==', '$type', 'Polygon'];
 const isVertex = ['==', 'type', 'vertex'];
 const isVertexSelected = ['==', 'type', 'selected-vertex'];
@@ -59,6 +60,18 @@ export const layers = [
 			'line-dasharray': [3, 3]
 		}
 	},
+	// {
+	// 	id: 'draw-text-selected',
+	// 	type: 'symbol',
+	// 	source: 'draw-selected',
+	// 	filter: isLine,
+	// 	layout: {
+	// 		'symbol-placement': 'line',
+	// 		'text-field': ['get', 'text'],
+	// 		'text-offset': [0, 1],
+	// 		'text-allow-overlap': true
+	// 	}
+	// },
 	{
 		id: 'draw-fill-selected',
 		type: 'fill',

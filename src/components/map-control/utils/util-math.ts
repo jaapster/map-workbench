@@ -1,10 +1,6 @@
 import { Point } from '../../../types';
 import { clamp } from '../../../utils/util-clamp';
 
-export const getDistance = (p0: Point, p1: Point) => (
-	Math.sqrt((p0.x - p1.x) ** 2 + (p0.y - p1.y) ** 2)
-);
-
 export const getDistanceToSegment = (p0: Point, p1: Point, p2: Point) => {
 	const ldx = p2.x - p1.x;
 	const ldy = p2.y - p1.y;
@@ -39,12 +35,3 @@ export const nearestPointOnSegment = (p: Point, a: Point, b: Point) => {
 export const nearestPointOnLine = (p: Point, [a, b]: [Point, Point]) => {
 	return _nearest(p, a, b, false);
 };
-
-export const angle = (a: Point, b: Point) => Math.atan2(a.y - b.y, a.x - b.x);
-
-export const rotateAround = (p: Point, c: Point, t: number): Point => (
-	{
-		x: (p.x - c.x) * Math.cos(t) - (p.y - c.y) * Math.sin(t) + c.x,
-		y: (p.y - c.y) * Math.cos(t) + (p.x - c.x) * Math.sin(t) + c.y
-	}
-);
