@@ -1,5 +1,4 @@
 import bind from 'autobind-decorator';
-import { oc } from 'ts-optchain';
 import { layers } from './draw-mode-layers';
 import { toPairs } from '../../utils/util-to-pairs';
 import { addAtIndex } from './add-at-index';
@@ -37,6 +36,13 @@ export class DrawMode extends InteractionMode {
 		return new	DrawMode(map);
 	}
 
+	constructor(map: any) {
+		super(map);
+
+		// @ts-ignore
+		window.dumpData = i => this._data.features[i];
+	}
+
 	protected _onStyleLoaded() {
 		this._map.addSource('draw', {
 			type: 'geojson',
@@ -71,7 +77,7 @@ export class DrawMode extends InteractionMode {
 	}
 
 	private _roll(f: Feature<MultiPoint>) {
-		return oc(f).properties.type() === CIRCLE
+		return f.properties.type === CIRCLE
 			? multiPointToCircle(f, this._project, this._unproject)
 			: f;
 	}

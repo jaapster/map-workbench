@@ -1,4 +1,4 @@
-import { FeatureCollection, Co } from '../../../../types';
+import { FeatureCollection, Co, Cos } from '../../../../types';
 import {
 	POLYGON,
 	MULTI_POINT,
@@ -25,11 +25,11 @@ export const addAtIndex = (data: FeatureCollection, [_i, _j, _k, _l]: number[], 
 					...feature,
 					geometry: {
 						...geometry,
-						coordinates: (coordinates as any).reduce((m1: any[], co1: any, j: number) => (
+						coordinates: (coordinates as any).reduce((m1: Cos, co1: Cos, j: number) => (
 							j !== _j
-								? m1.concat([co1])
+								? (m1 as Co[]).concat([co1 as Co])
 								: type === LINE_STRING || type === MULTI_POINT
-									? m1.concat([co, co1])
+									? (m1 as Co[]).concat([co, co1] as Co[])
 									: type === POLYGON || type === MULTI_LINE_STRING
 										? (m1 as Co[][]).concat([(co1 as Co[]).reduce(insertAtIndex(_k, co), [])])
 										: type === MULTI_POLYGON
@@ -38,8 +38,8 @@ export const addAtIndex = (data: FeatureCollection, [_i, _j, _k, _l]: number[], 
 													? m2.concat([co2])
 													: m2.concat([co2.reduce(insertAtIndex(_l, co), [])])
 											), [] as Co[][])])
-											: m1.concat([co1])
-						), [])
+											: (m1 as Co[]).concat([co1 as Co])
+						), [] as Cos)
 					}
 				};
 		})

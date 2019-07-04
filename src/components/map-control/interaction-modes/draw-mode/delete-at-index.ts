@@ -1,4 +1,4 @@
-import { FeatureCollection, Co } from '../../../../types';
+import { Co, Cos, FeatureCollection } from '../../../../types';
 import {
 	POLYGON,
 	LINE_STRING,
@@ -32,9 +32,9 @@ export const deleteAtIndex = (data: FeatureCollection, [_i, _j, _k, _l]: number[
 					...feature,
 					geometry: {
 						...geometry,
-						coordinates: (coordinates as any).reduce((m1: any[], co1: any, j: number) => (
+						coordinates: (coordinates as any).reduce((m1: Cos, co1: Cos, j: number) => (
 							j !== _j
-								? m1.concat([co1])
+								? (m1 as Co[]).concat([co1 as Co])
 								: type === LINE_STRING || type === MULTI_POINT
 									? m1
 									: type === POLYGON
@@ -51,8 +51,8 @@ export const deleteAtIndex = (data: FeatureCollection, [_i, _j, _k, _l]: number[
 															? m2.concat([co2])
 															: processRing(_l, m2, co2)
 													), [] as Co[][])])
-												: m1.concat([co1])
-						), [])
+												: (m1 as Co[]).concat([co1 as Co])
+						), [] as Cos)
 					}
 				};
 			})

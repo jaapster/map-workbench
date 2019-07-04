@@ -22,7 +22,7 @@ export interface Geometry {
 export interface Feature<T> {
 	type: string;
 	geometry: T;
-	properties?: Dict<any>;
+	properties: Dict<any>;
 }
 
 export interface LineString extends Geometry {

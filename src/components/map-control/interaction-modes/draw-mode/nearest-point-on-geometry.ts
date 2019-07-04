@@ -63,7 +63,7 @@ export const nearestPointOnGeometry = (
 		}
 
 		if (type === MULTI_POINT) {
-			if (oc(properties).type() === CIRCLE) {
+			if (properties.type === CIRCLE) {
 				const [co1, co2] = coordinates as Co[];
 
 				const p1 = project(coToLngLat(co1));
