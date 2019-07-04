@@ -1,6 +1,7 @@
 import {
 	POINT,
 	POLYGON,
+	MULTI_POINT,
 	LINE_STRING,
 	MULTI_POLYGON,
 	MULTI_LINE_STRING
@@ -24,7 +25,7 @@ export const updateCoordinate = (data: FeatureCollection, [_i, _j, _k, _l]: numb
 							: coordinates.map((co1: Co | Co[] | Co[][], j: number) => (
 								j !== _j
 									? co1
-									: type === LINE_STRING
+									: type === LINE_STRING || type === MULTI_POINT
 										? co
 										: type === MULTI_LINE_STRING
 											? (co1 as Co[]).map((co2: Co, k: number) => (
@@ -54,4 +55,8 @@ export const updateCoordinate = (data: FeatureCollection, [_i, _j, _k, _l]: numb
 				};
 		})
 	}
+);
+
+export const updateCoordinates = (data: FeatureCollection, entries: [number[], Co][]) => (
+	entries.reduce((m1, [index, co]) => updateCoordinate(m1, index, co), data)
 );

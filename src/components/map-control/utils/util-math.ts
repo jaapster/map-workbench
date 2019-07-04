@@ -21,23 +21,30 @@ export const getDistanceToSegment = (p0: Point, p1: Point, p2: Point) => {
 	return Math.sqrt(dx * dx + dy * dy);
 };
 
-export const closestPointOnSegment = (p: Point, a: Point, b: Point) => {
-    const v = [b.x - a.x, b.y - a.y];
-    const u = [a.x - p.x, a.y - p.y];
-    const vu = v[0] * u[0] + v[1] * u[1];
-    const vv = v[0] ** 2 + v[1] ** 2;
-    const t = -vu / vv;
-    if (t >= 0 && t <= 1) return vectorToSegment2D(t, { x: 0, y: 0 }, a, b);
-    const g0 = sqDiag2D(vectorToSegment2D(0, p, a, b))
-    const g1 = sqDiag2D(vectorToSegment2D(1, p, a, b))
-    return g0 <= g1 ? a : b
+const _nearest = (p: Point, a: Point, b: Point, constrain: boolean) => {
+	const atob = { x: b.x - a.x, y: b.y - a.y };
+	const atop = { x: p.x - a.x, y: p.y - a.y };
+	const len = atob.x * atob.x + atob.y * atob.y;
+	const dot = atop.x * atob.x + atop.y * atob.y;
+	const t = constrain
+		? Math.min(1, Math.max(0, dot / len))
+		: dot / len;
+	return { x: a.x + atob.x * t, y: a.y + atob.y * t };
 };
 
-const vectorToSegment2D = (t: number, p: Point, a: Point, b: Point) => {
-    return {
-        x: (1 - t) * a.x + t * b.x - p.x,
-        y: (1 - t) * a.y + t * b.y - p.y,
-    };
+export const nearestPointOnSegment = (p: Point, a: Point, b: Point) => {
+	return _nearest(p, a, b, true);
 };
 
-const sqDiag2D = (p: Point) => p.x ** 2 + p.y ** 2;
+export const nearestPointOnLine = (p: Point, [a, b]: [Point, Point]) => {
+	return _nearest(p, a, b, false);
+};
+
+export const angle = (a: Point, b: Point) => Math.atan2(a.y - b.y, a.x - b.x);
+
+export const rotateAround = (p: Point, c: Point, t: number): Point => (
+	{
+		x: (p.x - c.x) * Math.cos(t) - (p.y - c.y) * Math.sin(t) + c.x,
+		y: (p.y - c.y) * Math.cos(t) + (p.x - c.x) * Math.sin(t) + c.y
+	}
+);

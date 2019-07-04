@@ -1,8 +1,11 @@
 import { Co, FeatureCollection, ProjectFn, UnprojectFn } from '../../../../types';
 import {
+	POINT,
+	POLYGON,
 	LINE_STRING,
-	MULTI_LINE_STRING, MULTI_POLYGON, POINT,
-	POLYGON
+	MULTI_POINT,
+	MULTI_POLYGON,
+	MULTI_LINE_STRING
 } from '../../../../services/constants';
 
 export const moveGeometry = (data: FeatureCollection, index: number[], dx: number, dy: number, project: ProjectFn, unproject: UnprojectFn) => {
@@ -26,7 +29,7 @@ export const moveGeometry = (data: FeatureCollection, index: number[], dx: numbe
 						coordinates: type === POINT
 							? moveCo(coordinates as Co)
 							: (coordinates as any).map((c1: any) => {
-								if (type === LINE_STRING) {
+								if (type === LINE_STRING || type === MULTI_POINT) {
 									return moveCo(c1 as Co);
 								}
 

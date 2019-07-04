@@ -1,6 +1,7 @@
 import { Dict } from '../../../types';
+import { EventEmitter } from '../../../event-emitter';
 
-export class InteractionMode {
+export class InteractionMode extends EventEmitter {
 	readonly _el: any;
 	readonly _map: any;
 	readonly _container: any;
@@ -8,6 +9,8 @@ export class InteractionMode {
 	_options: Dict<any>;
 
 	constructor(map: any, options?: any) {
+		super();
+
 		this._el = map.getCanvasContainer();
 		this._map = map;
 		this._options = options;
@@ -35,9 +38,11 @@ export class InteractionMode {
 	onPointerDragEnd(e: any) {}
 	onKeyEscape(e: any) {}
 	onKeyDelete(e: any) {}
-	onKeyUp(e: any) {}
-	onContext(e: any) {
-		console.log(e.lngLat);
+	onContext(e: any) {}
+	onKeyUp(e: any) {
+		if (e.key === 'Escape') {
+			this.cleanUp();
+		}
 	}
 
 	cleanUp() {}

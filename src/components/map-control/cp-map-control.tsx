@@ -5,10 +5,10 @@ import { token } from '../../token';
 import './style/cp-map-control.scss';
 import { Portal } from '../app/cp-portal';
 import { Button, ButtonGroup } from '../app/cp-button';
-import { MapPointerEvents } from './utils/util-map-pointer-events';
-import { InteractionMode } from './interaction-modes/interaction-mode';
-import { NavigationMode } from './interaction-modes/navigation-mode';
 import { DrawMode } from './interaction-modes/draw-mode/draw-mode';
+import { NavigationMode } from './interaction-modes/navigation-mode';
+import { InteractionMode } from './interaction-modes/interaction-mode';
+import { MapPointerEvents } from './utils/util-map-pointer-events';
 import { ID_MAP_CONTROL, ID_MAP_CONTROL_TOOLS } from '../../services/constants';
 import { disableInteractions, add3dBuildings, styles } from './utils/util-map';
 import { DOM } from './utils/util-dom';
@@ -33,13 +33,23 @@ export class MapControl extends React.Component<Props, State> {
 	static instance: MapControl;
 
 	static resize() {
-		MapControl.instance.map.resize();
+		MapControl.instance.resize();
 	}
 
-	private ref: any;
-	private readonly navigationMode: any;
-	private readonly drawMode: any;
-	private readonly map: any;
+	static activateDrawMode() {
+		MapControl.instance.activateDrawMode();
+	}
+
+	static activateNavigationMode() {
+		MapControl.instance.activateNavigationMode();
+	}
+
+
+	private readonly _map: any;
+	private readonly _drawMode: DrawMode;
+	private readonly _navigationMode: NavigationMode;
+
+	private _ref: any;
 
 	constructor(props: Props) {
 		super(props);
@@ -49,33 +59,19 @@ export class MapControl extends React.Component<Props, State> {
 			center = [0, 0]
 		} = props;
 
-		this.map = new mapboxGL.Map({
+		const style = styles[5][1];
+
+		this._map = new mapboxGL.Map({
 			zoom,
+			style,
 			center,
-			style: styles[1][1],
 			container: DOM.create('div', 'map-container')
 		});
 
-		this.navigationMode = NavigationMode.create(this.map);
-		this.drawMode = DrawMode.create(this.map);
+		this._drawMode = DrawMode.create(this._map);
+		this._navigationMode = NavigationMode.create(this._map);
 
-		disableInteractions(this.map);
-
-		MapControl.instance = this;
-
-		this.state = {
-			mode: this.navigationMode,
-			style: styles[1][1],
-			d3: true,
-			center
-		};
-	}
-
-	componentDidMount() {
-		this.ref.appendChild(this.map.getContainer());
-		this.map.resize();
-
-		const events = MapPointerEvents.create(this.map);
+		const events = MapPointerEvents.create(this._map);
 
 		events.on('pointerup', (e: any) => this.state.mode.onPointerUp(e));
 		events.on('pointerdown', (e: any) => this.state.mode.onPointerDown(e));
@@ -93,79 +89,108 @@ export class MapControl extends React.Component<Props, State> {
 		events.on('wheel', (e: any) => this.state.mode.onWheel(e));
 		events.on('context', (e: any) => this.state.mode.onContext(e));
 
-		// todo: get this from map events class
-		this.map.on('move', this._onMapMove);
-		this.map.on('style.load', this._onStyleLoaded);
-
 		document.addEventListener('keyup', (e: any) => this.state.mode.onKeyUp(e));
+
+		this._map.on('load', this._onMapReady);
+
+		disableInteractions(this._map);
+
+		MapControl.instance = this;
+
+		this.state = {
+			d3: true,
+			mode: this._navigationMode,
+			style,
+			center
+		};
+	}
+
+	componentDidMount() {
+		this._ref.appendChild(this._map.getContainer());
+		this._map.resize();
+
+		// todo: get this from map events class
+		this._map.on('style.load', this._onStyleLoaded);
+		this._map.on('move', this._onMapMove);
 	}
 
 	componentWillUnmount() {
-		this.map.off('style.load', this._onStyleLoaded);
-		this.map.off('move', this._onMapMove);
+		this._map.off('style.load', this._onStyleLoaded);
+		this._map.off('move', this._onMapMove);
 
-		this.navigationMode.destroy();
-		this.drawMode.destroy();
-	}
-
-	private _onStyleLoaded() {
-		add3dBuildings(this.map);
+		this._navigationMode.destroy();
+		this._drawMode.destroy();
 	}
 
 	private _onMapMove() {
-		const { lng, lat } = this.map.getCenter();
+		const { lng, lat } = this._map.getCenter();
+
 		this.setState({
-			center: [lng.toFixed(4), lat.toFixed(4)]
+			center: [lng.toFixed(3), lat.toFixed(3)]
 		});
 	}
 
+	private _onMapReady() {
+		console.log('map ready');
+	}
+
+	private _onStyleLoaded() {
+		add3dBuildings(this._map);
+	}
+
 	private _setRef(e: any) {
-		this.ref = e;
+		this._ref = e;
 	}
 
 	private _setStyle(_style: string) {
 		const { style } = this.state;
 
 		if (style !== _style) {
-			this.map.setStyle(_style);
+			this._map.setStyle(_style);
 			this.setState({ style: _style });
 		}
 	}
 
 	private _toggle3d() {
 		this.setState({ d3: !this.state.d3 }, () => {
-			if (this.state.d3) {
-				this.map.setLayoutProperty('3d-buildings', 'visibility', 'visible');
-			} else {
-				this.map.setLayoutProperty('3d-buildings', 'visibility', 'none');
-			}
+			this._map.setLayoutProperty(
+				'3d-buildings',
+				'visibility',
+				this.state.d3 ? 'visible' : 'none'
+			);
 		});
 	}
 
+	resize() {
+		this._map.resize();
+	}
+
 	activateNavigationMode() {
-		const { mode } = this.state;
+		this.state.mode.cleanUp();
 
-		mode.cleanUp();
-
-		this.setState({ mode: this.navigationMode });
+		this.setState({
+			mode: this._navigationMode
+		});
 	}
 
 	activateDrawMode() {
-		const { mode } = this.state;
+		this.state.mode.cleanUp();
 
-		mode.cleanUp();
-
-		this.setState({ mode: this.drawMode });
+		this.setState({
+			mode: this._drawMode
+		});
 	}
 
 	render() {
-		const { mode, style, d3, center: [lng, lat] } = this.state;
+		const { style, d3, center: [lng, lat], mode } = this.state;
 
 		return (
 			<>
 				<Portal destination={ ID_MAP_CONTROL }>
 					<div className="map-container" ref={ this._setRef }>
-						<div className="center-coordinate">{ lng }, { lat }</div>
+						<div className="center-coordinate">
+							{ lng }, { lat }
+						</div>
 					</div>
 				</Portal>
 				<Portal destination={ ID_MAP_CONTROL_TOOLS }>

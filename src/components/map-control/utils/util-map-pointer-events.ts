@@ -5,7 +5,11 @@ import mapboxgl from 'mapbox-gl';
 // const log = (...args: any[]) => console.log(...args);
 
 // @ts-ignore
-const toEvent = (e: mapboxgl.MapTouchEvent | mapboxgl.MapMouseEvent | TouchEvent | MouseEvent) => {
+const toEvent = (e: mapboxgl.MapTouchEvent | mapboxgl.MapMouseEvent | TouchEvent | MouseEvent, map?: any) => {
+	if (map) {
+
+	}
+
     return {
         ...e,
         // features: !(e instanceof TouchEvent || e instanceof MouseEvent)
@@ -146,7 +150,7 @@ export class MapPointerEvents extends EventEmitter {
         this._onPointerDown(toEvent(e));
     }
 
-    private _onTouchMove(e: mapboxgl.MapTouchEvent) {
+    private _onTouchMove(e: mapboxgl.MapTouchEvent | TouchEvent) {
         // log('touchmove', e);
 
         this._onPointerMove(toEvent(e));
@@ -173,7 +177,7 @@ export class MapPointerEvents extends EventEmitter {
     }
 
     private _setDblClickTimeout(e: mapboxgl.MapMouseEvent) {
-        this._timeoutDblClick = setTimeout(() => this._onPointerClick(e), 250);
+        this._timeoutDblClick = setTimeout(() => this._onPointerClick(e), 220);
     }
 
     private _setLongPressTimeout(e: mapboxgl.MapMouseEvent) {

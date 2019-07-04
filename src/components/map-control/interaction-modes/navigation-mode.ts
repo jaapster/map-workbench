@@ -1,7 +1,10 @@
 import { Point } from 'mapbox-gl';
 import bind from 'autobind-decorator';
 import { InteractionMode } from './interaction-mode';
+import { layers } from './navigation-mode-layers';
 import { DOM } from '../utils/util-dom';
+import { Feature } from '../../../types';
+import { FEATURE_COLLECTION, EMPTY } from '../../../services/constants';
 
 interface Options {
 	pitch?: boolean;
@@ -24,9 +27,23 @@ export class NavigationMode extends InteractionMode {
 	private _boxZoom = false;
 	private _lastPos = new Point(0, 0);
 	private _startPos = new Point(0, 0);
+	private _frameId = null;
+	private _selection = EMPTY;
 
 	static create(map: any, options: Options = {}) {
 		return new	NavigationMode(map, { ...OPTIONS, ...options });
+	}
+
+	protected _onStyleLoaded() {
+		this._map.addSource('selection', { type: 'geojson', data: EMPTY });
+
+		layers.forEach(layer => this._map.addLayer(layer));
+
+		this._render();
+	}
+
+	private _render() {
+		this._map.getSource('selection').setData(this._selection);
 	}
 
 	onPointerDragStart(e: any) {
@@ -35,81 +52,86 @@ export class NavigationMode extends InteractionMode {
 	}
 
 	onPointerDragMove(e: any) {
-		const { originalEvent: { shiftKey, ctrlKey } } = e;
-		const { pitch, rotate, boxZoom } = this._options;
+		if (!this._frameId) {
+			this._frameId = this._map._requestRenderFrame(() => {
+				this._frameId = null;
 
-		const tr = this._map.transform;
+				const { originalEvent: { shiftKey, ctrlKey } } = e;
+				const { pitch, rotate, boxZoom } = this._options;
 
-		if (ctrlKey && (pitch || rotate)) {
-			const bearingDiff = (this._lastPos.x - e.point.x) * 0.5;
-			const pitchDiff = (this._lastPos.y - e.point.y) * -0.5;
+				const tr = this._map.transform;
 
-			if (rotate) {
-				tr.bearing = tr.bearing - bearingDiff;
-			}
+				if (ctrlKey && (pitch || rotate)) {
+					const bearingDiff = (this._lastPos.x - e.point.x) * 0.5;
+					const pitchDiff = (this._lastPos.y - e.point.y) * -0.5;
 
-			if (pitch) {
-				tr.pitch = tr.pitch - pitchDiff;
-			}
+					if (rotate) {
+						tr.bearing = tr.bearing - bearingDiff;
+					}
 
-			// we need to do this to make the map re-render correctly
-			this._map.fire({ type: 'move' });
-		} else if (this._boxZoom || (shiftKey && boxZoom)) {
-			this._boxZoom = true;
+					if (pitch) {
+						tr.pitch = tr.pitch - pitchDiff;
+					}
 
-			const bounds = this._map.getContainer().getBoundingClientRect();
+					// we need to do this to make the map re-render correctly
+					this._map.fire({ type: 'move' });
+				} else if (this._boxZoom || (shiftKey && boxZoom)) {
+					this._boxZoom = true;
 
-			if (!this._box) {
-				this._box = DOM.create('div', 'box-zoom', this._el);
-			}
+					const bounds = this._map.getContainer().getBoundingClientRect();
 
-			if (!this._scr) {
-				this._scr = DOM.create('div', 'box-screen', this._box);
-			}
+					if (!this._box) {
+						this._box = DOM.create('div', 'box-zoom', this._el);
+					}
 
-			const pos = e.point;
+					if (!this._scr) {
+						this._scr = DOM.create('div', 'box-screen', this._box);
+					}
 
-			const minX = Math.min(this._startPos.x, pos.x);
-			const maxX = Math.max(this._startPos.x, pos.x);
-			const minY = Math.min(this._startPos.y, pos.y);
-			const maxY = Math.max(this._startPos.y, pos.y);
+					const pos = e.point;
 
-			this._box.style.transform = `translate(${ minX }px, ${ minY }px)`;
-			this._box.style.width = `${ maxX - minX }px`;
-			this._box.style.height = `${ maxY - minY }px`;
+					const minX = Math.min(this._startPos.x, pos.x);
+					const maxX = Math.max(this._startPos.x, pos.x);
+					const minY = Math.min(this._startPos.y, pos.y);
+					const maxY = Math.max(this._startPos.y, pos.y);
 
-			const screenAspect = bounds.width / bounds.height;
-			const boxAspect = (maxX - minX) / (maxY - minY);
+					this._box.style.transform = `translate(${ minX }px, ${ minY }px)`;
+					this._box.style.width = `${ maxX - minX }px`;
+					this._box.style.height = `${ maxY - minY }px`;
 
-			if (screenAspect > boxAspect) {
-				const g = ((maxY - minY) * screenAspect) - (maxX - minX);
-				this._scr.style.height = `${ maxY - minY }px`;
-				this._scr.style.width = `${ (maxY - minY) * screenAspect }px`;
-				this._scr.style.marginLeft = `-${ g / 2 }px`;
-				this._scr.style.marginTop = '-1px';
-			} else {
-				const g = ((maxX - minX) / screenAspect) - (maxY - minY);
-				this._scr.style.width = `${ maxX - minX }px`;
-				this._scr.style.height = `${ (maxX - minX) / screenAspect }px`;
-				this._scr.style.marginTop = `-${ g / 2 }px`;
-				this._scr.style.marginLeft = '-1px';
-			}
-		} else {
-			tr.setLocationAtPoint(tr.pointLocation(this._lastPos), e.point);
+					const screenAspect = bounds.width / bounds.height;
+					const boxAspect = (maxX - minX) / (maxY - minY);
 
-			// we need to do this to make the map re-render correctly
-			this._map.fire({ type: 'move' });
+					if (screenAspect > boxAspect) {
+						const g = ((maxY - minY) * screenAspect) - (maxX - minX);
+						this._scr.style.height = `${ maxY - minY }px`;
+						this._scr.style.width = `${ (maxY - minY) * screenAspect }px`;
+						this._scr.style.marginLeft = `-${ g / 2 }px`;
+						this._scr.style.marginTop = '-1px';
+					} else {
+						const g = ((maxX - minX) / screenAspect) - (maxY - minY);
+						this._scr.style.width = `${ maxX - minX }px`;
+						this._scr.style.height = `${ (maxX - minX) / screenAspect }px`;
+						this._scr.style.marginTop = `-${ g / 2 }px`;
+						this._scr.style.marginLeft = '-1px';
+					}
+				} else {
+					tr.setLocationAtPoint(tr.pointLocation(this._lastPos), e.point);
+
+					// we need to do this to make the map re-render correctly
+					this._map.fire({ type: 'move' });
+				}
+
+				this._lastPos = e.point;
+			})
 		}
-
-		this._lastPos = e.point;
 	}
 
 	onPointerUp(e: any) {
 		if (this._boxZoom && e.point) {
 			this._map.fitScreenCoordinates(this._startPos, e.point, this._map.getBearing(), { linear: true });
+			this.cleanUp();
 		}
-
-		this.cleanUp();
 	}
 
 	onPointerDblClick(e: any) {
@@ -118,6 +140,20 @@ export class NavigationMode extends InteractionMode {
 			{ around: e.lngLat },
 			e
 		);
+	}
+
+	onPointerClick(e: any) {
+		const [feature]: Feature<any>[] = this._map.queryRenderedFeatures(e.point);
+
+		if (feature) {
+			this._selection = {
+				type: FEATURE_COLLECTION,
+				// @ts-ignore
+				features: [feature]
+			};
+
+			this._render();
+		}
 	}
 
 	onPointerLongPress(e: any) {
@@ -161,6 +197,10 @@ export class NavigationMode extends InteractionMode {
 
 			this._scr = null;
 		}
+
+		this._selection = EMPTY;
+
+		this._render();
 	}
 
 	setOptions(options: Options) {

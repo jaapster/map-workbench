@@ -1,58 +1,79 @@
 // predicates
-const isSelected = ['==', ['get', 'selected'], true];
-const isRegular = ['!=', ['get', 'selected'], true];
+const isPoint = ['==', 'type', 'Point'];
 const isPolygon = ['==', '$type', 'Polygon'];
-const isVertex = ['==', ['get', 'type'], 'vertex'];
+const isVertex = ['==', 'type', 'vertex'];
+const isVertexSelected = ['==', 'type', 'selected-vertex'];
 
 // colors
+const transparent = 'rgba(0, 0, 0, 0)';
 const colorSelected = 'orangered';
 const colorRegular = 'grey';
-const color = ['case', isSelected, colorSelected, colorRegular];
-
-// line styles
-const lineStyleRegular = [1, 0];
-const lineStyleSelected = [2, 1];
 
 export const layers = [
+	{
+		id: 'draw-point',
+		type: 'circle',
+		source: 'draw',
+		filter: isPoint,
+		paint: {
+			'circle-radius': 4,
+			'circle-color': colorRegular
+		}
+	},
+	{
+		id: 'draw-line',
+		type: 'line',
+		source: 'draw',
+		paint: {
+			'line-width': 1,
+			'line-color': colorRegular
+		}
+	},
 	{
 		id: 'draw-fill',
 		type: 'fill',
 		source: 'draw',
 		filter: isPolygon,
 		paint: {
-			'fill-color': color,
+			'fill-color': colorRegular,
 			'fill-opacity': 0.2
 		}
 	},
-	// todo: when mapbox supports data driven dash dasharray
-	// replace the following two layers with one
 	{
-		id: 'draw-line-regular',
-		type: 'line',
-		source: 'draw',
-		filter: isRegular,
+		id: 'draw-point-selected',
+		type: 'circle',
+		source: 'draw-selected',
+		filter: isPoint,
 		paint: {
-			'line-width': 1,
-			'line-color': colorRegular,
-			'line-dasharray': lineStyleRegular
+			'circle-radius': 4,
+			'circle-color': colorRegular
 		}
 	},
 	{
 		id: 'draw-line-selected',
 		type: 'line',
-		source: 'draw',
-		filter: isSelected,
+		source: 'draw-selected',
 		paint: {
-			'line-width': 2,
+			'line-width': 1,
 			'line-color': colorSelected,
-			'line-dasharray': lineStyleSelected
+			'line-dasharray': [3, 3]
+		}
+	},
+	{
+		id: 'draw-fill-selected',
+		type: 'fill',
+		source: 'draw-selected',
+		filter: isPolygon,
+		paint: {
+			'fill-color': colorSelected,
+			'fill-opacity': 0.2
 		}
 	},
 	{
 		id: 'draw-vertex',
 		type: 'circle',
-		source: 'draw',
-		filter: isSelected,
+		source: 'draw-selected',
+		filter: isVertex,
 		paint: {
 			'circle-color': colorSelected,
 			'circle-radius': 4
@@ -61,11 +82,13 @@ export const layers = [
 	{
 		id: 'draw-vertex-selected',
 		type: 'circle',
-		source: 'draw',
-		filter: isVertex,
+		source: 'draw-selected',
+		filter: isVertexSelected,
 		paint: {
-			'circle-color': colorSelected,
-			'circle-radius': 6
+			'circle-radius': 6,
+			'circle-color': transparent,
+			'circle-stroke-width': 1,
+			'circle-stroke-color': colorSelected
 		}
 	}
 ];

@@ -1,5 +1,3 @@
-import { Co, LngLat } from '../../../types';
-
 export const enableInteractions = (map: any) => {
 	if (map != null) {
 		map.boxZoom.enable();
@@ -19,8 +17,6 @@ export const disableInteractions = (map: any) => {
 		map.doubleClickZoom.disable();
 	}
 };
-
-export const toLngLat = ([lng, lat]: Co): LngLat => ({ lng, lat });
 
 export const add3dBuildings = (map: any) => {
 	if (map != null) {
@@ -68,5 +64,6 @@ export const styles = [
 	['Light', 'mapbox://styles/mapbox/light-v10'],
 	['Dark', 'mapbox://styles/mapbox/dark-v10'],
 	['Outdoors', 'mapbox://styles/mapbox/outdoors-v10'],
-	['Hybrid', 'mapbox://styles/mapbox/satellite-streets-v10']
+	['Hybrid', 'mapbox://styles/mapbox/satellite-streets-v10'],
+	['Mono', 'mapbox://styles/jaapl/cjxljt4i0011m1cnvwvqqsvcc']
 ];

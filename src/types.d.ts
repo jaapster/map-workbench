@@ -30,6 +30,11 @@ export interface LineString extends Geometry {
 	coordinates: Co[]
 }
 
+export interface MultiPoint extends Geometry {
+	type: 'MultiPoint';
+	coordinates: Co[]
+}
+
 export interface Polygon extends Geometry {
 	type: 'Polygon';
 	coordinates: Co[][]
