@@ -37,7 +37,7 @@ export const hyp = ({ x, y }: Point) => (
 );
 
 export const ang = (p0: Point, p1: Point) => (
-	Math.atan2(p0.y - p1.y, p0.x - p1.x)
+	Math.atan2(p1.y - p0.y, p1.x - p0.x)
 );
 
 export const rot = (p0: Point, po: Point, t: number) => {

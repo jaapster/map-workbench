@@ -1,37 +1,52 @@
 import bind from 'autobind-decorator';
+import { data } from './draw-mode-dev-data';
 import { layers } from './draw-mode-layers';
 import { toPairs } from '../../utils/util-to-pairs';
+import { realise } from './realise-features';
 import { addAtIndex } from './add-at-index';
 import { moveGeometry } from './move-geometry';
+import { pointAtLength } from './point-at-length';
 import { nearestVertex } from './nearest-vertex';
 import { deleteAtIndex } from './delete-at-index';
-import { multiPointToCircle } from '../../utils/util-multi-point-to-circle';
+import { InteractionMode } from '../interaction-mode';
+import { analyseRectangle } from './analyse-rectangle';
+import { updateCoordinates } from './update-coordinate';
+import { nearestPointOnLine } from '../../utils/util-math';
+import { setPropertyAtIndex } from './set-property-at-index';
 import { nearestPointOnGeometry } from './nearest-point-on-geometry';
 import {
-	lngLatToCo,
-	coToLngLat } from '../../utils/util-lng-lat-to-co';
+	ang,
+	dis,
+	rot } from '../../utils/util-point';
 import {
-	updateCoordinate,
-	updateCoordinates } from './update-coordinate';
-import { nearestPointOnLine } from '../../utils/util-math';
-import { InteractionMode } from '../interaction-mode';
-import { Co, Feature, FeatureCollection, LineString } from '../../../../types';
+	coToLngLat,
+	lngLatToCo } from '../../utils/util-lng-lat-to-co';
 import {
-	EMPTY,
+	geoDis,
+	geoUnproject } from '../../utils/util-geo';
+import {
+	Co,
+	Point,
+	Feature,
+	LineString,
+	FeatureCollection
+} from '../../../../types';
+import {
 	POINT,
+	EMPTY,
 	CIRCLE,
+	SEGMENT,
 	FEATURE,
 	POLYGON,
-	RECTANGLE,
 	THRESHOLD,
+	RECTANGLE,
+	PRECISION,
 	MODIFIERS,
-	MULTI_POINT,
 	LINE_STRING,
+	MULTI_POINT,
 	MULTI_POLYGON,
 	MULTI_LINE_STRING
 } from '../../../../services/constants';
-import { data } from './draw-mode-dev-data';
-import { ang, rot } from '../../utils/util-point';
 
 @bind
 export class DrawMode extends InteractionMode {
@@ -49,10 +64,7 @@ export class DrawMode extends InteractionMode {
 	protected _onStyleLoaded() {
 		this._map.addSource('draw', {
 			type: 'geojson',
-			data: {
-				...this._data,
-				features: this._data.features.map(this._roll)
-			}
+			data: EMPTY
 		} as any);
 
 		this._map.addSource('draw-selected', {
@@ -62,7 +74,7 @@ export class DrawMode extends InteractionMode {
 
 		layers.forEach(layer => this._map.addLayer(layer as any));
 
-		this._render();
+		this._render(true);
 	}
 
 	private _data: FeatureCollection = data;
@@ -71,43 +83,29 @@ export class DrawMode extends InteractionMode {
 
 	private _prevIndex: number | null = -1;
 
-	private _project(a: any) {
+	private _screenProject(a: any) {
 		return this._map.project(a);
 	}
 
-	private _unproject(a: any) {
+	private _screenUnproject(a: any) {
 		return this._map.unproject(a);
 	}
 
-	private _roll(f: Feature<any>) {
-		return f.properties.type === CIRCLE
-			? multiPointToCircle(f, this._project, this._unproject)
-			: f;
-	}
+	private _render(forceDrawNonSelected: boolean = false) {
+		if (this._prevIndex !== this._index[0] || forceDrawNonSelected) {
+			this._prevIndex = this._index[0];
 
-	private _render() {
-		if (!this._index.length) {
-			if (this._prevIndex !== null) {
-				this._prevIndex = null;
-				this._map.getSource('draw').setData({
-					...this._data,
-					features: this._data.features.map(this._roll)
-				});
-				this._map.getSource('draw-selected').setData(EMPTY);
-			}
-		} else {
-			if (this._prevIndex !== this._index[0]) {
-				this._prevIndex = this._index[0];
-				this._map.getSource('draw').setData({
-					...this._data,
-					features: this._data.features.reduce((m1, f1, i) => (
-						i !== this._index[0]
-							? m1.concat(this._roll(f1))
-							: m1
-					), [])
-				});
-			}
+			this._map.getSource('draw').setData({
+				...this._data,
+				features: this._data.features.reduce((m1, f1, i) => (
+					i !== this._index[0]
+						? m1.concat(realise([f1]))
+						: m1
+				), [])
+			});
+		}
 
+		if (this._index.length) {
 			const { features } = this._data;
 			const [_i, _j, _k, _l] = this._index;
 			const l = this._index.length;
@@ -115,24 +113,29 @@ export class DrawMode extends InteractionMode {
 
 			this._map.getSource('draw-selected').setData({
 				...this._data,
-				features: [
-					this._roll(features[_i])
-				].concat({
-						type: FEATURE,
-						geometry: {
-							type: MULTI_POINT,
-							coordinates: (
-								type === POINT
-									? [coordinates]
-									: toPairs((coordinates).flat(4))
-							)
-						},
-						properties: {
-							type: 'vertex'
+				features: ([] as Feature<any>[])
+					.concat(
+						realise([features[_i]])
+					)
+					.concat([
+						{
+							type: FEATURE,
+							geometry: {
+								type: MULTI_POINT,
+								coordinates: (
+									type === POINT
+										? [coordinates]
+										: toPairs((coordinates).flat(4))
+								)
+							},
+							properties: {
+								type: 'vertex'
+							}
 						}
-					}).concat(
+					])
+					.concat(
 						this._index.length
-							? {
+							? [{
 								type: FEATURE,
 								geometry: {
 									type: POINT,
@@ -148,40 +151,50 @@ export class DrawMode extends InteractionMode {
 								properties: {
 									type: 'selected-vertex'
 								}
-							}
-							: []
-					).concat(
-						this._index.length && ([LINE_STRING, MULTI_LINE_STRING, POLYGON, MULTI_POLYGON].includes(type))
-							? (
-								type === LINE_STRING
-									? [coordinates]
-									: type === MULTI_LINE_STRING || type === POLYGON
-										? coordinates
-										: coordinates.flat(1)
-								)
-								.reduce((m1: any, co1: any, i: number) => {
-									return co1.reduce((m2: any, co2: any, j: number, xs: Co[]) => (
-										j === 0
-											? m2
-											: m2.concat({
-												type: FEATURE,
-												geometry: {
-													type: LINE_STRING,
-													coordinates: [
-														xs[j - 1],
-														co2
-													]
-												},
-												properties: {
-													type: 'lineLabel',
-													text: `${ i }-${ j - 1 }`
-												}
-											})
-									), m1);
-								}, [])
+							}]
 							: []
 					)
+					.concat(
+						(
+							type === LINE_STRING
+								? [coordinates]
+								: type === MULTI_LINE_STRING || type === POLYGON
+									? coordinates
+									: type === MULTI_POLYGON
+										? coordinates.flat(1)
+										: []
+						)
+						.reduce((m1: any, co1: Co[]) => (
+							co1.reduce((
+								m2: Feature<LineString>[],
+								co2: Co,
+								j: number,
+								xs: Co[]
+							) => (
+								j === 0
+									? m2
+									: m2.concat({
+										type: FEATURE,
+										geometry: {
+											type: LINE_STRING,
+											coordinates: [xs[j - 1], co2]
+										},
+										properties: {
+											type: SEGMENT,
+											text: `${
+												geoDis(
+													coToLngLat(xs[j - 1]), 
+													coToLngLat(co2)
+												).toFixed(PRECISION)
+											}`
+										}
+									})
+							), m1)
+						), [] as Feature<LineString>[])
+					)
 			});
+		} else {
+			this._map.getSource('draw-selected').setData(EMPTY);
 		}
 	}
 
@@ -189,7 +202,7 @@ export class DrawMode extends InteractionMode {
 		const { distance, index } = nearestVertex(
 			e.point,
 			this._data,
-			this._project
+			this._screenProject
 		);
 
 		if (distance < THRESHOLD) {
@@ -198,8 +211,8 @@ export class DrawMode extends InteractionMode {
 			const { distance, index } = nearestPointOnGeometry(
 				e.point,
 				this._data,
-				this._project,
-				this._unproject
+				this._screenProject,
+				this._screenUnproject
 			);
 
 			this._index = distance < THRESHOLD ? [index[0]] : [];
@@ -209,161 +222,141 @@ export class DrawMode extends InteractionMode {
 	}
 
 	onPointerDragStart(e: any) {
-		if (e.originalEvent[MODIFIERS.ADD_VERTEX]) {
-			const [f] = this._index;
-			const { properties: { type } } = this._data.features[f];
+		const [_i, , _k] = this._index;
 
-			if (![RECTANGLE, CIRCLE].includes(type)) {
-				const { coordinate, distance, index } = nearestPointOnGeometry(
-					e.point,
-					this._data,
-					this._project,
-					this._unproject
-				);
+		if (_i != null) {
+			const {
+				geometry: { coordinates },
+				properties: { type }
+			} = this._data.features[_i];
 
-				if (distance < THRESHOLD) {
-					this._index = index;
-					this._data = addAtIndex(
+			if (e.originalEvent[MODIFIERS.ADD_VERTEX]) {
+				if (![RECTANGLE, CIRCLE].includes(type)) {
+					const {
+						coordinate,
+						distance,
+						index
+					} = nearestPointOnGeometry(
+						e.point,
 						this._data,
-						this._index,
-						coordinate
+						this._screenProject,
+						this._screenUnproject
 					);
 
-					this._render();
+					if (distance < THRESHOLD) {
+						this._index = index;
+						this._data = addAtIndex(
+							this._data,
+							this._index,
+							coordinate
+						);
+
+						this._render();
+					}
 				}
+			}
+
+			if (type === RECTANGLE && _k != null) {
+				const { p0, p1, p2 } = analyseRectangle(coordinates, _k);
+
+				this._data = setPropertyAtIndex(
+					this._data,
+					_i,
+					'ratio',
+					dis(p0, p1) / dis(p0, p2)
+				);
 			}
 		}
 	}
 
 	onPointerDragMove(e: any) {
-		const project = this._project;
-		const unproject = this._unproject;
+		const [_i, _j, _k] = this._index;
 
-		if (this._index.length) {
-			const {
-				lngLat,
-				originalEvent: { movementX, movementY }
-			} = e;
+		if (_i != null) {
+			const { merc, lngLat, movement } = e;
 
-			if (this._index.length > 1) {
-				// get the feature index
-				const [f] = this._index;
+			if (_j != null) {
+				// the index contains more than just the feature index
+				// so we're going to update one or more coordinates
+				// in its geometry
 				const {
 					geometry: { coordinates },
-					properties: { type }
-				} = this._data.features[f];
+					properties: { type },
+					properties
+				} = this._data.features[_i];
 
 				if (type === RECTANGLE) {
-					// get the vertex index
-					const [, , nv] = this._index;
-					const [cos] = coordinates;
+					const { p0, p1, p2, p3, n1, n2 } = analyseRectangle(
+						coordinates,
+						_k
+					);
 
-					// get the coordinate indices of the points
-					// opposite, clockwise and counter clockwise from
-					// the point that is dragged
-					const n0 = [2, 3, 0, 1, 2][nv];
-					const n1 = [1, 2, 3, 0, 1][nv];
-					const n2 = [3, 0, 1, 2, 3][nv];
-
-					// get screen positions for the coordinates
-					const p0 = project(coToLngLat(cos[n0]));
-					const p1 = project(coToLngLat(cos[n1]));
-					const p2 = project(coToLngLat(cos[n2]));
-					const p3 = project(coToLngLat(cos[nv]));
-					const pv = project(lngLat);
+					let A: Point;
+					let B: Point;
+					let C: Point;
 
 					if (e.originalEvent[MODIFIERS.ROTATE]) {
 						// Rotation:
 						// get the rotation increment in radians
 						// (bearing from "opposite" to stored coordinates
 						// vs bearing from "opposite" to mouse position)
-						const t = (ang(p0, pv) - ang(p0, p3));
+						const t = (ang(p0, merc) - ang(p0, p3));
 
 						// rotate all points and unproject to lngLat
-						const A = unproject(rot(p1, p0, t));
-						const B = unproject(rot(p2, p0, t));
-						const C = unproject(rot(p3, p0, t));
+						A = rot(p1, p0, t);
+						B = rot(p2, p0, t);
+						C = rot(p3, p0, t);
+					} else if (e.originalEvent[MODIFIERS.CONSERVE_RATIO]) {
+						// Resize while conserving aspect ratio
+						// get the ratio from the feature properties
+						const { ratio } = properties;
 
-						// update the coordinates in the feature collection
-						this._data = updateCoordinates(
-							this._data,
-							[
-								[[f, 0, n1], lngLatToCo(A)],
-								[[f, 0, n2], lngLatToCo(B)],
-								[[f, 0, nv], lngLatToCo(C)]
-							]
-						);
+						A = nearestPointOnLine(merc, [p0, p1]);
+						B = pointAtLength([p0, p2], dis(p0, A) / ratio);
+						C = nearestPointOnLine(B, [merc, A]);
 					} else {
-						// Resizing:
-						// get the new positions of the two neighbouring points
-						// and unproject to lngLat
-						const A = unproject(nearestPointOnLine(pv, [p1, p0]));
-						const B = unproject(nearestPointOnLine(pv, [p2, p0]));
-
-						// update the coordinates in the feature collection
-						this._data = updateCoordinates(
-							this._data,
-							[
-								[[f, 0, n1], lngLatToCo(A)],
-								[[f, 0, n2], lngLatToCo(B)],
-								[[f, 0, nv], lngLatToCo(lngLat)]
-							]
-						);
+						// Simple resizing:
+						// get the new positions of the two neighbouring
+						// points and unproject to lngLat
+						A = nearestPointOnLine(merc, [p1, p0]);
+						B = nearestPointOnLine(merc, [p2, p0]);
+						C = merc;
 					}
-				} else if (type === CIRCLE) {
-					const [, nv] = this._index;
 
-					// a circle is a multipoint with two coordinates:
-					// 0 is the center and 1 a point on the circle
-					if (nv === 1) {
-						// move the point on the circle (implicitly
-						// changing the radius)
-						this._data = updateCoordinate(
-							this._data,
-							this._index,
-							lngLatToCo(lngLat)
-						);
-					} else {
-						// move the entire circle by moving the center point
-						this._data = moveGeometry(
-							this._data,
-							this._index,
-							movementX,
-							movementY,
-							project,
-							unproject
-						);
-					}
+					// update the coordinates in the feature collection
+					this._data = updateCoordinates(
+						this._data,
+						[
+							[[_i, 0, n1], lngLatToCo(geoUnproject(A))],
+							[[_i, 0, n2], lngLatToCo(geoUnproject(B))],
+							[[_i, 0, _k], lngLatToCo(geoUnproject(C))]
+						]
+					);
 				} else {
 					// change one coordinate in de the feature collection
-					// at vector "this._index"
-					this._data = updateCoordinate(
-						this._data,
-						this._index,
-						lngLatToCo(lngLat)
-					);
+					// at vector [_i, _j, _k]
+
+					// only the second coordinate in circle can be updated
+					if (type !== CIRCLE || _j === 1) {
+						this._data = updateCoordinates(
+							this._data,
+							[[[_i, _j, _k], lngLatToCo(lngLat)]]
+						);
+					}
 				}
 			} else {
-				this._data = moveGeometry(
-					this._data,
-					this._index,
-					movementX,
-					movementY,
-					project,
-					unproject
-				);
+				// the index contains only the feature so we're going to
+				// move its entire geometry
+				this._data = moveGeometry(this._data, [_i], movement);
 			}
 
 			this._render();
 		}
 	}
 
-	onKeyUp(e: any) {
-		super.onKeyUp(e);
-
-		if (e.key === 'Backspace' && this._index.length) {
+	onDeleteKey() {
+		if (this._index.length) {
 			this._data = deleteAtIndex(this._data, this._index);
-			// this._index = this._index.slice(0, this._index.length - 1);
 
 			this._index = this._index.length === 1
 				? []
@@ -371,11 +364,6 @@ export class DrawMode extends InteractionMode {
 
 			this._render();
 		}
-	}
-
-	engage() {
-		// as we need to project to screen coordinates the map needs to be 2d
-		this._map.setPitch(0);
 	}
 
 	cleanUp() {

@@ -64,8 +64,11 @@ export class MapControl extends React.Component<Props, State> {
 			zoom,
 			style,
 			center,
-			container: DOM.create('div', 'map-container')
+			container: DOM.create('div', 'map-container'),
+			fadeDuration: 0
 		});
+
+		// this._map.showTileBoundaries = true;
 
 		this._drawMode = DrawMode.create(this._map);
 		this._navigationMode = NavigationMode.create(this._map);
@@ -90,15 +93,13 @@ export class MapControl extends React.Component<Props, State> {
 
 		document.addEventListener('keyup', (e: any) => this.state.mode.onKeyUp(e));
 
-		this._map.on('load', this._onMapReady);
-
 		disableInteractions(this._map);
 
 		MapControl.instance = this;
 
 		this.state = {
 			d3: true,
-			mode: this._navigationMode,
+			mode: this._drawMode,
 			style,
 			center
 		};
@@ -127,10 +128,6 @@ export class MapControl extends React.Component<Props, State> {
 		this.setState({
 			center: [lng.toFixed(3), lat.toFixed(3)]
 		});
-	}
-
-	private _onMapReady() {
-		console.log('map ready');
 	}
 
 	private _onStyleLoaded() {

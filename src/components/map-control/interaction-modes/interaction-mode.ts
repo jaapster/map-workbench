@@ -36,14 +36,20 @@ export class InteractionMode extends EventEmitter {
 	onPointerDragStart(e: any) {}
 	onPointerDragMove(e: any) {}
 	onPointerDragEnd(e: any) {}
-	onKeyEscape(e: any) {}
-	onKeyDelete(e: any) {}
 	onContext(e: any) {}
 	onKeyUp(e: any) {
 		if (e.key === 'Escape') {
-			this.cleanUp();
+			this.onEscapeKey();
+		}
+
+		if (e.key === 'Backspace') {
+			this.onDeleteKey();
 		}
 	}
+	onEscapeKey() {
+		this.cleanUp();
+	}
+	onDeleteKey() {}
 
 	engage() {}
 

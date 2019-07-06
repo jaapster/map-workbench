@@ -1,8 +1,12 @@
 import bind from 'autobind-decorator';
-import { EventEmitter } from '../../../event-emitter';
 import mapboxgl from 'mapbox-gl';
+import { EventEmitter } from '../../../event-emitter';
+import { geoProject } from './util-geo';
+import { sub } from './util-point';
 
 // const log = (...args: any[]) => console.log(...args);
+
+let prev: any;
 
 // @ts-ignore
 const toEvent = (e: mapboxgl.MapTouchEvent | mapboxgl.MapMouseEvent | TouchEvent | MouseEvent, map?: any) => {
@@ -10,14 +14,25 @@ const toEvent = (e: mapboxgl.MapTouchEvent | mapboxgl.MapMouseEvent | TouchEvent
 
 	}
 
-    return {
+	const merc = !(e instanceof MouseEvent || e instanceof TouchEvent)
+		? geoProject(e.lngLat)
+		: { x: 0, y: 0 };
+
+    const ev = {
         ...e,
-        // features: !(e instanceof TouchEvent || e instanceof MouseEvent)
+		merc,
+        movement: prev
+			? sub(merc, prev.merc)
+			: { x: 0, y: 0 },
 		features: !(e instanceof MouseEvent)
 			// @ts-ignore
 			? e.target.queryRenderedFeatures(e.point)
 			: []
     };
+
+	prev = ev;
+
+	return ev;
 };
 
 @bind

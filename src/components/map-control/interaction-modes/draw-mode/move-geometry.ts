@@ -1,29 +1,28 @@
 import {
 	Co,
 	Cos,
-	ProjectFn,
-	UnprojectFn,
-	FeatureCollection } from '../../../../types';
+	Point,
+	FeatureCollection
+} from '../../../../types';
 import {
 	POINT,
 	POLYGON,
 	LINE_STRING,
 	MULTI_POINT,
 	MULTI_POLYGON,
-	MULTI_LINE_STRING
-} from '../../../../services/constants';
+	MULTI_LINE_STRING } from '../../../../services/constants';
+import {
+	geoProject,
+	geoUnproject } from '../../utils/util-geo';
 
 export const moveGeometry = (
 	data: FeatureCollection,
 	index: number[],
-	dx: number,
-	dy: number,
-	project: ProjectFn,
-	unproject: UnprojectFn
+	{ x: dx, y: dy }: Point
 ) => {
 	const moveCo = ([lng, lat]: Co) => {
-		const { x, y } = project({ lng, lat });
-		const lngLat = unproject({ x: x + dx, y: y + dy });
+		const { x, y } = geoProject({ lng, lat });
+		const lngLat = geoUnproject({ x: x + dx, y: y + dy });
 		return [lngLat.lng, lngLat.lat];
 	};
 
