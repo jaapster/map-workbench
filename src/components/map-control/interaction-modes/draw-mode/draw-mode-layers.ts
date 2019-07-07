@@ -22,7 +22,7 @@ const isPolygonLike = ['any', isCircle, isPolygon, isRectangle, isMultiPolygon];
 // colors
 const transparent = 'rgba(0, 0, 0, 0)';
 const colorRegular = 'grey';
-const colorSelected = 'ivory';
+const colorSelected = 'cornsilk';
 
 const regular = [
 	{

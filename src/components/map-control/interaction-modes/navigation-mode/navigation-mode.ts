@@ -123,7 +123,7 @@ export class NavigationMode extends InteractionMode {
 				}
 
 				this._lastPos = e.point;
-			})
+			});
 		}
 	}
 

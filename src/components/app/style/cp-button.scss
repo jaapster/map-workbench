@@ -1,27 +1,26 @@
-$color-border: black;
+$color-b: #333;
+$color-a: lightgrey;
 
 .button {
 	font-size: 13px;
-	background: rgba(255, 255, 255, 0.8);
-	color: $color-border;
-	border-top: 1px solid $color-border;
-	border-bottom: 1px solid $color-border;
-	border-left: 1px solid $color-border;
+	background: lightgrey;
+	color: grey;
 	padding: 3px 5px;
+	border-left: 1px solid slategrey;
 
 	&:first-child {
 		border-bottom-left-radius: 3px;
 		border-top-left-radius: 3px;
+		border-left: none;
 	}
 
 	&:last-child {
-		border-right: 1px solid $color-border;
 		border-bottom-right-radius: 3px;
 		border-top-right-radius: 3px;
 	}
 
 	&.button-depressed {
-		background: rgba(0, 0, 0, 0.8);
+		background: slategrey;
 		color: white;
 	}
 }
@@ -29,5 +28,4 @@ $color-border: black;
 .button-group {
 	display: inline-block;
 	margin-left: 4px;
-	opacity: 0.7;
 }

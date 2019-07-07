@@ -5,13 +5,16 @@ import { token } from '../../token';
 import './style/cp-map-control.scss';
 import { Portal } from '../app/cp-portal';
 import { Button, ButtonGroup } from '../app/cp-button';
-import { DrawMode } from './interaction-modes/draw-mode/draw-mode';
+import { UpdateMode } from './interaction-modes/draw-mode/update-mode';
 import { NavigationMode } from './interaction-modes/navigation-mode/navigation-mode';
 import { InteractionMode } from './interaction-modes/interaction-mode';
 import { MapPointerEvents } from './utils/util-map-pointer-events';
 import { ID_MAP_CONTROL, ID_MAP_CONTROL_TOOLS } from '../../services/constants';
 import { disableInteractions, add3dBuildings, styles } from './utils/util-map';
 import { DOM } from './utils/util-dom';
+import { FeatureCollectionLayer } from './interaction-modes/layer-feature-collection';
+import { data } from './interaction-modes/draw-mode/draw-mode-dev-data';
+import { DrawMode } from './interaction-modes/draw-mode/draw-mode';
 
 // @ts-ignore
 mapboxGL.accessToken = token;
@@ -37,7 +40,7 @@ export class MapControl extends React.Component<Props, State> {
 	}
 
 	static activateDrawMode() {
-		MapControl.instance.activateDrawMode();
+		MapControl.instance.activateUpdateMode();
 	}
 
 	static activateNavigationMode() {
@@ -45,7 +48,9 @@ export class MapControl extends React.Component<Props, State> {
 	}
 
 	private readonly _map: any;
+	private readonly _trails: FeatureCollectionLayer;
 	private readonly _drawMode: DrawMode;
+	private readonly _updateMode: UpdateMode;
 	private readonly _navigationMode: NavigationMode;
 
 	private _ref: any;
@@ -58,7 +63,7 @@ export class MapControl extends React.Component<Props, State> {
 			center = [0, 0]
 		} = props;
 
-		const style = styles[2][1];
+		const style = styles[0][1];
 
 		this._map = new mapboxGL.Map({
 			zoom,
@@ -70,8 +75,16 @@ export class MapControl extends React.Component<Props, State> {
 
 		// this._map.showTileBoundaries = true;
 
+		this._trails = FeatureCollectionLayer.create(this._map, data);
+
 		this._drawMode = DrawMode.create(this._map);
+		this._updateMode = UpdateMode.create(this._map);
 		this._navigationMode = NavigationMode.create(this._map);
+
+		this._drawMode.setModel(this._trails);
+		this._updateMode.setModel(this._trails);
+
+		this._drawMode.on('finishDrawing', this.activateUpdateMode);
 
 		const events = MapPointerEvents.create(this._map);
 
@@ -99,7 +112,7 @@ export class MapControl extends React.Component<Props, State> {
 
 		this.state = {
 			d3: true,
-			mode: this._drawMode,
+			mode: this._updateMode,
 			style,
 			center
 		};
@@ -119,7 +132,7 @@ export class MapControl extends React.Component<Props, State> {
 		this._map.off('move', this._onMapMove);
 
 		this._navigationMode.destroy();
-		this._drawMode.destroy();
+		this._updateMode.destroy();
 	}
 
 	private _onMapMove() {
@@ -179,6 +192,15 @@ export class MapControl extends React.Component<Props, State> {
 		});
 	}
 
+	activateUpdateMode() {
+		this.state.mode.cleanUp();
+		this._updateMode.engage();
+
+		this.setState({
+			mode: this._updateMode
+		});
+	}
+
 	render() {
 		const { style, d3, center: [lng, lat], mode } = this.state;
 
@@ -204,6 +226,12 @@ export class MapControl extends React.Component<Props, State> {
 							onClick={ this.activateDrawMode }
 						>
 							Draw
+						</Button>
+						<Button
+							depressed={ mode instanceof UpdateMode }
+							onClick={ this.activateUpdateMode }
+						>
+							Update
 						</Button>
 					</ButtonGroup>
 					<ButtonGroup>

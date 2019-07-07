@@ -21,7 +21,7 @@ export class App extends React.Component {
 				<PanelPair // footer
 					fixed
 					vertical
-					initial={ 30 }
+					initial={ 0 }
 					onResize={ MapControl.resize }
 				>
 					<Panel>
@@ -34,9 +34,11 @@ export class App extends React.Component {
 						>
 							<Panel>
 								<PanelPair // panel left
+									fixed
 									horizontal
-									initial={ 200 }
-									collapsed={ true }
+									initial={ 0 }
+									// initial={ 200 }
+									// collapsed={ true }
 									onResize={ MapControl.resize }
 								>
 									<Panel primary />
@@ -44,13 +46,14 @@ export class App extends React.Component {
 										<PanelPair // header
 											fixed
 											vertical
-											initial={ 30 }
+											initial={ 0 }
 											onResize={ MapControl.resize }
 										>
 											<Panel primary>
-												<MainToolBar />
+
 											</Panel>
 											<Panel>
+												<MainToolBar />
 												<div id={ ID_MAP_CONTROL } />
 											</Panel>
 										</PanelPair>
