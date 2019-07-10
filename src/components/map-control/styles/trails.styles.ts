@@ -1,38 +1,56 @@
 import {
-	CIRCLE,
+	EMPTY,
 	POINT,
+	CIRCLE,
+	VERTEX,
 	SEGMENT,
 	POLYGON,
 	RECTANGLE,
-	MULTI_POLYGON } from '../../../../services/constants';
+	MULTI_POINT,
+	MULTI_POLYGON
+} from '../../../constants';
 
 // predicates
 const isPoint = ['==', 'type', POINT];
 const isCircle = ['==', 'type', CIRCLE];
-const isVertex = ['==', 'type', 'vertex'];
+const isVertex = ['==', 'type', VERTEX];
 const isSegment = ['==', 'type', SEGMENT];
 const isPolygon = ['==', 'type', POLYGON];
 const isRectangle = ['==', 'type', RECTANGLE];
+const isMultiPoint = ['==', 'type', MULTI_POINT];
 const isMultiPolygon = ['==', 'type', MULTI_POLYGON];
 const isVertexSelected = ['==', 'type', 'selected-vertex'];
 
+const isPointLike = ['any', isPoint, isMultiPoint];
 const isSegmentLike = ['any', isSegment, isCircle];
 const isPolygonLike = ['any', isCircle, isPolygon, isRectangle, isMultiPolygon];
 
 // colors
 const transparent = 'rgba(0, 0, 0, 0)';
-const colorRegular = 'grey';
-const colorSelected = 'cornsilk';
+const colorRegular = 'deeppink';
+const colorSelected = 'lime'; // 'mediumspringgreen';
+
+const sources = {
+	draw: {
+		type: 'geojson',
+		data: EMPTY
+	},
+
+	drawSelected: {
+		type: 'geojson',
+		data: EMPTY
+	}
+};
 
 const regular = [
 	{
 		id: 'draw-point',
 		type: 'circle',
 		source: 'draw',
-		filter: isPoint,
+		filter: isPointLike,
 		paint: {
-			'circle-radius': 4,
-			'circle-color': colorRegular
+			'circle-color': colorRegular,
+			'circle-radius': 4
 		}
 	},
 	{
@@ -55,49 +73,50 @@ const regular = [
 		}
 	}
 ];
+
 const selected = [
 	{
 		id: 'draw-point-selected',
 		type: 'circle',
-		source: 'draw-selected',
-		filter: isPoint,
+		source: 'drawSelected',
+		filter: isPointLike,
 		paint: {
-			'circle-radius': 4,
-			'circle-color': colorRegular
+			'circle-color': colorSelected,
+			'circle-radius': 4
 		}
 	},
 	{
 		id: 'draw-segment-selected',
 		type: 'line',
-		source: 'draw-selected',
+		source: 'drawSelected',
 		filter: isSegmentLike,
 		paint: {
 			'line-width': 1,
 			'line-color': colorSelected,
-			'line-dasharray': [3, 2]
+			'line-dasharray': [1, 1] // [4, 2]
 		}
 	},
 	{
 		id: 'draw-segment-selected-label',
 		type: 'symbol',
-		source: 'draw-selected',
+		source: 'drawSelected',
 		filter: isSegmentLike,
 		paint: {
 			'text-color': colorSelected
 		},
 		layout: {
+			'text-size': 10,
+			'text-field': ['get', 'text'],
+			'text-offset': [0, -1],
 			'symbol-placement': 'line-center',
 			'symbol-avoid-edges': false,
-			'text-field': ['get', 'text'],
-			'text-offset': [0, 1],
-			'text-allow-overlap': true,
-			'text-size': 10
+			'text-allow-overlap': true
 		}
 	},
 	{
 		id: 'draw-fill-selected',
 		type: 'fill',
-		source: 'draw-selected',
+		source: 'drawSelected',
 		filter: isPolygonLike,
 		paint: {
 			'fill-color': colorSelected,
@@ -107,28 +126,53 @@ const selected = [
 	{
 		id: 'draw-vertex',
 		type: 'circle',
-		source: 'draw-selected',
+		source: 'drawSelected',
 		filter: isVertex,
 		paint: {
 			'circle-color': colorSelected,
-			'circle-radius': 4
+			'circle-radius': 2.5
 		}
 	},
 	{
 		id: 'draw-vertex-selected',
 		type: 'circle',
-		source: 'draw-selected',
+		source: 'drawSelected',
 		filter: isVertexSelected,
 		paint: {
-			'circle-radius': 6,
 			'circle-color': transparent,
+			'circle-radius': 6,
 			'circle-stroke-width': 1,
 			'circle-stroke-color': colorSelected
 		}
-	}
+	} // ,
+	// {
+	// 	id: 'draw-center-selected',
+	// 	type: 'symbol',
+	// 	source: 'drawSelected',
+	// 	filter: ['==', 'type', 'Center'],
+	// 	paint: {
+	// 		'text-color': colorSelected
+	// 	},
+	// 	layout: {
+	// 		'text-size': 10,
+	// 		'text-field': ['get', 'text'],
+	// 		'text-offset': [0, -1.1],
+	// 		'symbol-avoid-edges': false,
+	// 		'text-allow-overlap': true
+	// 	}
+	// }
 ];
 
-export const layers = [
+export const trailsStyles = [
 	...regular,
 	...selected
 ];
+
+export const trailStyle = {
+	sources,
+	layers: [
+		...regular,
+		...selected
+	],
+	source: 'draw'
+};

@@ -1,31 +1,33 @@
 .map-container {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
 }
 
 .box-zoom {
-  box-sizing: border-box;
-  position: absolute;
-  pointer-events: none;
-  border: 1px solid grey;
+	box-sizing: border-box;
+	position: absolute;
+	pointer-events: none;
+	border: 1px solid grey;
+	background: rgba(130, 130, 130, 0.1);
 }
 
 .box-screen {
-  box-sizing: border-box;
-  position: absolute;
-  pointer-events: none;
-  border: 1px dashed grey;
+	box-sizing: border-box;
+	position: absolute;
+	pointer-events: none;
+	border: 1px dotted grey;
 }
 
 .center-coordinate {
-  position: absolute;
-  left: 0;
-  bottom: 0;
-  z-index: 10;
-  padding: 8px;
-  color: white;
-  background: rgba(0, 0, 0, 0.2);
+	font-size: 13px;
+	position: absolute;
+	left: 0;
+	bottom: 0;
+	z-index: 10;
+	padding: 8px;
+	color: rgba(255, 255, 255, 0.7);
+	//background: rgba(0, 0, 0, 0.2);
 }

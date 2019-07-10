@@ -3,7 +3,7 @@ import './style/cp-app.scss';
 import { Panel } from '../panels/cp-panel';
 import { PanelPair } from '../panels/cp-panel-pair';
 import { MainToolBar } from './cp-main-tool-bar';
-import { ID_MAP_CONTROL, ASTORIA } from '../../services/constants';
+import { ID_MAP_CONTROL, ASTORIA } from '../../constants';
 import { MapControl } from '../map-control/cp-map-control';
 
 export class App extends React.Component {

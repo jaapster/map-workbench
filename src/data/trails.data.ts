@@ -9,7 +9,7 @@ import {
 	MULTI_POLYGON,
 	MULTI_LINE_STRING,
 	FEATURE_COLLECTION
-} from '../../../../services/constants';
+} from '../constants';
 
 export const data = {
 	type: FEATURE_COLLECTION,

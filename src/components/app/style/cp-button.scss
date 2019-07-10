@@ -1,31 +1,29 @@
-$color-b: #333;
-$color-a: lightgrey;
+$color-a: rgba(255, 255, 255, 0.7);
 
 .button {
 	font-size: 13px;
-	background: lightgrey;
-	color: grey;
+	background: transparent; // rgba(0, 0, 0, 0.2);
+	color: $color-a; // white;
 	padding: 3px 5px;
-	border-left: 1px solid slategrey;
-
-	&:first-child {
-		border-bottom-left-radius: 3px;
-		border-top-left-radius: 3px;
-		border-left: none;
-	}
-
-	&:last-child {
-		border-bottom-right-radius: 3px;
-		border-top-right-radius: 3px;
-	}
+	margin-left: 1px;
 
 	&.button-depressed {
-		background: slategrey;
-		color: white;
+		background: $color-a; // tomato;
+		color: black; // white;
+	}
+
+	&.button-disabled {
+		opacity: 0.5;
 	}
 }
 
 .button-group {
 	display: inline-block;
-	margin-left: 4px;
+	padding: 4px;
+	border-left: 1px solid rgba(255, 255, 255, 0.2);
+
+	&:first-child {
+		border: none;
+		margin-left: 4px;
+	}
 }

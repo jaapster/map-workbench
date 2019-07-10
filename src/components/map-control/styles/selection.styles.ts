@@ -1,15 +1,24 @@
 // predicates
-const isLine = ['==', '$type', 'LineString'];
-const isPoint = ['==', '$type', 'Point'];
-const isPolygon = ['==', '$type', 'Polygon'];
+import { EMPTY } from '../../../constants';
 
-const colorRegular = 'deeppink';
+const isLine = ['==', 'type', 'LineString'];
+const isPoint = ['==', 'type', 'Point'];
+const isPolygon = ['==', 'type', 'Polygon'];
+
+const colorRegular = 'dodgerblue';
+
+const sources = {
+	selection: {
+		type: 'geojson',
+		data: EMPTY
+	}
+};
 
 export const layers = [
 	{
 		id: 'selection-point',
 		type: 'circle',
-		source: 'selection',
+		source: 'selectionSelected',
 		filter: isPoint,
 		paint: {
 			'circle-radius': 4,
@@ -19,17 +28,17 @@ export const layers = [
 	{
 		id: 'selection-line',
 		type: 'line',
-		source: 'selection',
+		source: 'selectionSelected',
 		filter: isLine,
 		paint: {
-			'line-width': 5,
+			'line-width': 1,
 			'line-color': colorRegular
 		}
 	},
 	{
 		id: 'selection-polygon-line',
 		type: 'line',
-		source: 'selection',
+		source: 'selectionSelected',
 		filter: isPolygon,
 		paint: {
 			'line-width': 1,
@@ -39,7 +48,7 @@ export const layers = [
 	{
 		id: 'selection-polygon-fill',
 		type: 'fill',
-		source: 'selection',
+		source: 'selectionSelected',
 		filter: isPolygon,
 		paint: {
 			'fill-color': colorRegular,
@@ -47,3 +56,9 @@ export const layers = [
 		}
 	}
 ];
+
+export const selectionStyle = {
+	sources,
+	layers,
+	source: 'selection'
+};

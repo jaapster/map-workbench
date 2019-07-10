@@ -1,3 +1,11 @@
+export interface Ev {
+	merc: Point;
+	point: Point;
+	lngLat: LngLat;
+	movement: Point;
+	originalEvent: any;
+}
+
 export type Dict<T> = { [key: string]: T };
 
 export interface Point {
@@ -9,9 +17,6 @@ export interface LngLat {
 	lng: number;
 	lat: number;
 }
-
-export type ProjectFn = (c: LngLat) => Point;
-export type UnprojectFn = (p: Point) => LngLat;
 
 export type Co = number[];
 

@@ -3,7 +3,7 @@ import { Dict } from './types';
 
 @bind
 export class EventEmitter {
-    _subscribers: Dict<Array<Function>>;
+	private _subscribers: Dict<Array<Function>>;
 
     constructor() {
         this._subscribers = {};
@@ -30,4 +30,8 @@ export class EventEmitter {
             this._subscribers[eventName].forEach(fn => fn(data));
         }
     }
+
+    destroy() {
+		this._subscribers = {};
+	}
 }

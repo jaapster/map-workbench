@@ -1,5 +1,6 @@
-import { Point } from '../../../types';
+import { Co, Point } from '../../../types';
 import { clamp } from '../../../utils/util-clamp';
+import { ang } from './util-point';
 
 export const getDistanceToSegment = (p0: Point, p1: Point, p2: Point) => {
 	const ldx = p2.x - p1.x;
@@ -35,3 +36,41 @@ export const nearestPointOnSegment = (p: Point, [a, b]: [Point, Point]) => {
 export const nearestPointOnLine = (p: Point, [a, b]: [Point, Point]) => {
 	return _nearest(p, a, b, false);
 };
+
+export const pointAtLength = ([p0, p1]: Point[], l: number) => {
+	const t = ang(p0, p1);
+
+	return {
+		x: p0.x + (l * Math.cos(t)),
+		y: p0.y + (l * Math.sin(t))
+	};
+};
+
+export const signedArea = (xs: Point[]) => (
+	xs.reduce((m, { x, y }, i, s) => (
+		m + ((s[(i + 1) % s.length].x - x) * (s[(i + 1) % s.length].y + y)) / 2
+	), 0)
+);
+
+export const isClockwise = (xs: Co[]) => (
+	xs.reduce((m, [x, y], i, s) => (
+		m + ((s[(i + 1) % s.length][0] - x) * (s[(i + 1) % s.length][1] + y))
+	), 0) > 0
+);
+
+/*
+
+signed_area(const std::vector<point>& polygon) {
+  double area = 0.0;
+
+  unsigned j = 1;
+  for (unsigned i = 0; i < polygon.size(); i++, j++) {
+    j = j % polygon.size();
+
+    area += (polygon[j].x - polygon[i].x)*(polygon[j].y + polygon[i].y);
+  }
+
+  return area / 2.0;
+}
+
+ */

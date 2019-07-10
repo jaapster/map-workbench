@@ -1,8 +1,8 @@
 import bind from 'autobind-decorator';
 import mapboxgl from 'mapbox-gl';
 import { EventEmitter } from '../../../event-emitter';
-import { geoProject } from './util-geo';
-import { sub } from './util-point';
+import { geoProject } from '../utils/util-geo';
+import { sub } from '../utils/util-point';
 
 // const log = (...args: any[]) => console.log(...args);
 
@@ -36,9 +36,9 @@ const toEvent = (e: mapboxgl.MapTouchEvent | mapboxgl.MapMouseEvent | TouchEvent
 };
 
 @bind
-export class MapPointerEvents extends EventEmitter {
+export class PointerDevice extends EventEmitter {
     static create(map: mapboxgl.Map) {
-        return new MapPointerEvents(map);
+        return new PointerDevice(map);
     }
 
     constructor(map: any) {
@@ -96,9 +96,10 @@ export class MapPointerEvents extends EventEmitter {
     }
 
     private _onPointerUp(e: any) {
+		this.trigger('pointerup', e);
+
         if (!this._longPressSincePointerDown) {
             // log('pointerup');
-			this.trigger('pointerup', e);
 
             this._clearLongPressTimeout();
 

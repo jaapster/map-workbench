@@ -1,4 +1,4 @@
-import { LngLat, Point } from '../../../types';
+import { Co, LngLat, Point } from '../../../types';
 import { clamp } from '../../../utils/util-clamp';
 
 const R = 6378137.0;
@@ -40,3 +40,7 @@ export const geoUnproject = ({ x, y }: Point) => {
 		lat: ((Math.PI * 0.5) - 2.0 * Math.atan(Math.exp(-y / R))) * R2D
 	};
 };
+
+export const llToCo = ({ lng, lat }: LngLat): Co => [lng, lat];
+
+export const coToLl = ([lng, lat]: Co): LngLat => ({ lng, lat });

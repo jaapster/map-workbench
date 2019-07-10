@@ -4,9 +4,14 @@ import {
 	MULTI_POINT,
 	LINE_STRING,
 	MULTI_POLYGON,
-	MULTI_LINE_STRING
-} from '../../../../services/constants';
-import { FeatureCollection, Co } from '../../../../types';
+	MULTI_LINE_STRING } from '../../../constants';
+import { FeatureCollection, Co } from '../../../types';
+
+const ringMap = (co: Co, _l: number) => (co3: Co, l: number, xs: Co[]) => (
+	l === _l || (_l === 0 && l === xs.length - 1)
+		? co
+		: co3
+);
 
 export const updateCoordinate = (data: FeatureCollection, [_i, _j, _k, _l]: number[], co: Co) => (
 	{
@@ -34,19 +39,11 @@ export const updateCoordinate = (data: FeatureCollection, [_i, _j, _k, _l]: numb
 													: co2
 											))
 											: type === POLYGON
-												? (co1 as Co[]).map((co2: Co, k: number, xs: Co[]) => (
-													k === _k || (_k === 0 && k === xs.length - 1)
-														? co
-														: co2
-												))
+												? (co1 as Co[]).map(ringMap(co, _k))
 												: type === MULTI_POLYGON
 													? (co1 as Co[][]).map((co2: Co[], k: number) => (
 														k === _k
-															? co2.map((co3: Co, l: number, xs: Co[]) => (
-																l === _l || (_l === 0 && l === xs.length - 1)
-																	? co
-																	: co3
-															))
+															? co2.map(ringMap(co, _l))
 															: co2
 													))
 													: co1

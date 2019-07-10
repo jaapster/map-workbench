@@ -1,4 +1,4 @@
-import { FeatureCollection } from '../../../../types';
+import { FeatureCollection } from '../../../types';
 
 export const setPropertyAtIndex = (
 	data: FeatureCollection,

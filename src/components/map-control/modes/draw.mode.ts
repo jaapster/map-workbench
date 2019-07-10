@@ -1,28 +1,29 @@
-import { dis } from '../../utils/util-point';
-import { dropLast } from '../../utils/util-list';
-import { THRESHOLD } from '../../../../services/constants';
-import { InteractionMode } from '../interaction-mode';
-import { FeatureCollectionLayer } from '../layer-feature-collection';
+import { dis } from '../utils/util-point';
+import { dropLast } from '../utils/util-list';
+import { THRESHOLD } from '../../../constants';
+import { InteractionMode } from './interaction.mode';
+import { FeatureCollectionModel } from '../../../models/feature-collection/feature-collection.model';
 import {
-	coToLngLat,
-	lngLatToCo } from '../../utils/util-lng-lat-to-co';
+	coToLl,
+	llToCo } from '../utils/util-geo';
 import {
 	newPolygon,
-	newLineString } from './new-feature';
+	newLineString } from '../utils/util-geo-json';
+import { Ev } from '../../../types';
 
 export class DrawMode extends InteractionMode {
 	static create(map: any) {
 		return new DrawMode(map);
 	}
 
-	private _model?: FeatureCollectionLayer;
+	private _model?: FeatureCollectionModel;
 
-	onPointerDown(e: any) {
+	onPointerDown(e: Ev) {
 		if (!this._model) {
 			return;
 		}
 
-		const co = lngLatToCo(e.lngLat);
+		const co = llToCo(e.lngLat);
 
 		if (!this._model.index.length) {
 			this._model.addFeature(newLineString([co, co]));
@@ -33,7 +34,7 @@ export class DrawMode extends InteractionMode {
 			} = this._model.data.features[_i];
 
 			if (cos.length > 2) {
-				const p0 = this._map.project(coToLngLat(cos[0]));
+				const p0 = this._map.project(coToLl(cos[0]));
 
 				if (dis(p0, e.point) < THRESHOLD) {
 					this._model.data = {
@@ -45,7 +46,7 @@ export class DrawMode extends InteractionMode {
 						))
 					};
 
-					this.trigger('finishDrawing');
+					this.trigger('finish');
 
 					return;
 				}
@@ -55,7 +56,7 @@ export class DrawMode extends InteractionMode {
 		}
 	}
 
-	onPointerMove(e: any) {
+	onPointerMove(e: Ev) {
 		if (!this._model) {
 			return;
 		}
@@ -69,9 +70,11 @@ export class DrawMode extends InteractionMode {
 		const { geometry: { coordinates } } = this._model.data.features[_i];
 
 		this._model.updateCoordinates([
-			[[_i, coordinates.length - 1], lngLatToCo(e.lngLat)]
+			[[_i, coordinates.length - 1], llToCo(e.lngLat)]
 		]);
 	}
+
+	onPointerUp(e: Ev) {}
 
 	onPointerDblClick() {
 		if (!this._model) {
@@ -80,7 +83,7 @@ export class DrawMode extends InteractionMode {
 
 		const [_i] = this._model.index;
 
-		if (!_i) {
+		if (_i == null) {
 			return;
 		}
 
@@ -99,10 +102,17 @@ export class DrawMode extends InteractionMode {
 			))
 		};
 
-		this.trigger('finishDrawing');
+		this.trigger('finish');
 	}
 
-	setModel(model: any) {
+	onEscapeKey() {
+		if (this._model) {
+			this._model.deleteAtIndex();
+			this._model.cleanUp();
+		}
+	}
+
+	setModel(model: FeatureCollectionModel) {
 		this._model = model;
 	}
 }
