@@ -68,11 +68,15 @@ export class FeatureCollectionModel extends EventEmitter {
 		return this._selection;
 	}
 
-	select(index: number[]) {
+	select(index: number[] = [], add: boolean = false) {
+		this._selection = index.length
+			? add
+				? [...this._selection, index]
+				: [index]
+			: [];
+
 		this._prevIndex = this._index[0];
 		this._index = index;
-
-		this._selection = [this._index];
 
 		this.trigger('update');
 	}
@@ -104,30 +108,22 @@ export class FeatureCollectionModel extends EventEmitter {
 		);
 	}
 
-	deleteAtIndex() {
-		if (this._index.length) {
-			this._data = deleteAtIndex(this.data, this._index);
-			this.select(
-				this._index.length === 1
-					? []
-					: [this._index[0]]
-			);
-		}
-	}
-
 	deleteSelection() {
-		if (this._selection.length) {
-			const index = this._selection[0];
-
+		this._selection.slice().reverse().forEach((index: number[]) => {
 			if (index.length) {
 				this._data = deleteAtIndex(this.data, index);
-				this.select(
-					index.length === 1
-						? []
-						: [index[0]]
-				);
 			}
-		}
+		});
+
+		this._selection = this._selection.reduce((m1: number[][], index: number[]) => {
+			return index.length === 1
+				? m1
+				: m1.concat([[index[0]]]);
+		}, [] as number[][]);
+
+		this._index = this._selection[0] || [];
+
+		this.trigger('update');
 	}
 
 	setPropertyAtIndex(key: string, value: any) {

@@ -107,7 +107,7 @@ export class DrawMode extends InteractionMode {
 
 	onEscapeKey() {
 		if (this._model) {
-			this._model.deleteAtIndex();
+			this._model.deleteSelection();
 			this._model.cleanUp();
 		}
 

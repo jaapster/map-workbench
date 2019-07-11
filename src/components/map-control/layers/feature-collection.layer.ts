@@ -77,27 +77,28 @@ export class FeatureCollectionLayer {
 	private _render(forceDrawNonSelected: boolean = false) {
 		const { source } = this._style;
 
-		if (this._model.prevIndex !== this._model.index[0] || forceDrawNonSelected) {
-			this._map.getSource(source).setData({
-				...this._model.data,
-				features: this._model.data.features.reduce((m1, f1, i) => (
-					i !== this._model.index[0]
-						? m1.concat(realise([f1]))
-						: m1
-				), [])
-			});
-		}
+		const indices = this._model.selection.map(([i]) => i);
 
-		if (this._model.index.length) {
-			const { features } = this._model.data;
-			const [_i, _j, _k, _l] = this._model.index;
-			const l = this._model.index.length;
+		// if (this._model.prevIndex !== this._model.index[0] || forceDrawNonSelected) {
+		this._map.getSource(source).setData({
+			...this._model.data,
+			features: this._model.data.features.reduce((m1, f1, i) => (
+				!indices.includes(i)
+					? m1.concat(realise([f1]))
+					: m1
+			), [])
+		});
+		// }
 
-			const { geometry: { type, coordinates }, properties: { id } } = features[_i];
+		this._map.getSource(`${ source }Selected`).setData({
+			...this._model.data,
+			features: this._model.selection.reduce((m1: any, index: any) => {
+				const { features } = this._model.data;
+				const [_i, _j, _k, _l] = index;
+				const l = index.length;
+				const { geometry: { type, coordinates }, properties: { id } } = features[_i];
 
-			this._map.getSource(`${ source }Selected`).setData({
-				...this._model.data,
-				features: ([] as Feature<any>[])
+				return m1
 					.concat(
 						realise([features[_i]])
 					)
@@ -145,12 +146,12 @@ export class FeatureCollectionLayer {
 							type === LINE_STRING
 								? [coordinates]
 								: type === MULTI_LINE_STRING
-									? coordinates
-									: type === POLYGON
-										? coordinates.map(foo)
-										: type === MULTI_POLYGON
-											? coordinates.flat(1).map(foo)
-											: []
+								? coordinates
+								: type === POLYGON
+									? coordinates.map(foo)
+									: type === MULTI_POLYGON
+										? coordinates.flat(1).map(foo)
+										: []
 						)
 							.reduce((m1: any, co1: Co[]) => (
 								co1.reduce((
@@ -180,10 +181,8 @@ export class FeatureCollectionLayer {
 										})
 								), m1)
 							), [] as Feature<LineString>[])
-					)
-			});
-		} else {
-			this._map.getSource(`${ source }Selected`).setData(EMPTY);
-		}
+					);
+			}, [])
+		});
 	}
 }

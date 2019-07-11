@@ -29,6 +29,7 @@ export class Side extends React.Component<Props> {
 
 	render() {
 		const { model } = this.props;
+		const indices = model.selection.map(([i]: any) => i);
 
 		return (
 			<div className="side">
@@ -42,19 +43,22 @@ export class Side extends React.Component<Props> {
 								key={ feature.properties.id }
 								className={
 									`feature ${
-										model.index[0] === i
+										indices.includes(i)
 											? 'selected'
 											: ''
 									}`
 								}
-								onClick={ (e: React.MouseEvent<HTMLElement>) => MapControl.select(model, [i], e.shiftKey) }
+								onClick={ (e: React.MouseEvent<HTMLElement>) => {
+									MapControl.select(model, [i], e.shiftKey);
+								} }
 							>
 								{ feature.properties.type }
 								<div
 									className="delete"
 									onClick={ (e: React.MouseEvent<HTMLElement>) => {
 										e.stopPropagation();
-										model.select([i]);
+
+										model.select([i], e.shiftKey);
 										model.deleteSelection();
 									} }
 								>

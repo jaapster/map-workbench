@@ -11,10 +11,14 @@
 
 		.delete {
 			display: none;
-			//background: black;
 			color: lightgrey;
 			padding: 0 4px;
 			float: right;
+
+			&:hover {
+				color: white;
+				background: rgba(255, 255, 255, 0.1);
+			}
 		}
 
 		&.selected,

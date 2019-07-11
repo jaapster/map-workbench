@@ -27,7 +27,7 @@ export class InteractionMode extends EventEmitter {
 
 	protected _onStyleLoaded() {}
 
-	_hitCollectionModel(lngLat: LngLat, point: Point, model: FeatureCollectionModel) {
+	_hitCollectionModel(lngLat: LngLat, point: Point, model: FeatureCollectionModel, add: boolean) {
 		let res = false;
 
 		const {
@@ -39,7 +39,7 @@ export class InteractionMode extends EventEmitter {
 		const d = dis(point, p);
 
 		if (d < THRESHOLD) {
-			model.select(index);
+			model.select(index, add);
 			this.trigger('select', model);
 			res = true;
 		} else {
@@ -52,7 +52,7 @@ export class InteractionMode extends EventEmitter {
 			const d = dis(point, p);
 
 			if (d < THRESHOLD) {
-				model.select([index[0]]);
+				model.select([index[0]], add);
 				this.trigger('select', model);
 				res = true;
 			}
@@ -74,10 +74,12 @@ export class InteractionMode extends EventEmitter {
 		const trails = TrailService.getModel();
 		const geoNotes = GeoNoteService.getModel();
 
-		const trailHit = this._hitCollectionModel(lngLat, point, trails);
-		const geoNoteHit = this._hitCollectionModel(lngLat, point, geoNotes);
+		const add = originalEvent.shiftKey;
 
-		if (!originalEvent.shiftKey) {
+		const trailHit = this._hitCollectionModel(lngLat, point, trails, add);
+		const geoNoteHit = this._hitCollectionModel(lngLat, point, geoNotes, add);
+
+		if (!add) {
 			if (trailHit) {
 				geoNotes.cleanUp();
 			} else if (geoNoteHit) {
@@ -101,8 +103,8 @@ export class InteractionMode extends EventEmitter {
 	}
 
 	onDeleteKey() {
-		TrailService.getModel().deleteAtIndex();
-		GeoNoteService.getModel().deleteAtIndex();
+		TrailService.getModel().deleteSelection();
+		GeoNoteService.getModel().deleteSelection();
 	}
 
 	cleanUp() {

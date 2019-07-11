@@ -56,7 +56,7 @@ export class MapControl extends React.Component<Props, State> {
 			GeoNoteService.getModel().cleanUp();
 		}
 
-		model.select(index);
+		model.select(index, add);
 	}
 
 	private readonly _map: any;
