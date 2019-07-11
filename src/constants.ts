@@ -16,7 +16,6 @@ export const LINE_STRING = 'LineString';
 export const MULTI_POLYGON = 'MultiPolygon';
 export const MULTI_LINE_STRING = 'MultiLineString';
 export const FEATURE_COLLECTION = 'FeatureCollection';
-export const GEOMETRY_COLLECTION = 'GeometryCollection';
 
 export const MODIFIERS = {
 	ROTATE: 'altKey',
@@ -30,4 +29,4 @@ export const EMPTY = {
 	features: []
 };
 
-export const ASTORIA = [-123.8340, 46.1937];
+export const ASTORIA = [-123.8380, 46.1937];

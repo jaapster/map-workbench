@@ -1,3 +1,4 @@
+import uuid from 'uuid/v1';
 import {
 	dis,
 	rot } from './util-point';
@@ -27,7 +28,8 @@ export const newLineString = (coordinates: Co[] = []) => (
 			coordinates
 		},
 		properties: {
-			type: LINE_STRING
+			type: LINE_STRING,
+			id: uuid()
 		}
 	}
 );
@@ -40,13 +42,14 @@ export const newPolygon = (coordinates: Co[][] = [[]]) => (
 			coordinates
 		},
 		properties: {
-			type: POLYGON
+			type: POLYGON,
+			id: uuid()
 		}
 	}
 );
 
 export const multiPointToCircle = (feature: Feature<MultiPoint>) => {
-	const { geometry: { coordinates: [co1, co2] } } = feature;
+	const { geometry: { coordinates: [co1, co2] }, properties: { id } } = feature;
 
 	const c = geoProject(coToLl(co1));
 	const r = geoProject(coToLl(co2));
@@ -62,7 +65,6 @@ export const multiPointToCircle = (feature: Feature<MultiPoint>) => {
 
 	const radius = geoDis(coToLl(co1), coToLl(co2));
 	const circumference = 2 * Math.PI * radius;
-	// const surface = Math.PI * (radius ** 2);
 
 	return [
 		{
@@ -72,7 +74,8 @@ export const multiPointToCircle = (feature: Feature<MultiPoint>) => {
 				coordinates: [coordinates]
 			},
 			properties: {
-				type: POLYGON
+				type: POLYGON,
+				id
 			}
 		},
 		{
@@ -83,7 +86,8 @@ export const multiPointToCircle = (feature: Feature<MultiPoint>) => {
 			},
 			properties: {
 				type: SEGMENT,
-				text: circumference.toFixed(PRECISION)
+				text: circumference.toFixed(PRECISION),
+				id
 			}
 		},
 		{
@@ -94,19 +98,9 @@ export const multiPointToCircle = (feature: Feature<MultiPoint>) => {
 			},
 			properties: {
 				type: SEGMENT,
-				text: radius.toFixed(PRECISION)
+				text: radius.toFixed(PRECISION),
+				id
 			}
-		} // ,
-		// {
-		// 	type: FEATURE,
-		// 	geometry: {
-		// 		type: POINT,
-		// 		coordinates: co1
-		// 	},
-		// 	properties: {
-		// 		type: 'Center',
-		// 		text: surface.toFixed(PRECISION)
-		// 	}
-		// }
+		}
 	];
 };

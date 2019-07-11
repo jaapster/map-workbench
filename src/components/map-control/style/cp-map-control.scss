@@ -24,10 +24,18 @@
 .center-coordinate {
 	font-size: 13px;
 	position: absolute;
-	left: 0;
+	left: 50%;
 	bottom: 0;
 	z-index: 10;
 	padding: 8px;
+	text-align: center;
+	width: 150px;
+	background: rgba(255, 255, 255, 0.1);
+	margin-left: -75px;
+	margin-bottom: 4px;
 	color: rgba(255, 255, 255, 0.7);
-	//background: rgba(0, 0, 0, 0.2);
+}
+
+.mapboxgl-control-container {
+	display: none;
 }

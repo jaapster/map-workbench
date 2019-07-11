@@ -1,3 +1,4 @@
+import bind from 'autobind-decorator';
 import { addAtIndex } from './fn/add-at-index';
 import { moveGeometry } from './fn/move-geometry';
 import { EventEmitter } from '../../event-emitter';
@@ -13,21 +14,24 @@ import {
 	Feature,
 	FeatureCollection } from '../../types';
 
+@bind
 export class FeatureCollectionModel extends EventEmitter {
 	private _data: FeatureCollection;
-	private _index: number[];
-	private _prevIndex: number;
+	private _index: number[] = [];
+	private _prevIndex: number = -1;
+	private _selection: number[][] = [];
 
-	static create(data: FeatureCollection) {
-		return new FeatureCollectionModel(data);
+	private readonly _title: string;
+
+	static create(data: FeatureCollection, title: string) {
+		return new FeatureCollectionModel(data, title);
 	}
 
-	constructor(data: FeatureCollection) {
+	constructor(data: FeatureCollection, title: string) {
 		super();
 
 		this._data = data;
-		this._index = [];
-		this._prevIndex = -1;
+		this._title = title;
 	}
 
 	get data(): FeatureCollection {
@@ -46,11 +50,31 @@ export class FeatureCollectionModel extends EventEmitter {
 	set index(index: number[]) {
 		this._prevIndex = this._index[0];
 		this._index = index;
+
+		this._selection = [this._index];
+
 		this.trigger('update');
 	}
 
 	get prevIndex(): number {
 		return this._prevIndex;
+	}
+
+	get title(): string {
+		return this._title;
+	}
+
+	get selection(): number[][] {
+		return this._selection;
+	}
+
+	select(index: number[]) {
+		this._prevIndex = this._index[0];
+		this._index = index;
+
+		this._selection = [this._index];
+
+		this.trigger('update');
 	}
 
 	moveGeometry(index: number[], movement: Point) {
@@ -62,12 +86,14 @@ export class FeatureCollectionModel extends EventEmitter {
 	}
 
 	addFeature(feature: Feature<any>) {
+		const i = this.data.features.length;
+
 		this.data = {
 			...this.data,
 			features: this.data.features.concat(feature)
 		};
 
-		this.index = [this.data.features.length - 1];
+		this.select([i]);
 	}
 
 	addAtIndex(coordinate: Co, index?: number[]) {
@@ -81,11 +107,26 @@ export class FeatureCollectionModel extends EventEmitter {
 	deleteAtIndex() {
 		if (this._index.length) {
 			this._data = deleteAtIndex(this.data, this._index);
-			this._index = this._index.length === 1
-				? []
-				: [this._index[0]];
+			this.select(
+				this._index.length === 1
+					? []
+					: [this._index[0]]
+			);
+		}
+	}
 
-			this.trigger('update');
+	deleteSelection() {
+		if (this._selection.length) {
+			const index = this._selection[0];
+
+			if (index.length) {
+				this._data = deleteAtIndex(this.data, index);
+				this.select(
+					index.length === 1
+						? []
+						: [index[0]]
+				);
+			}
 		}
 	}
 
@@ -102,6 +143,6 @@ export class FeatureCollectionModel extends EventEmitter {
 	}
 
 	cleanUp() {
-		this.index = [];
+		this.select([]);
 	}
 }

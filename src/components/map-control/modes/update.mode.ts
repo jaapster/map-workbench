@@ -72,7 +72,7 @@ export class UpdateMode extends InteractionMode {
 						const d = dis(point, p);
 
 						if (d < THRESHOLD) {
-							this._model.index = index;
+							this._model.select(index);
 							this._model.addAtIndex(coordinate);
 						}
 					}

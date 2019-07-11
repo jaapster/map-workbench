@@ -125,7 +125,7 @@ export class NavigationMode extends InteractionMode {
 		if (this._boxZoom && e.point) {
 			this._map.fitScreenCoordinates(
 				this._startPos as mapboxgl.PointLike,
-				e.point,
+				e.point as mapboxgl.PointLike,
 				this._map.getBearing(),
 				{ linear: true }
 			);
@@ -165,14 +165,14 @@ export class NavigationMode extends InteractionMode {
 	}
 
 	cleanUp() {
-		super.cleanUp();
-
 		this._boxZoom = false;
 
 		if (this._box) {
 			DOM.remove(this._box);
 
 			this._box = null;
+		} else {
+			super.cleanUp();
 		}
 
 		if (this._scr) {

@@ -55,7 +55,11 @@ export interface MultiPolygon extends Geometry {
 export interface Feature<T> {
 	type: string;
 	geometry: T;
-	properties: Dict<any>;
+	properties: {
+		type: string,
+		id: string,
+		text?: string
+	};
 }
 
 export interface FeatureCollection {

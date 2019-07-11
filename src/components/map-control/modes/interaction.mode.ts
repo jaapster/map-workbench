@@ -1,10 +1,12 @@
-import { Dict, Ev } from '../../../types';
+import { Dict, Ev, LngLat, Point } from '../../../types';
 import { EventEmitter } from '../../../event-emitter';
 import { coToLl } from '../utils/util-geo';
 import { dis } from '../utils/util-point';
 import { THRESHOLD } from '../../../constants';
 import { TrailService } from '../../../services/trail.service';
 import * as mapboxgl from 'mapbox-gl';
+import { GeoNoteService } from '../../../services/geo-note.service';
+import { FeatureCollectionModel } from '../../../models/feature-collection/feature-collection.model';
 
 export class InteractionMode extends EventEmitter {
 	protected readonly _el: HTMLElement;
@@ -25,6 +27,40 @@ export class InteractionMode extends EventEmitter {
 
 	protected _onStyleLoaded() {}
 
+	_hitCollectionModel(lngLat: LngLat, point: Point, model: FeatureCollectionModel) {
+		let res = false;
+
+		const {
+			index,
+			coordinate
+		} = model.nearestVertex(lngLat);
+
+		const p = this._map.project(coToLl(coordinate));
+		const d = dis(point, p);
+
+		if (d < THRESHOLD) {
+			model.select(index);
+			this.trigger('select', model);
+			res = true;
+		} else {
+			const {
+				index,
+				coordinate
+			} = model.nearestPointOnGeometry(lngLat);
+
+			const p = this._map.project(coToLl(coordinate));
+			const d = dis(point, p);
+
+			if (d < THRESHOLD) {
+				model.select([index[0]]);
+				this.trigger('select', model);
+				res = true;
+			}
+		}
+
+		return res;
+	}
+
 	destroy() {
 		this._map.off('style.load', this._onStyleLoaded);
 	}
@@ -34,32 +70,18 @@ export class InteractionMode extends EventEmitter {
 	onPointerUp(e: Ev) {
 		setTimeout(() => this.trigger('finish'));
 	}
-	onPointerDown({ lngLat, point }: Ev) {
+	onPointerDown({ lngLat, point, originalEvent }: Ev) {
 		const trails = TrailService.getModel();
+		const geoNotes = GeoNoteService.getModel();
 
-		const {
-			index,
-			coordinate
-		} = trails.nearestVertex(lngLat);
+		const trailHit = this._hitCollectionModel(lngLat, point, trails);
+		const geoNoteHit = this._hitCollectionModel(lngLat, point, geoNotes);
 
-		const p = this._map.project(coToLl(coordinate));
-		const d = dis(point, p);
-
-		if (d < THRESHOLD) {
-			trails.index = index;
-			this.trigger('select', trails);
-		} else {
-			const {
-				index,
-				coordinate
-			} = trails.nearestPointOnGeometry(lngLat);
-
-			const p = this._map.project(coToLl(coordinate));
-			const d = dis(point, p);
-
-			if (d < THRESHOLD) {
-				trails.index = [index[0]];
-				this.trigger('select', trails);
+		if (!originalEvent.shiftKey) {
+			if (trailHit) {
+				geoNotes.cleanUp();
+			} else if (geoNoteHit) {
+				trails.cleanUp();
 			}
 		}
 	}
@@ -75,16 +97,16 @@ export class InteractionMode extends EventEmitter {
 	onContext(e: Ev) {}
 
 	onEscapeKey() {
-		TrailService.getModel().cleanUp();
+		this.cleanUp();
 	}
 
 	onDeleteKey() {
 		TrailService.getModel().deleteAtIndex();
+		GeoNoteService.getModel().deleteAtIndex();
 	}
-
-	engage() {}
 
 	cleanUp() {
 		TrailService.getModel().cleanUp();
+		GeoNoteService.getModel().cleanUp();
 	}
 }

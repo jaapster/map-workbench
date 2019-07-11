@@ -5,6 +5,9 @@ import { PanelPair } from '../panels/cp-panel-pair';
 import { MainToolBar } from './cp-main-tool-bar';
 import { ID_MAP_CONTROL, ASTORIA } from '../../constants';
 import { MapControl } from '../map-control/cp-map-control';
+import { Side } from './cp-side';
+import { TrailService } from '../../services/trail.service';
+import { GeoNoteService } from '../../services/geo-note.service';
 
 export class App extends React.Component {
 	private _mounted = false;
@@ -28,8 +31,7 @@ export class App extends React.Component {
 						<PanelPair // panel right
 							horizontal
 							max={ 500 }
-							initial={ 300 }
-							collapsed={ true }
+							initial={ 200 }
 							onResize={ MapControl.resize }
 						>
 							<Panel>
@@ -37,8 +39,6 @@ export class App extends React.Component {
 									fixed
 									horizontal
 									initial={ 0 }
-									// initial={ 200 }
-									// collapsed={ true }
 									onResize={ MapControl.resize }
 								>
 									<Panel primary />
@@ -50,7 +50,6 @@ export class App extends React.Component {
 											onResize={ MapControl.resize }
 										>
 											<Panel primary>
-
 											</Panel>
 											<Panel>
 												<MainToolBar />
@@ -60,7 +59,14 @@ export class App extends React.Component {
 									</Panel>
 								</PanelPair>
 							</Panel>
-							<Panel primary />
+							<Panel primary>
+								<Side
+									model={ TrailService.getModel() }
+								/>
+								<Side
+									model={ GeoNoteService.getModel() }
+								/>
+							</Panel>
 						</PanelPair>
 					</Panel>
 					<Panel primary />

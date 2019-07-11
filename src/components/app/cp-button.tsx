@@ -30,12 +30,17 @@ export const Button = (props: Props) => {
 	);
 };
 
-export const ButtonGroup = (props: { children: any }) => {
-	const { children } = props;
+export const ButtonGroup = (props: { children: any, title: string }) => {
+	const { children, title } = props;
 
 	return (
 		<div className="button-group">
-			{ children }
+			<div className="button-group-title">
+				{ title }
+			</div>
+			<div>
+				{ children }
+			</div>
 		</div>
 	);
 };

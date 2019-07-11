@@ -1,10 +1,8 @@
 import {
-	POINT,
 	CIRCLE,
 	POLYGON,
 	FEATURE,
 	RECTANGLE,
-	LINE_STRING,
 	MULTI_POINT,
 	MULTI_POLYGON,
 	MULTI_LINE_STRING,
@@ -17,18 +15,6 @@ export const data = {
 		{
 			type: FEATURE,
 			geometry: {
-				type: POINT,
-				coordinates: [
-					-123.84677582550688, 46.19473437827497
-				]
-			},
-			properties: {
-				type: POINT
-			}
-		},
-		{
-			type: FEATURE,
-			geometry: {
 				type: MULTI_POINT,
 				coordinates: [
 					[-123.83398420999211, 46.19870735935811],
@@ -37,23 +23,8 @@ export const data = {
 				]
 			},
 			properties: {
-				type: MULTI_POINT
-			}
-		},
-		{
-			type: FEATURE,
-			geometry: {
-				type: LINE_STRING,
-				coordinates: [
-					[-123.83854902682879, 46.19947770219255],
-					[-123.83859194183685, 46.19665576385509],
-					[-123.83408583069064, 46.196239887092986],
-					[-123.834514984136, 46.19329895447109],
-					[-123.83108175693133, 46.192704808167235]
-				]
-			},
-			properties: {
-				type: LINE_STRING
+				type: MULTI_POINT,
+				id: 'ba5cd3f0-a3b3-11e9-9c31-a55125d25e0c'
 			}
 		},
 		{
@@ -74,7 +45,8 @@ export const data = {
 				]
 			},
 			properties: {
-				type: MULTI_LINE_STRING
+				type: MULTI_LINE_STRING,
+				id: 'b5a873a0-a3b3-11e9-891b-8b45496ecba3'
 			}
 		},
 		{
@@ -93,7 +65,8 @@ export const data = {
 				]
 			},
 			properties: {
-				type: POLYGON
+				type: POLYGON,
+				id: 'b1e81040-a3b3-11e9-b25c-9122a8e14f5c'
 			}
 		},
 		{
@@ -128,7 +101,8 @@ export const data = {
 				]
 			},
 			properties: {
-				type: MULTI_POLYGON
+				type: MULTI_POLYGON,
+				id: 'ac740970-a3b3-11e9-8969-9fcd215425a3'
 			}
 		},
 		{
@@ -141,7 +115,8 @@ export const data = {
 				]
 			},
 			properties: {
-				type: CIRCLE
+				type: CIRCLE,
+				id: 'a842e2e0-a3b3-11e9-bcaf-29c543929ff6'
 			}
 		},
 		{
@@ -157,7 +132,8 @@ export const data = {
 				]]
 			},
 			properties: {
-				type: RECTANGLE
+				type: RECTANGLE,
+				id: 'a4530b10-a3b3-11e9-a2a2-5511273102b0'
 			}
 		}
 	]

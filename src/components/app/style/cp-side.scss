@@ -1,0 +1,35 @@
+.side {
+	padding: 4px 16px;
+	color: lightgrey;
+	font-size: 12px;
+	margin-bottom: 24px;
+	user-select: none;
+
+	.feature {
+		padding: 4px;
+		cursor: default;
+
+		.delete {
+			display: none;
+			//background: black;
+			color: lightgrey;
+			padding: 0 4px;
+			float: right;
+		}
+
+		&.selected,
+		&:hover {
+			background: rgba(255, 255, 255, 0.1);
+		}
+
+		&.selected {
+			color: white;
+		}
+
+		&:hover {
+			.delete {
+				display: inline-block;
+			}
+		}
+	}
+}

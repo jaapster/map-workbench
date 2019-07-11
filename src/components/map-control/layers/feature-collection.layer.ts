@@ -93,7 +93,7 @@ export class FeatureCollectionLayer {
 			const [_i, _j, _k, _l] = this._model.index;
 			const l = this._model.index.length;
 
-			const { geometry: { type, coordinates } } = features[_i];
+			const { geometry: { type, coordinates }, properties: { id } } = features[_i];
 
 			this._map.getSource(`${ source }Selected`).setData({
 				...this._model.data,
@@ -113,7 +113,8 @@ export class FeatureCollectionLayer {
 								)
 							},
 							properties: {
-								type: VERTEX
+								type: VERTEX,
+								id
 							}
 						}
 					])
@@ -133,7 +134,8 @@ export class FeatureCollectionLayer {
 												: coordinates[_j][_k][_l]
 								},
 								properties: {
-									type: 'selected-vertex'
+									type: 'selected-vertex',
+									id
 								}
 							}]
 							: []
@@ -172,7 +174,8 @@ export class FeatureCollectionLayer {
 														coToLl(xs[j - 1]),
 														coToLl(co2)
 													).toFixed(PRECISION)
-												}`
+												}`,
+												id
 											}
 										})
 								), m1)

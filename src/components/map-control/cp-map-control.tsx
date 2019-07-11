@@ -1,20 +1,19 @@
 import bind from 'autobind-decorator';
 import React from 'react';
 import mapboxGL from 'mapbox-gl';
+import 'mapbox-gl/dist/mapbox-gl.css';
 import './style/cp-map-control.scss';
 import { DOM } from './utils/util-dom';
 import { token } from '../../token';
 import { Portal } from '../app/cp-portal';
 import { DrawMode } from './modes/draw.mode';
 import { UpdateMode } from './modes/update.mode';
-import { trailStyle } from './styles/trails.styles';
 import { TrailService } from '../../services/trail.service';
 import { PointerDevice } from './devices/pointer.device';
-import { selectionStyle } from './styles/selection.styles';
 import { KeyboardDevice } from './devices/keyboard.device';
 import { NavigationMode } from './modes/navigation.mode';
 import { InteractionMode } from './modes/interaction.mode';
-import { SelectionService } from '../../services/selection.service';
+import { GeoNoteService } from '../../services/geo-note.service';
 import { FeatureCollectionLayer } from './layers/feature-collection.layer';
 import {
 	ID_MAP_CONTROL,
@@ -26,13 +25,15 @@ import {
 	Button,
 	ButtonGroup } from '../app/cp-button';
 import { Ev } from '../../types';
+import { FeatureCollectionModel } from '../../models/feature-collection/feature-collection.model';
+import { getStyle } from './utils/util-style';
 
 // @ts-ignore
 mapboxGL.accessToken = token;
 
 interface Props {
-	center?: any;
 	zoom?: number;
+	center?: any;
 }
 
 interface State {
@@ -47,6 +48,15 @@ export class MapControl extends React.Component<Props, State> {
 
 	static resize() {
 		MapControl.instance.resize();
+	}
+
+	static select(model: FeatureCollectionModel, index: number[], add: boolean) {
+		if (!add) {
+			TrailService.getModel().cleanUp();
+			GeoNoteService.getModel().cleanUp();
+		}
+
+		model.select(index);
 	}
 
 	private readonly _map: any;
@@ -66,21 +76,23 @@ export class MapControl extends React.Component<Props, State> {
 			center = [0, 0]
 		} = props;
 
-		const style = styles[1][1];
+		const style = styles[0][1];
 
 		this._map = new mapboxGL.Map({
 			zoom,
 			style,
 			center,
-			container: DOM.create('div', 'map-container'),
+			// temporarily attach container element to body to keep
+			// mapbox from complaining about missing CSS file
+			container: DOM.create('div', 'map-container', document.body),
 			fadeDuration: 0
 		});
 
 		const trails = TrailService.getModel();
-		const selection = SelectionService.getModel();
+		const geoNotes = GeoNoteService.getModel();
 
-		FeatureCollectionLayer.create(this._map, trails, trailStyle);
-		FeatureCollectionLayer.create(this._map, selection, selectionStyle);
+		FeatureCollectionLayer.create(this._map, trails, getStyle('deeppink', 'lime'));
+		FeatureCollectionLayer.create(this._map, geoNotes, getStyle('dodgerblue', 'yellow'));
 
 		this._drawMode = DrawMode.create(this._map);
 		this._drawMode.setModel(trails);
@@ -169,8 +181,6 @@ export class MapControl extends React.Component<Props, State> {
 	}
 
 	activateNavigationMode() {
-		this._navigationMode.engage();
-
 		this.setState({
 			mode: this._navigationMode
 		});
@@ -178,15 +188,14 @@ export class MapControl extends React.Component<Props, State> {
 
 	activateDrawMode() {
 		this.state.mode.cleanUp();
-		this._drawMode.engage();
 
 		this.setState({
 			mode: this._drawMode
 		});
 	}
 
-	activateUpdateMode() {
-		this._updateMode.engage();
+	activateUpdateMode(model: FeatureCollectionModel) {
+		this._updateMode.setModel(model);
 
 		this.setState({
 			mode: this._updateMode
@@ -206,7 +215,7 @@ export class MapControl extends React.Component<Props, State> {
 					</div>
 				</Portal>
 				<Portal destination={ ID_MAP_CONTROL_TOOLS }>
-					<ButtonGroup>
+					<ButtonGroup title="interaction mode">
 						<Button
 							depressed={ mode instanceof NavigationMode }
 							disabled
@@ -226,12 +235,13 @@ export class MapControl extends React.Component<Props, State> {
 							Draw
 						</Button>
 					</ButtonGroup>
-					<ButtonGroup>
+					<ButtonGroup title="map style">
 						{
 							styles.map(([name, url]) => (
 								<Button
 									key={ name }
 									depressed={ style === url }
+									disabled={ styles.length === 1 }
 									onClick={ () => this._setStyle(url) }
 								>
 									{ name }

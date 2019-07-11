@@ -1,3 +1,4 @@
+import { Ev } from '../../../types';
 import { dis } from '../utils/util-point';
 import { dropLast } from '../utils/util-list';
 import { THRESHOLD } from '../../../constants';
@@ -9,7 +10,6 @@ import {
 import {
 	newPolygon,
 	newLineString } from '../utils/util-geo-json';
-import { Ev } from '../../../types';
 
 export class DrawMode extends InteractionMode {
 	static create(map: any) {
@@ -63,7 +63,7 @@ export class DrawMode extends InteractionMode {
 
 		const [_i] = this._model.index;
 
-		if (!_i) {
+		if (_i == null) {
 			return;
 		}
 
@@ -110,6 +110,8 @@ export class DrawMode extends InteractionMode {
 			this._model.deleteAtIndex();
 			this._model.cleanUp();
 		}
+
+		this.trigger('finish');
 	}
 
 	setModel(model: FeatureCollectionModel) {

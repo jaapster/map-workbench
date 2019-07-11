@@ -60,11 +60,10 @@ export const add3dBuildings = (map: any) => {
 };
 
 export const styles = [
-	['Light', 'mapbox://styles/mapbox/light-v10'],
 	['Dark', 'mapbox://styles/mapbox/dark-v10'],
-	['Mono', 'mapbox://styles/jaapl/cjxutkz950m341cnigemqtqmb'],
-	// ['Dark', 'mapbox://styles/mapbox/dark-v10'] // ,
+	// ['Light', 'mapbox://styles/mapbox/light-v10'],
+	// ['Blue', 'mapbox://styles/jaapl/cjxutkz950m341cnigemqtqmb'],
 	// ['Streets', 'mapbox://styles/mapbox/streets-v11'],
 	// ['Outdoors', 'mapbox://styles/mapbox/outdoors-v10'],
-	// ['Hybrid', 'mapbox://styles/mapbox/satellite-streets-v10'],
+	['Hybrid', 'mapbox://styles/mapbox/satellite-streets-v10'] // ,
 ];
