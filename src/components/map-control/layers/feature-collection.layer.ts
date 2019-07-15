@@ -75,114 +75,116 @@ export class FeatureCollectionLayer {
 	}
 
 	private _render(forceDrawNonSelected: boolean = false) {
-		const { source } = this._style;
+		this._map._requestRenderFrame(() => {
+			const { source } = this._style;
 
-		const indices = this._model.selection.map(([i]) => i);
+			const indices = this._model.selection.map(([i]) => i);
 
-		// if (this._model.prevIndex !== this._model.index[0] || forceDrawNonSelected) {
-		this._map.getSource(source).setData({
-			...this._model.data,
-			features: this._model.data.features.reduce((m1, f1, i) => (
-				!indices.includes(i)
-					? m1.concat(realise([f1]))
-					: m1
-			), [])
-		});
-		// }
+			if (this._model.prevIndex !== this._model.index[0] || forceDrawNonSelected) {
+				this._map.getSource(source).setData({
+					...this._model.data,
+					features: this._model.data.features.reduce((m1, f1, i) => (
+						!indices.includes(i)
+							? m1.concat(realise([f1]))
+							: m1
+					), [])
+				});
+			}
 
-		this._map.getSource(`${ source }Selected`).setData({
-			...this._model.data,
-			features: this._model.selection.reduce((m1: any, index: any) => {
-				const { features } = this._model.data;
-				const [_i, _j, _k, _l] = index;
-				const l = index.length;
-				const { geometry: { type, coordinates }, properties: { id } } = features[_i];
+			this._map.getSource(`${ source }Selected`).setData({
+				...this._model.data,
+				features: this._model.selection.reduce((m1: any, index: any) => {
+					const { features } = this._model.data;
+					const [_i, _j, _k, _l] = index;
+					const l = index.length;
+					const { geometry: { type, coordinates }, properties: { id } } = features[_i];
 
-				return m1
-					.concat(
-						realise([features[_i]])
-					)
-					.concat([
-						{
-							type: FEATURE,
-							geometry: {
-								type: MULTI_POINT,
-								coordinates: (
-									type === POINT
-										? [coordinates]
-										: toPairs((coordinates).flat(4))
-								)
-							},
-							properties: {
-								type: VERTEX,
-								id
-							}
-						}
-					])
-					.concat(
-						this._model.index.length
-							? [{
+					return m1
+						.concat(
+							realise([features[_i]])
+						)
+						.concat([
+							{
 								type: FEATURE,
 								geometry: {
-									type: POINT,
-									coordinates:
-										l === 1
-											? coordinates
-											: l === 2
-											? coordinates[_j]
-											: l === 3
-												? coordinates[_j][_k]
-												: coordinates[_j][_k][_l]
+									type: MULTI_POINT,
+									coordinates: (
+										type === POINT
+											? [coordinates]
+											: toPairs((coordinates).flat(4))
+									)
 								},
 								properties: {
-									type: 'selected-vertex',
+									type: VERTEX,
 									id
 								}
-							}]
-							: []
-					)
-					.concat(
-						(
-							type === LINE_STRING
-								? [coordinates]
-								: type === MULTI_LINE_STRING
-								? coordinates
-								: type === POLYGON
-									? coordinates.map(foo)
-									: type === MULTI_POLYGON
-										? coordinates.flat(1).map(foo)
-										: []
+							}
+						])
+						.concat(
+							this._model.index.length
+								? [{
+									type: FEATURE,
+									geometry: {
+										type: POINT,
+										coordinates:
+											l === 1
+												? coordinates
+												: l === 2
+												? coordinates[_j]
+												: l === 3
+													? coordinates[_j][_k]
+													: coordinates[_j][_k][_l]
+									},
+									properties: {
+										type: 'selected-vertex',
+										id
+									}
+								}]
+								: []
 						)
-							.reduce((m1: any, co1: Co[]) => (
-								co1.reduce((
-									m2: Feature<LineString>[],
-									co2: Co,
-									j: number,
-									xs: Co[]
-								) => (
-									j === 0
-										? m2
-										: m2.concat({
-											type: FEATURE,
-											geometry: {
-												type: LINE_STRING,
-												coordinates: [xs[j - 1], co2]
-											},
-											properties: {
-												type: SEGMENT,
-												text: `${
-													geoDis(
-														coToLl(xs[j - 1]),
-														coToLl(co2)
-													).toFixed(PRECISION)
-												}`,
-												id
-											}
-										})
-								), m1)
-							), [] as Feature<LineString>[])
-					);
-			}, [])
+						.concat(
+							(
+								type === LINE_STRING
+									? [coordinates]
+									: type === MULTI_LINE_STRING
+									? coordinates
+									: type === POLYGON
+										? coordinates.map(foo)
+										: type === MULTI_POLYGON
+											? coordinates.flat(1).map(foo)
+											: []
+							)
+								.reduce((m1: any, co1: Co[]) => (
+									co1.reduce((
+										m2: Feature<LineString>[],
+										co2: Co,
+										j: number,
+										xs: Co[]
+									) => (
+										j === 0
+											? m2
+											: m2.concat({
+												type: FEATURE,
+												geometry: {
+													type: LINE_STRING,
+													coordinates: [xs[j - 1], co2]
+												},
+												properties: {
+													type: SEGMENT,
+													text: `${
+														geoDis(
+															coToLl(xs[j - 1]),
+															coToLl(co2)
+														).toFixed(PRECISION)
+													}`,
+													id
+												}
+											})
+									), m1)
+								), [] as Feature<LineString>[])
+						);
+				}, [])
+			});
 		});
 	}
 }

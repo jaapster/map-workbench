@@ -1,20 +1,24 @@
 import bind from 'autobind-decorator';
 import React from 'react';
 import mapboxGL from 'mapbox-gl';
-import 'mapbox-gl/dist/mapbox-gl.css';
+// import 'mapbox-gl/dist/mapbox-gl.css';
 import './style/cp-map-control.scss';
+import { Ev, Feature } from '../../types';
 import { DOM } from './utils/util-dom';
 import { token } from '../../token';
 import { Portal } from '../app/cp-portal';
+import { getStyle } from './utils/util-style';
 import { DrawMode } from './modes/draw.mode';
+import { getBounds } from './utils/util-geo-json';
 import { UpdateMode } from './modes/update.mode';
 import { TrailService } from '../../services/trail.service';
 import { PointerDevice } from './devices/pointer.device';
+import { GeoNoteService } from '../../services/geo-note.service';
 import { KeyboardDevice } from './devices/keyboard.device';
 import { NavigationMode } from './modes/navigation.mode';
 import { InteractionMode } from './modes/interaction.mode';
-import { GeoNoteService } from '../../services/geo-note.service';
 import { FeatureCollectionLayer } from './layers/feature-collection.layer';
+import { FeatureCollectionModel } from '../../models/feature-collection/feature-collection.model';
 import {
 	ID_MAP_CONTROL,
 	ID_MAP_CONTROL_TOOLS } from '../../constants';
@@ -24,9 +28,6 @@ import {
 import {
 	Button,
 	ButtonGroup } from '../app/cp-button';
-import { Ev } from '../../types';
-import { FeatureCollectionModel } from '../../models/feature-collection/feature-collection.model';
-import { getStyle } from './utils/util-style';
 
 // @ts-ignore
 mapboxGL.accessToken = token;
@@ -37,6 +38,7 @@ interface Props {
 }
 
 interface State {
+	zoom: number;
 	mode: InteractionMode;
 	style: string;
 	center: any;
@@ -50,13 +52,8 @@ export class MapControl extends React.Component<Props, State> {
 		MapControl.instance.resize();
 	}
 
-	static select(model: FeatureCollectionModel, index: number[], add: boolean) {
-		if (!add) {
-			TrailService.getModel().cleanUp();
-			GeoNoteService.getModel().cleanUp();
-		}
-
-		model.select(index, add);
+	static fitFeature(feature: Feature<any>) {
+		MapControl.instance.fitFeature(feature);
 	}
 
 	private readonly _map: any;
@@ -85,7 +82,8 @@ export class MapControl extends React.Component<Props, State> {
 			// temporarily attach container element to body to keep
 			// mapbox from complaining about missing CSS file
 			container: DOM.create('div', 'map-container', document.body),
-			fadeDuration: 0
+			fadeDuration: 0,
+			maxZoom: 24
 		});
 
 		const trails = TrailService.getModel();
@@ -132,6 +130,7 @@ export class MapControl extends React.Component<Props, State> {
 		MapControl.instance = this;
 
 		this.state = {
+			zoom,
 			mode: this._navigationMode,
 			style,
 			center
@@ -144,10 +143,12 @@ export class MapControl extends React.Component<Props, State> {
 
 		// todo: get this from map events class
 		this._map.on('move', this._onMapMove);
+		this._map.on('zoom', this._onMapZoom);
 	}
 
 	componentWillUnmount() {
 		this._map.off('move', this._onMapMove);
+		this._map.off('zoom', this._onMapZoom);
 
 		this._updateMode.destroy();
 		this._navigationMode.destroy();
@@ -156,11 +157,11 @@ export class MapControl extends React.Component<Props, State> {
 	}
 
 	private _onMapMove() {
-		const { lng, lat } = this._map.getCenter();
+		this._updateMetrics();
+	}
 
-		this.setState({
-			center: [lng.toFixed(3), lat.toFixed(3)]
-		});
+	private _onMapZoom() {
+		this._updateMetrics();
 	}
 
 	private _setRef(e: any) {
@@ -174,6 +175,24 @@ export class MapControl extends React.Component<Props, State> {
 			this._map.setStyle(_style);
 			this.setState({ style: _style });
 		}
+	}
+
+	private _updateMetrics() {
+		const { lng, lat } = this._map.getCenter();
+
+		this.setState({
+			zoom: this._map.getZoom(),
+			center: [lng, lat]
+		});
+	}
+
+	fitFeature(feature: Feature<any>) {
+		this._map.fitBounds(getBounds(feature), {
+			linear: true,
+			maxZoom: 16,
+			padding: 64,
+			duration: 350
+		});
 	}
 
 	resize() {
@@ -203,14 +222,17 @@ export class MapControl extends React.Component<Props, State> {
 	}
 
 	render() {
-		const { style, center: [lng, lat], mode } = this.state;
+		const { style, center: [lng, lat], mode, zoom } = this.state;
 
 		return (
 			<>
 				<Portal destination={ ID_MAP_CONTROL }>
 					<div className="map-container" ref={ this._setRef }>
 						<div className="center-coordinate">
-							{ lng }, { lat }
+							{ lng.toFixed(3) }, { lat.toFixed(3) }
+						</div>
+						<div className="zoom">
+							{ zoom.toFixed(2) }
 						</div>
 					</div>
 				</Portal>

@@ -77,6 +77,8 @@ export class PointerDevice extends EventEmitter {
 		this._movedSincePointerDown = false;
 		this._longPressSincePointerDown = false;
 		this._setLongPressTimeout(e);
+
+		e.originalEvent.preventDefault();
     }
 
     private _onPointerMove(e: any) {

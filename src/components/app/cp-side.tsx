@@ -3,6 +3,7 @@ import bind from 'autobind-decorator';
 import './style/cp-side.scss';
 import { MapControl } from '../map-control/cp-map-control';
 import { capitalize } from '../map-control/utils/util-string';
+import { SelectionService } from '../../services/selection.service';
 import { FeatureCollectionModel } from '../../models/feature-collection/feature-collection.model';
 
 interface Props {
@@ -49,7 +50,10 @@ export class Side extends React.Component<Props> {
 									}`
 								}
 								onClick={ (e: React.MouseEvent<HTMLElement>) => {
-									MapControl.select(model, [i], e.shiftKey);
+									SelectionService.select(model, [i], e.shiftKey);
+								} }
+								onDoubleClick={ () => {
+									MapControl.fitFeature(model.data.features[i]);
 								} }
 							>
 								{ feature.properties.type }
@@ -62,7 +66,7 @@ export class Side extends React.Component<Props> {
 										model.deleteSelection();
 									} }
 								>
-									x
+									&#10761;
 								</div>
 							</div>
 						);

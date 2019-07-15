@@ -1,4 +1,4 @@
-$panel-border: 1px solid rgba(0, 0, 0, 0.5);
+$panel-border: 1px solid transparent; // rgba(255, 255, 255, 0.1);
 
 .panel-pair-container {
   position: absolute;
@@ -20,7 +20,7 @@ $panel-border: 1px solid rgba(0, 0, 0, 0.5);
     background: black;
 
     &.panel-primary {
-      background: grey; // white; // rgb(240, 240, 240);
+      background: #333;
 
       .panel-drag-handle {
         position: absolute;

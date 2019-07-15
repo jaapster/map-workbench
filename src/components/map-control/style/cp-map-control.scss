@@ -4,6 +4,7 @@
 	left: 0;
 	right: 0;
 	bottom: 0;
+	overflow: hidden;
 }
 
 .box-zoom {
@@ -36,6 +37,27 @@
 	color: rgba(255, 255, 255, 0.7);
 }
 
-.mapboxgl-control-container {
-	display: none;
+.zoom {
+	font-size: 13px;
+	position: absolute;
+	left: 0;
+	bottom: 0;
+	z-index: 10;
+	padding: 8px;
+	text-align: center;
+	width: 40px;
+	background: rgba(255, 255, 255, 0.1);
+	margin-left: 4px;
+	margin-bottom: 4px;
+	color: rgba(255, 255, 255, 0.7);
+}
+
+// hide mapbox control elements
+//.mapboxgl-control-container {
+//	display: none;
+//}
+
+// suppress mapbox missing css warning
+.mapboxgl-canary {
+	background-color: rgb(250, 128, 114);
 }

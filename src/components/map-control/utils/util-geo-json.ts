@@ -3,9 +3,11 @@ import {
 	dis,
 	rot } from './util-point';
 import {
+	Bounds,
 	Co,
 	Feature,
-	MultiPoint } from '../../../types';
+	MultiPoint
+} from '../../../types';
 import {
 	// POINT,
 	FEATURE,
@@ -19,6 +21,7 @@ import {
 	geoDis,
 	geoProject,
 	geoUnproject } from './util-geo';
+import { toPairs } from './util-list';
 
 export const newLineString = (coordinates: Co[] = []) => (
 	{
@@ -102,5 +105,19 @@ export const multiPointToCircle = (feature: Feature<MultiPoint>) => {
 				id
 			}
 		}
+	];
+};
+
+export const getBounds = (feature: Feature<any>): Bounds => {
+	const { geometry: { coordinates } } = feature;
+
+	const cos: Co[] = toPairs(coordinates.flat(4));
+
+	const lng = cos.map(([lng]) => lng);
+	const lat = cos.map(([, lat]) => lat);
+
+	return [
+		[Math.min(...lng), Math.min(...lat)],
+		[Math.max(...lng), Math.max(...lat)]
 	];
 };

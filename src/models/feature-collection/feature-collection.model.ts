@@ -81,6 +81,12 @@ export class FeatureCollectionModel extends EventEmitter {
 		this.trigger('update');
 	}
 
+	getSelectedFeatures() {
+		if (this._selection.length) {
+			return this._data.features[this._selection[0][0]];
+		}
+	}
+
 	moveGeometry(index: number[], movement: Point) {
 		this.data = moveGeometry(this.data, index, movement);
 	}

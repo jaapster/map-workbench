@@ -11,8 +11,7 @@ import {
 import {
 	Co,
 	Ev,
-	Point
-} from '../../../types';
+	Point } from '../../../types';
 import {
 	CIRCLE,
 	THRESHOLD,
@@ -21,8 +20,8 @@ import {
 import {
 	coToLl,
 	llToCo,
-	geoUnproject, geoProject
-} from '../utils/util-geo';
+	geoUnproject, geoProject } from '../utils/util-geo';
+import { MapControl } from '../cp-map-control';
 
 const analyseRectangle = (coordinates: Co[][], nv: number) => {
 	const [cos] = coordinates;
@@ -164,6 +163,12 @@ export class UpdateMode extends InteractionMode {
 					this._model.moveGeometry([_i], movement);
 				}
 			}
+		}
+	}
+
+	onPointerDblClick(e: Ev) {
+		if (this._model) {
+			MapControl.fitFeature(this._model.data.features[this._model.selection[0][0]]);
 		}
 	}
 

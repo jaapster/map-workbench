@@ -66,3 +66,5 @@ export interface FeatureCollection {
 	type: string;
 	features: Feature[];
 }
+
+export type Bounds = [Co, Co];

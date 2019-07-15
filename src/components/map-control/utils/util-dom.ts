@@ -23,7 +23,7 @@ export const DOM = {
 
 	mousePos(el: HTMLElement, e: PointerEvent) {
 		const rect = el.getBoundingClientRect();
-		
+
 		return new Point(
 			e.clientX - rect.left - el.clientLeft,
 			e.clientY - rect.top - el.clientTop
