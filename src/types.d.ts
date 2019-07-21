@@ -8,6 +8,12 @@ export interface Ev {
 
 export type Dict<T> = { [key: string]: T };
 
+export interface Location {
+	zoom: number;
+	title?: string;
+	center: any;
+}
+
 export interface Point {
 	x: number;
 	y: number;

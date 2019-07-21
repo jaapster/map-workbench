@@ -4,7 +4,7 @@ import {
 	FeatureCollection, LngLat } from '../../../types';
 import {
 	getDistanceToSegment,
-	nearestPointOnSegment } from '../../../components/map-control/utils/util-math';
+	nearestPointOnSegment } from '../../../map-control/utils/util-math';
 import {
 	POINT,
 	CIRCLE,
@@ -19,12 +19,12 @@ import {
 	mul,
 	div,
 	dis,
-	hyp } from '../../../components/map-control/utils/util-point';
+	hyp } from '../../../map-control/utils/util-point';
 import {
 	llToCo,
 	coToLl,
 	geoProject,
-	geoUnproject } from '../../../components/map-control/utils/util-geo';
+	geoUnproject } from '../../../map-control/utils/util-geo';
 
 const roll = (p0: Point, index: number[]) =>
 	(m: any, co: Co, i: number, xs: any) => {

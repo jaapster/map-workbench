@@ -13,7 +13,7 @@ import {
 	MULTI_LINE_STRING } from '../../../constants';
 import {
 	geoProject,
-	geoUnproject } from '../../../components/map-control/utils/util-geo';
+	geoUnproject } from '../../../map-control/utils/util-geo';
 
 export const moveGeometry = (
 	data: FeatureCollection,

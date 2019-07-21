@@ -1,0 +1,140 @@
+.map-container {
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	overflow: hidden;
+
+	&.mode-update,
+	&.mode-draw {
+		cursor: crosshair;
+	}
+}
+
+.box-zoom {
+	box-sizing: border-box;
+	position: absolute;
+	pointer-events: none;
+	border: 1px solid grey;
+	background: rgba(130, 130, 130, 0.1);
+}
+
+.box-screen {
+	box-sizing: border-box;
+	position: absolute;
+	pointer-events: none;
+	border: 1px dotted grey;
+}
+
+.center-coordinate {
+	font-size: 13px;
+	position: absolute;
+	left: 50%;
+	bottom: 0;
+	z-index: 10;
+	padding: 8px;
+	text-align: center;
+	width: 150px;
+	background: rgba(0, 0, 0, 0.4);
+	margin-left: -75px;
+	margin-bottom: 4px;
+	color: rgba(255, 255, 255, 0.7);
+}
+
+.zoom {
+	font-size: 13px;
+	position: absolute;
+	left: 0;
+	bottom: 0;
+	z-index: 10;
+	padding: 8px;
+	text-align: center;
+	width: 40px;
+	background: rgba(0, 0, 0, 0.4);
+	margin-left: 4px;
+	margin-bottom: 4px;
+	color: rgba(255, 255, 255, 0.7);
+}
+
+// hide mapbox control elements
+.mapboxgl-control-container {
+	display: none;
+}
+
+// suppress mapbox missing css warning
+.mapboxgl-canary {
+	background-color: rgb(250, 128, 114);
+}
+
+.main-tool-bar {
+	position: absolute;
+	padding: 4px 0;
+	z-index: 10;
+}
+
+$colorSelected: deeppink;
+$colorRegular: dodgerblue;
+
+svg {
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	z-index: 1000;
+	pointer-events: none;
+	width: 100%;
+	height: 100%;
+}
+
+path {
+	fill: none;
+	stroke: $colorRegular;
+	stroke-width: 1;
+
+	&.selected {
+		stroke: $colorSelected;
+	}
+
+	&.polygon {
+		opacity: 0.1;
+		fill: $colorRegular;
+
+		&.selected {
+			fill: $colorSelected;
+		}
+	}
+
+	&.arrow-head {
+		fill: $colorRegular;
+
+		&.selected {
+			fill: $colorSelected;
+		}
+	}
+}
+
+text {
+	font-size: 10px;
+	fill: $colorSelected;
+	text-anchor: middle;
+}
+
+circle {
+	fill: $colorRegular;
+
+	&.selected,
+	&.vertex {
+		fill: $colorSelected;
+	}
+
+	&.vertex-selected {
+		fill: none;
+		stroke: $colorSelected;
+
+		&:hover {
+			cursor: crosshair;
+		}
+	}
+}

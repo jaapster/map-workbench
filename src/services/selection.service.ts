@@ -1,14 +1,19 @@
-import { TrailService } from './trail.service';
-import { GeoNoteService } from './geo-note.service';
+import { FeatureCollection } from '../types';
 import { FeatureCollectionModel } from '../models/feature-collection/feature-collection.model';
+import { EMPTY_COLLECTION } from '../constants';
+
+const _model = FeatureCollectionModel.create(EMPTY_COLLECTION, 'Selection');
 
 export const SelectionService = {
-	select(model: FeatureCollectionModel, index: number[], add: boolean) {
-		if (!add) {
-			TrailService.getModel().cleanUp();
-			GeoNoteService.getModel().cleanUp();
-		}
+	setData(featureCollection: FeatureCollection) {
+		_model.setData(featureCollection);
+	},
 
-		model.select(index, add);
+	getModel() {
+		return _model;
+	},
+
+	deleteSelection() {
+		_model.deleteSelection();
 	}
 };

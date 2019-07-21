@@ -1,87 +1,59 @@
 import React from 'react';
 import './style/cp-app.scss';
+import './style/cp-side.scss';
+import { Map } from '../map/cp-map';
 import { Panel } from '../panels/cp-panel';
 import { PanelPair } from '../panels/cp-panel-pair';
-import { MainToolBar } from './cp-main-tool-bar';
-import { ID_MAP_CONTROL, ASTORIA } from '../../constants';
-import { MapControl } from '../map-control/cp-map-control';
-import { Side } from './cp-side';
-import { TrailService } from '../../services/trail.service';
-import { GeoNoteService } from '../../services/geo-note.service';
+import { LOCATIONS } from '../../constants';
+import { Locations } from './cp-locations';
+import { MapControl } from '../../map-control/map-control';
+import { LayerPanels } from '../map/cp-layer-panels';
 
-export class App extends React.Component {
-	private _mounted = false;
-
-	componentDidMount() {
-		this._mounted = true;
-
-		this.forceUpdate();
-	}
-
-	render() {
-		return (
-			<div className="app">
-				<PanelPair // footer
-					fixed
-					vertical
-					initial={ 0 }
+export const App = () => (
+	<div className="app">
+		<PanelPair // footer
+			fixed
+			vertical
+			initial={ 0 }
+			onResize={ MapControl.resize }
+		>
+			<Panel>
+				<PanelPair // panel right
+					horizontal
+					max={ 500 }
+					initial={ 200 }
 					onResize={ MapControl.resize }
 				>
 					<Panel>
-						<PanelPair // panel right
+						<PanelPair // panel left
+							fixed
 							horizontal
-							max={ 500 }
-							initial={ 200 }
+							initial={ 0 }
 							onResize={ MapControl.resize }
 						>
+							<Panel primary />
 							<Panel>
-								<PanelPair // panel left
+								<PanelPair // header
 									fixed
-									horizontal
+									vertical
 									initial={ 0 }
 									onResize={ MapControl.resize }
 								>
 									<Panel primary />
 									<Panel>
-										<PanelPair // header
-											fixed
-											vertical
-											initial={ 0 }
-											onResize={ MapControl.resize }
-										>
-											<Panel primary>
-											</Panel>
-											<Panel>
-												<MainToolBar />
-												<div id={ ID_MAP_CONTROL } />
-											</Panel>
-										</PanelPair>
+										<Map location={ LOCATIONS[0] } />
 									</Panel>
 								</PanelPair>
 							</Panel>
-							<Panel primary>
-								<Side
-									model={ TrailService.getModel() }
-								/>
-								<Side
-									model={ GeoNoteService.getModel() }
-								/>
-							</Panel>
 						</PanelPair>
 					</Panel>
-					<Panel primary />
+					<Panel primary>
+						<LayerPanels />
+						<Locations locations={ LOCATIONS }/>
+					</Panel>
 				</PanelPair>
-				{
-					this._mounted
-						? (
-							<MapControl
-								center={ ASTORIA }
-								zoom={ 14 }
-							/>
-						)
-						: null
-				}
-			</div>
-		);
-	}
-}
+			</Panel>
+			<Panel primary />
+		</PanelPair>
+	</div>
+);

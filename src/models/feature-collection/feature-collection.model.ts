@@ -5,7 +5,6 @@ import { EventEmitter } from '../../event-emitter';
 import { deleteAtIndex } from './fn/delete-at-index';
 import { nearestVertex } from './fn/nearest-vertex';
 import { updateCoordinates } from './fn/update-coordinate';
-import { setPropertyAtIndex } from './fn/set-property-at-index';
 import { nearestPointOnGeometry } from './fn/nearest-point-on-geometry';
 import {
 	Co,
@@ -13,15 +12,14 @@ import {
 	LngLat,
 	Feature,
 	FeatureCollection } from '../../types';
+import { POINT } from '../../constants';
 
 @bind
 export class FeatureCollectionModel extends EventEmitter {
-	private _data: FeatureCollection;
-	private _index: number[] = [];
-	private _prevIndex: number = -1;
-	private _selection: number[][] = [];
-
 	private readonly _title: string;
+
+	private _featureCollection: FeatureCollection;
+	private _selection: number[][] = [];
 
 	static create(data: FeatureCollection, title: string) {
 		return new FeatureCollectionModel(data, title);
@@ -30,42 +28,38 @@ export class FeatureCollectionModel extends EventEmitter {
 	constructor(data: FeatureCollection, title: string) {
 		super();
 
-		this._data = data;
+		this._featureCollection = data;
 		this._title = title;
 	}
 
-	get data(): FeatureCollection {
-		return this._data;
-	}
-
-	set data(data: FeatureCollection) {
-		this._data = data;
-		this.trigger('update');
-	}
-
-	get index(): number[] {
-		return this._index;
-	}
-
-	set index(index: number[]) {
-		this._prevIndex = this._index[0];
-		this._index = index;
-
-		this._selection = [this._index];
-
-		this.trigger('update');
-	}
-
-	get prevIndex(): number {
-		return this._prevIndex;
-	}
-
-	get title(): string {
+	getTitle() {
 		return this._title;
 	}
 
 	get selection(): number[][] {
 		return this._selection;
+	}
+
+	getSelection() {
+		return this._selection;
+	}
+
+	getFeatureCollection() {
+		return this._featureCollection;
+	}
+
+	setFeatureCollection(data: FeatureCollection) {
+		this._featureCollection = data;
+
+		this.trigger('update');
+	}
+
+	getFeatures() {
+		return this._featureCollection.features;
+	}
+
+	getFeatureAtIndex(index: number) {
+		return this._featureCollection.features[index];
 	}
 
 	select(index: number[] = [], add: boolean = false) {
@@ -75,76 +69,113 @@ export class FeatureCollectionModel extends EventEmitter {
 				: [index]
 			: [];
 
-		this._prevIndex = this._index[0];
-		this._index = index;
+		this.trigger('update');
+	}
+
+	moveGeometry(index: number[], movement: Point) {
+		this._featureCollection = moveGeometry(this._featureCollection, index, movement);
 
 		this.trigger('update');
 	}
 
-	getSelectedFeatures() {
-		if (this._selection.length) {
-			return this._data.features[this._selection[0][0]];
-		}
-	}
-
-	moveGeometry(index: number[], movement: Point) {
-		this.data = moveGeometry(this.data, index, movement);
-	}
-
 	updateCoordinates(entries: [number[], Co][]) {
-		this.data = updateCoordinates(this.data, entries);
+		this._featureCollection = updateCoordinates(this._featureCollection, entries);
+
+		this.trigger('update');
 	}
 
 	addFeature(feature: Feature<any>) {
-		const i = this.data.features.length;
-
-		this.data = {
-			...this.data,
-			features: this.data.features.concat(feature)
+		this._featureCollection = {
+			...this._featureCollection,
+			features: this._featureCollection.features.concat({ ...feature })
 		};
 
-		this.select([i]);
+		this.select([this._featureCollection.features.length - 1]);
 	}
 
-	addAtIndex(coordinate: Co, index?: number[]) {
-		this.data = addAtIndex(
-			this.data,
-			index != null ? index : this._index,
+	addAtIndex(coordinate: Co, index: Co) {
+		this._featureCollection = addAtIndex(
+			this._featureCollection,
+			index,
 			coordinate
 		);
+
+		this.trigger('update');
 	}
 
 	deleteSelection() {
 		this._selection.slice().reverse().forEach((index: number[]) => {
 			if (index.length) {
-				this._data = deleteAtIndex(this.data, index);
+				this._featureCollection = deleteAtIndex(this._featureCollection, index);
 			}
 		});
 
-		this._selection = this._selection.reduce((m1: number[][], index: number[]) => {
-			return index.length === 1
+		this._selection = this._selection.reduce((m1, index: number[]) => (
+			index.length === 1
 				? m1
-				: m1.concat([[index[0]]]);
-		}, [] as number[][]);
-
-		this._index = this._selection[0] || [];
+				: m1.concat([[index[0]]])
+		), [] as number[][]);
 
 		this.trigger('update');
 	}
 
-	setPropertyAtIndex(key: string, value: any) {
-		this.data = setPropertyAtIndex(this.data, this._index[0], key, value);
+	clearSelection() {
+		if (this._selection.length) {
+			this.select([]);
+		}
 	}
 
-	nearestVertex(lngLat: LngLat) {
-		return nearestVertex(lngLat, this.data);
+	getNearestVertex(lngLat: LngLat) {
+		return nearestVertex(lngLat, this._featureCollection);
 	}
 
-	nearestPointOnGeometry(lngLat: LngLat) {
-		return nearestPointOnGeometry(lngLat, this.data);
+	getNearestPointOnGeometry(lngLat: LngLat) {
+		return nearestPointOnGeometry(lngLat, this._featureCollection);
 	}
 
-	cleanUp() {
-		this.select([]);
+	getSelectedFeatureIndex() {
+		return this._selection[0]
+			? this._selection[0][0]
+			: undefined;
+	}
+
+	getSelectedFeatureIndices() {
+		return this._selection.map(([i]) => i);
+	}
+
+	getSelectedVertices(): Co[] {
+		return this.getSelection().reduce((m, s) => {
+			const l = s.length;
+			const [_i, _j, _k, _l] = s;
+
+			const {
+				geometry: { coordinates },
+				properties: { type }
+			} = this.getFeatureAtIndex(_i);
+
+			if (_j == null) {
+				return type === POINT
+					? m.concat([coordinates])
+					: m;
+			}
+
+			return m.concat([
+				l === 0
+					? [0, 0]
+					: l === 1
+					? coordinates
+					: l === 2
+						? coordinates[_j]
+						: l === 3
+							? coordinates[_j][_k]
+							: coordinates[_j][_k][_l]
+			]);
+		}, [] as Co[]);
+	}
+
+	setData(featureCollection: FeatureCollection) {
+		this._featureCollection = featureCollection;
+
+		this.trigger('update');
 	}
 }
