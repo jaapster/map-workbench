@@ -4,9 +4,9 @@ import mapboxGL from 'mapbox-gl';
 import './style/cp-map.scss';
 import { token } from '../../token';
 import { Layer } from './cp-layer';
-import { Location } from '../../types';
 import { ZoomLevel } from './cp-zoom-level';
 import { MapControl } from '../../map-control/map-control';
+import { ContextMenu } from './cp-context-menu';
 import { ModeSelector } from './cp-mode-selector';
 import { mergeClasses } from '../../utils/util-merge-classes';
 import { TrailService } from '../../services/trail.service';
@@ -16,6 +16,9 @@ import { GeoNoteService } from '../../services/geo-note.service';
 import { MarkerArrowHead } from './cp-marker-arrow-head';
 import { CenterCoordinate } from './cp-center-coordinate';
 import { SelectionService } from '../../services/selection.service';
+import {
+	Point,
+	Location } from '../../types';
 
 // @ts-ignore
 mapboxGL.accessToken = token;
@@ -24,8 +27,21 @@ interface Props {
 	location: Location;
 }
 
+interface Context {
+	location: Point;
+	items: any[];
+}
+
+interface State {
+	contextMenu: null | Context;
+}
+
 @bind
-export class Map extends React.Component<Props> {
+export class Map extends React.Component<Props, State> {
+	state = {
+		contextMenu: null
+	};
+
 	private readonly _mapControl: MapControl;
 
 	private _ref: any;
@@ -39,13 +55,29 @@ export class Map extends React.Component<Props> {
 	componentDidMount() {
 		this._ref.appendChild(this._mapControl.getContainer());
 		this._mapControl.resize();
+		this._mapControl.on('context', this._openContextMenu);
+		this._mapControl.on('modeChange', this._onModeChange);
 	}
 
 	private _setRef(e: any) {
 		this._ref = e;
 	}
 
+	private _openContextMenu(context: Context) {
+		this.setState({ contextMenu: context });
+	}
+
+	private _closeContextMenu() {
+		this.setState({ contextMenu: null });
+	}
+
+	private _onModeChange() {
+		this.forceUpdate();
+	}
+
 	render() {
+		const { contextMenu } = this.state;
+
 		const className = mergeClasses(
 			'map-container',
 			`mode-${ this._mapControl.getMode() }`
@@ -58,7 +90,7 @@ export class Map extends React.Component<Props> {
 		];
 
 		return (
-			<>
+			<div>
 				<div className={ className } ref={ this._setRef } />
 				<svg>
 					<MarkerVertex />
@@ -78,7 +110,18 @@ export class Map extends React.Component<Props> {
 					<ModeSelector mapControl={ this._mapControl } />
 					<StyleSelector mapControl={ this._mapControl } />
 				</div>
-			</>
+				{
+					contextMenu !== null
+						? (
+							<ContextMenu
+								// @ts-ignore
+								context={ contextMenu }
+								close={ this._closeContextMenu }
+							/>
+						)
+						: null
+				}
+			</div>
 		);
 	}
 }

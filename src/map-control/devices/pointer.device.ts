@@ -14,7 +14,9 @@ const toEvent = (e: mapboxgl.MapTouchEvent | mapboxgl.MapMouseEvent | TouchEvent
 
 	}
 
-	const merc = !(e instanceof MouseEvent || e instanceof TouchEvent)
+	// @ts-ignore
+	const merc = !(e instanceof MouseEvent || (window.TouchEvent && e instanceof TouchEvent))
+		// @ts-ignore
 		? geoProject(e.lngLat)
 		: { x: 0, y: 0 };
 
@@ -41,6 +43,12 @@ export class PointerDevice extends EventEmitter {
         return new PointerDevice(map);
     }
 
+	private _pointerDown = false;
+	private _timeoutLongPress: any = null;
+	private _timeoutDblClick: any = null;
+	private _longPressSincePointerDown = false;
+	private _movedSincePointerDown = false;
+
     constructor(map: any) {
         super();
 
@@ -55,19 +63,20 @@ export class PointerDevice extends EventEmitter {
         map.on('wheel', this._onWheel);
 
         // todo: add real handler for this
-        map.on('contextmenu', this._onContextMenu);
+        map.on('contextmenu', PointerDevice._onContextMenu);
 
-        // document.addEventListener('mouseup', this._onMouseUp);
-		// document.addEventListener('touchend', this._onTouchEnd);
-
+		window.addEventListener('mouseup', this._reset);
+		window.addEventListener('touchend', this._reset);
 		window.addEventListener('blur', this._onBlur);
     }
 
-    private _pointerDown = false;
-    private _timeoutLongPress: any = null;
-    private _timeoutDblClick: any = null;
-    private _longPressSincePointerDown = false;
-    private _movedSincePointerDown = false;
+	private static _onContextMenu(e: any) {
+		e.originalEvent.preventDefault();
+	}
+
+    private _reset() {
+		this._pointerDown = false;
+	}
 
     private _onPointerDown(e: any) {
         // log('pointerdown');
@@ -127,8 +136,13 @@ export class PointerDevice extends EventEmitter {
             return;
         }
 
-        // log('pointerclick');
-		this.trigger('pointerclick', e);
+        const { originalEvent: { button, ctrlKey } } = e;
+
+		this.trigger(
+			button === 2 || ctrlKey
+				? 'pointeraltclick'
+				: 'pointerclick'
+		, e);
     }
 
     private _onPointerDblClick(e: any) {
@@ -188,14 +202,9 @@ export class PointerDevice extends EventEmitter {
         this.trigger('blur');
     }
 
-    private _onContextMenu(e: any) {
-        e.originalEvent.preventDefault();
-
-        this.trigger('context', toEvent(e));
-    }
-
     private _setDblClickTimeout(e: mapboxgl.MapMouseEvent) {
-        this._timeoutDblClick = setTimeout(() => this._onPointerClick(e), 220);
+    	// 220
+        this._timeoutDblClick = setTimeout(() => this._onPointerClick(e), 170);
     }
 
     private _setLongPressTimeout(e: mapboxgl.MapMouseEvent) {

@@ -14,8 +14,8 @@ export const MultiPolygon = ({ id, coordinates, selected }: Props) => {
 			{
 				coordinates.map((c, i) => (
 					<Polygon
-						key={ i }
-						id={ id }
+						key={ `${ id }-${ i }` }
+						id={ `${ id }-${ i }` }
 						coordinates={ c }
 						selected={ selected }
 					/>

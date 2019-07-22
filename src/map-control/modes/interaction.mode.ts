@@ -91,7 +91,7 @@ export class InteractionMode extends EventEmitter {
 	onPointerDragStart(e: Ev) {}
 	onPointerDragMove(e: Ev) {}
 	onPointerDragEnd(e: Ev) {}
-	onContext(e: Ev) {}
+	onPointerAltClick(e: Ev) {}
 
 	onEscapeKey() {
 		this.cleanUp();

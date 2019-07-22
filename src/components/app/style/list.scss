@@ -1,11 +1,15 @@
-.side {
-	padding: 4px 16px;
-	color: lightgrey;
+.list {
+	padding: 8px;
 	font-size: 12px;
-	margin-bottom: 24px;
+	color: lightgrey;
 	user-select: none;
 
-	.feature {
+	h2 {
+		padding: 0;
+		margin: 0 0 8px 4px;
+	}
+
+	.list-item {
 		padding: 4px;
 		cursor: default;
 

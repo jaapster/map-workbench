@@ -60,8 +60,8 @@ export const add3dBuildings = (map: any) => {
 };
 
 export const styles = [
-	['Light', 'mapbox://styles/mapbox/light-v10'],
 	['Dark', 'mapbox://styles/mapbox/dark-v10'],
+	['Light', 'mapbox://styles/mapbox/light-v10'],
 	['Empty', 'mapbox://styles/jaapl/cjy8jar9u0y6y1co8rn1j9kpw']
 	// ['Blue', 'mapbox://styles/jaapl/cjxutkz950m341cnigemqtqmb'],
 	// ['Streets', 'mapbox://styles/mapbox/streets-v11'],

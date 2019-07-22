@@ -4,8 +4,8 @@ import { LineString } from './cp-line-string';
 
 interface Props {
 	id: string;
-	coordinates: Co[][];
 	selected: boolean;
+	coordinates: Co[][];
 }
 
 export const MultiLineString = ({ id, coordinates, selected }: Props) => {
@@ -14,10 +14,10 @@ export const MultiLineString = ({ id, coordinates, selected }: Props) => {
 			{
 				coordinates.map((c, i) => (
 					<LineString
-						key={ i }
-						id={ id }
-						coordinates={ c }
+						id={ `${ id }-${ i }` }
+						key={ `${ id }-${ i }` }
 						selected={ selected }
+						coordinates={ c }
 					/>
 				))
 			}

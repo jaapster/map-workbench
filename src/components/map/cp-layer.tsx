@@ -56,42 +56,50 @@ export class Layer extends React.Component<Props> {
 
 		return (
 			<g>
-				{
-					model.getFeatures().map((f, i) => {
-						const props = {
-							key: i,
-							id: f.properties.id,
-							coordinates: f.geometry.coordinates,
-							selected: selection.includes(i)
-						};
+				<g>
+					{
+						model.getFeatures().map((f, i) => {
+							const p = {
+								id: f.properties.id,
+								key: f.properties.id,
+								selected: selection.includes(i),
+								coordinates: f.geometry.coordinates
+							};
 
-						switch (f.properties.type) {
-							case POINT:
-								return <Point { ...props } />;
-							case MULTI_POINT:
-								return <MultiPoint { ...props } />;
-							case LINE_STRING:
-								return <LineString { ...props } />;
-							case MULTI_LINE_STRING:
-								return <MultiLineString { ...props } />;
-							case POLYGON:
-								return <Polygon { ...props } />;
-							case MULTI_POLYGON:
-								return <MultiPolygon { ...props } />;
-							case CIRCLE:
-								return <Circle { ...props } />;
-							case RECTANGLE:
-								return <Rectangle { ...props } />;
-							default:
-								return null;
-						}
-					})
-				}
-				{
-					model.getSelectedVertices().map((coordinates, i) => (
-						<SelectedVertex key={ `v${ i }`} coordinates={ coordinates } />
-					))
-				}
+							switch (f.properties.type) {
+								case POINT:
+									return <Point { ...p } />;
+								case MULTI_POINT:
+									return <MultiPoint { ...p } />;
+								case LINE_STRING:
+									return <LineString { ...p } />;
+								case MULTI_LINE_STRING:
+									return <MultiLineString { ...p } />;
+								case POLYGON:
+									return <Polygon { ...p } />;
+								case MULTI_POLYGON:
+									return <MultiPolygon { ...p } />;
+								case CIRCLE:
+									return <Circle { ...p } />;
+								case RECTANGLE:
+									return <Rectangle { ...p } />;
+								default:
+									return null;
+							}
+						})
+					}
+				</g>
+				<g>
+					{
+						model.getSelectedVertices().map((coordinates, i) => (
+							<SelectedVertex
+								key={ i }
+								animate={ true }
+								coordinates={ coordinates }
+							/>
+						))
+					}
+				</g>
 			</g>
 		);
 	}

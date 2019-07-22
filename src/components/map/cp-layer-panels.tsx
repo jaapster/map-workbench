@@ -10,7 +10,7 @@ export const LayerPanels = () => {
 	];
 
 	return (
-		<>
+		<div className="side-panel">
 			{
 				models.map(model => (
 					<LayerPanel
@@ -19,6 +19,6 @@ export const LayerPanels = () => {
 					/>
 				))
 			}
-		</>
+		</div>
 	);
 };

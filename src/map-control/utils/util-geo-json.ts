@@ -22,9 +22,10 @@ import {
 import {
 	llToCo,
 	coToLl,
-	geoDis,
+	geoDistance,
 	geoProject,
-	geoUnproject } from './util-geo';
+	geoUnproject
+} from './util-geo';
 
 export const newLineString = (coordinates: Co[] = []) => (
 	{
@@ -54,9 +55,7 @@ export const newPolygon = (coordinates: Co[][] = [[]]) => (
 	}
 );
 
-export const multiPointToCircle = (feature: Feature<MultiPoint>) => {
-	const { geometry: { coordinates: [co1, co2] }, properties: { id } } = feature;
-
+export const multiPointToLines = ([co1, co2]: Co[]) => {
 	const c = geoProject(coToLl(co1));
 	const r = geoProject(coToLl(co2));
 
@@ -69,7 +68,15 @@ export const multiPointToCircle = (feature: Feature<MultiPoint>) => {
 		.map((e, i) => (llToCo(geoUnproject(rot(r, c, a * i)))))
 		.concat([llToCo(geoUnproject(rot(r, c, 0)))]);
 
-	const radius = geoDis(coToLl(co1), coToLl(co2));
+	return [coordinates, [co1, co2]];
+};
+
+export const multiPointToCircle = (feature: Feature<MultiPoint>) => {
+	const { geometry: { coordinates: [co1, co2] }, properties: { id } } = feature;
+
+	const [coordinates] = multiPointToLines([co1, co2]);
+
+	const radius = geoDistance(co1, co2);
 	const circumference = 2 * Math.PI * radius;
 
 	return [

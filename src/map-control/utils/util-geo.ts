@@ -7,21 +7,10 @@ const MAX_EXTENT = 20037508.342789244;
 const D2R = Math.PI / 180;
 const R2D = 180 / Math.PI;
 
-export const geoDis = (a: LngLat, b: LngLat) => {
-	const lat = (b.lat - a.lat) * D2R;
-	const lng = (b.lng - a.lng) * D2R;
-	const v =
-		Math.sin(lat / 2) ** 2 +
-		Math.cos((a.lat * D2R)) * Math.cos(b.lat * D2R) *
-		Math.sin(lng / 2) ** 2
-	;
-	const c = 2 * Math.atan2(Math.sqrt(v), Math.sqrt(1 - v));
-	return R * c; // distance in m
-};
-
-export const geoDis2 = (_a: Co, _b: Co) => {
+export const geoDistance = (_a: Co, _b: Co) => {
 	const a = coToLl(_a);
 	const b = coToLl(_b);
+
 	const lat = (b.lat - a.lat) * D2R;
 	const lng = (b.lng - a.lng) * D2R;
 	const v =

@@ -97,8 +97,9 @@ path {
 		stroke: $colorSelected;
 	}
 
-	&.polygon {
-		opacity: 0.1;
+	&.polygon,
+	&.circle {
+		fill-opacity: 0.1;
 		fill: $colorRegular;
 
 		&.selected {
@@ -116,9 +117,12 @@ path {
 }
 
 text {
-	font-size: 10px;
+	font-size: 11px;
 	fill: $colorSelected;
+	// stroke: white;
+	// stroke-width: 0.3px;
 	text-anchor: middle;
+	paint-order: stroke;
 }
 
 circle {
@@ -132,9 +136,14 @@ circle {
 	&.vertex-selected {
 		fill: none;
 		stroke: $colorSelected;
-
-		&:hover {
-			cursor: crosshair;
-		}
 	}
+}
+
+.context-menu {
+	position: absolute;
+	z-index: 1000;
+	width: 150px;
+	padding: 8px;
+	background: darkslategrey;
+	box-shadow: 0 3px 10px rgba(0, 0, 0, 0.5);
 }

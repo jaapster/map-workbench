@@ -107,6 +107,10 @@ export class MapControl extends EventEmitter {
 		this._pointerDevice = PointerDevice.create(this._map);
 		this._keyboardDevice = KeyboardDevice.create();
 
+		this._drawMode.on('context', this._onModeContext);
+		this._updateMode.on('context', this._onModeContext);
+		this._navigationMode.on('context', this._onModeContext);
+
 		this._pointerDevice.on('pointerup', this._onPointerUp);
 		this._pointerDevice.on('pointerdown', this._onPointerDown);
 		this._pointerDevice.on('pointermove', this._onPointerMove);
@@ -117,11 +121,11 @@ export class MapControl extends EventEmitter {
 
 		this._pointerDevice.on('pointerclick', this._onPointerClick);
 		this._pointerDevice.on('pointerdblclick', this._onPointerDblClick);
+		this._pointerDevice.on('pointeraltclick', this._onPointerAltClick);
 		this._pointerDevice.on('pointerlongpress', this._onPointerLongPress);
 
 		this._pointerDevice.on('blur', this._onBlur);
 		this._pointerDevice.on('wheel', this._onWheel);
-		this._pointerDevice.on('context', this._onContext);
 
 		this._keyboardDevice.on('deleteKey', this._onDeleteKey);
 		this._keyboardDevice.on('escapeKey', this._onEscapeKey);
@@ -153,6 +157,10 @@ export class MapControl extends EventEmitter {
 		this.trigger('zoom');
 	}
 
+	private _onModeContext(e: Ev) {
+		this.trigger('context', e);
+	}
+
 	private _onPointerDown(e: Ev) {
 		this._mode.onPointerDown(e);
 	}
@@ -181,6 +189,10 @@ export class MapControl extends EventEmitter {
 		this._mode.onPointerClick(e);
 	}
 
+	private _onPointerAltClick(e: Ev) {
+		this._mode.onPointerAltClick(e);
+	}
+
 	private _onPointerDblClick(e: Ev) {
 		this._mode.onPointerDblClick(e);
 	}
@@ -195,10 +207,6 @@ export class MapControl extends EventEmitter {
 
 	private _onWheel(e: Ev) {
 		this._mode.onWheel(e);
-	}
-
-	private _onContext(e: Ev) {
-		this._mode.onContext(e);
 	}
 
 	private _onDeleteKey() {

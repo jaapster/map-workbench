@@ -52,6 +52,21 @@ export class UpdateMode extends InteractionMode {
 	// used to store initial rectangle ratio on start drag
 	private _ratio = 1;
 
+	private _triggerContext(e: Ev) {
+		this.trigger('context', {
+			location: e.point,
+			items: [
+				['delete', () => console.log('delete feature')],
+				['copy as geo-json',  () => {
+					if (this._model) {
+						// @ts-ignore
+						console.log(this._model.getFeatureAtIndex(this._model.getSelectedFeatureIndex()));
+					}
+				}]
+			]
+		});
+	}
+
 	onPointerDragStart({ lngLat, point, originalEvent }: Ev) {
 		if (this._model) {
 			const [_i, , _k] = this._model.getSelection()[0];
@@ -73,7 +88,7 @@ export class UpdateMode extends InteractionMode {
 						const d = dis(point, p);
 
 						if (d < THRESHOLD) {
-							// this._model.select(index);
+							this._model.select(index);
 							this._model.addAtIndex(coordinate, index);
 						}
 					}
@@ -169,6 +184,14 @@ export class UpdateMode extends InteractionMode {
 		if (this._model) {
 			MapControl.fitFeature(this._model.getFeatures()[this._model.getSelection()[0][0]]);
 		}
+	}
+
+	onPointerLongPress(e: Ev) {
+		this._triggerContext(e);
+	}
+
+	onPointerAltClick(e: Ev) {
+		this._triggerContext(e);
 	}
 
 	setModel(model: FeatureCollectionModel) {
