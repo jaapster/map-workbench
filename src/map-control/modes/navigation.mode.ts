@@ -3,8 +3,6 @@ import * as mapboxgl from 'mapbox-gl';
 import { Ev } from '../../types';
 import { DOM } from '../utils/util-dom';
 import { InteractionMode } from './interaction.mode';
-import { TrailService } from '../../services/trail.service';
-import { GeoNoteService } from '../../services/geo-note.service';
 
 interface Options {
 	pitch?: boolean;
@@ -20,11 +18,6 @@ const OPTIONS: Options = {
 	wheelZoom: true
 };
 
-const clearSelection = () => {
-	TrailService.clearSelection();
-	GeoNoteService.clearSelection();
-};
-
 @bind
 export class NavigationMode extends InteractionMode {
 	private _box: HTMLElement | null = null;
@@ -38,13 +31,9 @@ export class NavigationMode extends InteractionMode {
 		return new	NavigationMode(map, { ...OPTIONS, ...options });
 	}
 
-	private _triggerContext({ lngLat: { lng, lat }, point }: Ev) {
+	private _triggerContext({ point }: Ev) {
 		this.trigger('context', {
-			location: point,
-			items: [
-				['clear selection', clearSelection],
-				['copy coordinate', () => console.log('lng:', lng, 'lat:', lat)]
-			]
+			location: point
 		});
 	}
 

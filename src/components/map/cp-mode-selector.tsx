@@ -2,7 +2,12 @@ import bind from 'autobind-decorator';
 import React from 'react';
 import { MapControl } from '../../map-control/map-control';
 import { Button, ButtonGroup } from '../app/cp-button';
-import { DRAW_MODE, NAVIGATION_MODE, UPDATE_MODE } from '../../constants';
+import {
+	DRAW_MODE,
+	MENU_MODE,
+	UPDATE_MODE,
+	NAVIGATION_MODE
+} from '../../constants';
 
 interface Props {
 	mapControl: MapControl;
@@ -37,6 +42,12 @@ export class ModeSelector extends React.Component<Props> {
 					depressed={ mode === UPDATE_MODE }
 				>
 					Update
+				</Button>
+				<Button
+					disabled
+					depressed={ mode === MENU_MODE }
+				>
+					Menu
 				</Button>
 				<Button
 					onClick={ () => mapControl.activateDrawMode(false) }

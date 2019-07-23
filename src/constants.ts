@@ -63,6 +63,7 @@ export const LOCATIONS = [
 	}
 ];
 
-export const UPDATE_MODE = 'update';
+export const MENU_MODE = 'menu';
 export const DRAW_MODE = 'draw';
+export const UPDATE_MODE = 'update';
 export const NAVIGATION_MODE = 'navigation';

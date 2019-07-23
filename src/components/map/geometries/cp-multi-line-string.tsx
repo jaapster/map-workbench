@@ -1,5 +1,5 @@
 import React from 'react';
-import { Co } from '../../types';
+import { Co } from '../../../types';
 import { LineString } from './cp-line-string';
 
 interface Props {

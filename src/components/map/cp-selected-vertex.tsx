@@ -1,6 +1,5 @@
 import React from 'react';
 import { Co } from '../../types';
-import { coToLl } from '../../map-control/utils/util-geo';
 import { MapControl } from '../../map-control/map-control';
 
 interface Props {
@@ -9,7 +8,7 @@ interface Props {
 }
 
 export const SelectedVertex = ({ coordinates, animate }: Props) => {
-	const { x, y } = MapControl.project(coToLl(coordinates));
+	const { x, y } = MapControl.project(coordinates);
 
 	return (
 		<g>

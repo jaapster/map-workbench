@@ -63,11 +63,27 @@ export class FeatureCollectionModel extends EventEmitter {
 	}
 
 	select(index: number[] = [], add: boolean = false) {
-		this._selection = index.length
-			? add
-				? [...this._selection, index]
-				: [index]
-			: [];
+		// check if already selected
+		const same = this._selection.find(v => (
+			JSON.stringify(v) === JSON.stringify(index)
+		));
+
+		if (same) {
+			if (!add) {
+				// selecting the same thing again
+				return;
+			}
+
+			this._selection = this._selection.filter(v => (
+				JSON.stringify(v) !== JSON.stringify(index)
+			));
+		} else {
+			this._selection = index.length
+				? add
+					? [...this._selection, index]
+					: [index]
+				: [];
+		}
 
 		this.trigger('update');
 	}
@@ -104,17 +120,26 @@ export class FeatureCollectionModel extends EventEmitter {
 	}
 
 	deleteSelection() {
-		this._selection.slice().reverse().forEach((index: number[]) => {
-			if (index.length) {
-				this._featureCollection = deleteAtIndex(this._featureCollection, index);
-			}
-		});
+		let selection = this._selection.slice();
 
-		this._selection = this._selection.reduce((m1, index: number[]) => (
-			index.length === 1
-				? m1
-				: m1.concat([[index[0]]])
-		), [] as number[][]);
+		while (selection.length) {
+			const v = selection.pop();
+
+			if (v && v.length) {
+				this._featureCollection = deleteAtIndex(this._featureCollection, v);
+
+				if (v.length === 1) {
+					// re-index remaining selections when needed
+					selection = selection.map(w => (
+						w[0] > v[0]
+							? [w[0] - 1, ...w.slice(1)]
+							: w
+					));
+				}
+			}
+		}
+
+		this._selection = [];
 
 		this.trigger('update');
 	}

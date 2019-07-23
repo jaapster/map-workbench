@@ -1,11 +1,14 @@
 import bind from 'autobind-decorator';
 import mapboxGL from 'mapbox-gl';
-import { Bounds, Ev, Feature, LngLat, Location } from '../types';
 import { DOM } from './utils/util-dom';
+import { sub } from './utils/util-point';
 import { token } from '../token';
+import { coToLl } from './utils/util-geo';
+// import { llToCo } from './utils/util-geo';
 import { DrawMode } from './modes/draw.mode';
 import { getBounds } from './utils/util-geo-json';
 import { UpdateMode } from './modes/update.mode';
+import { EventEmitter } from '../event-emitter';
 import { TrailService } from '../services/trail.service';
 import { PointerDevice } from './devices/pointer.device';
 import { KeyboardDevice } from './devices/keyboard.device';
@@ -15,9 +18,22 @@ import { FeatureCollectionModel } from '../models/feature-collection/feature-col
 import {
 	styles,
 	disableInteractions } from './utils/util-map';
-import { llToCo } from './utils/util-geo';
-import { EventEmitter } from '../event-emitter';
-import { DRAW_MODE, NAVIGATION_MODE, UPDATE_MODE } from '../constants';
+import {
+	DRAW_MODE,
+	UPDATE_MODE,
+	NAVIGATION_MODE, MENU_MODE
+} from '../constants';
+import {
+	Ev,
+	// Bounds,
+	// LngLat,
+	Feature,
+	Location, Co } from '../types';
+import { MenuMode } from './modes/menu.mode';
+
+const FIT_MIN_ZOOM = 14;
+const FIT_MAX_ZOOM = 16;
+const FIT_PADDING = 64;
 
 // @ts-ignore
 mapboxGL.accessToken = token;
@@ -52,27 +68,27 @@ export class MapControl extends EventEmitter {
 		MapControl.instance.setLocation(location);
 	}
 
-	static getExtent() {
-		return MapControl.instance.getExtent();
+	// static getExtent() {
+	// 	return MapControl.instance.getExtent();
+	// }
+
+	static project(co: Co) {
+		return MapControl.instance.project(co);
 	}
 
-	static project(lngLat: LngLat) {
-		return MapControl.instance.project(lngLat);
-	}
-
-	static getFeatureAt(lngLat: LngLat) {
-		return MapControl.instance.getFeatureAt(lngLat);
-	}
+	// static getFeatureAt(lngLat: LngLat) {
+	// 	return MapControl.instance.getFeatureAt(lngLat);
+	// }
 
 	private readonly _map: any;
 	// private readonly _layers: FeatureCollectionLayer[];
+	private readonly _menuMode: MenuMode;
 	private readonly _drawMode: DrawMode;
 	private readonly _updateMode: UpdateMode;
 	private readonly _pointerDevice: PointerDevice;
 	private readonly _keyboardDevice: KeyboardDevice;
 	private readonly _navigationMode: NavigationMode;
 
-	private _ref: any;
 	private _mode: InteractionMode;
 
 	constructor(props: Props = defaultProps) {
@@ -103,6 +119,9 @@ export class MapControl extends EventEmitter {
 
 		this._navigationMode = NavigationMode.create(this._map);
 		this._navigationMode.on('select', this._activateUpdateMode);
+
+		this._menuMode = MenuMode.create(this._map);
+		this._menuMode.on('finish', this.activateNavigationMode);
 
 		this._pointerDevice = PointerDevice.create(this._map);
 		this._keyboardDevice = KeyboardDevice.create();
@@ -159,6 +178,8 @@ export class MapControl extends EventEmitter {
 
 	private _onModeContext(e: Ev) {
 		this.trigger('context', e);
+
+		this._activateMenuMode();
 	}
 
 	private _onPointerDown(e: Ev) {
@@ -231,6 +252,18 @@ export class MapControl extends EventEmitter {
 		document.removeEventListener('keyup', this._onKeyUp);
 	}
 
+	private _activateUpdateMode(model: FeatureCollectionModel) {
+		this._mode = this._updateMode.setModel(model);
+
+		this.trigger('modeChange', UPDATE_MODE);
+	}
+
+	private _activateMenuMode() {
+		this._mode = this._menuMode;
+
+		this.trigger('modeChange', MENU_MODE);
+	}
+
 	activateNavigationMode() {
 		this._mode = this._navigationMode;
 
@@ -246,12 +279,6 @@ export class MapControl extends EventEmitter {
 		this._mode = this._drawMode;
 
 		this.trigger('modeChange', DRAW_MODE);
-	}
-
-	private _activateUpdateMode(model: FeatureCollectionModel) {
-		this._mode = this._updateMode.setModel(model);
-
-		this.trigger('modeChange', UPDATE_MODE);
 	}
 
 	resize() {
@@ -270,35 +297,73 @@ export class MapControl extends EventEmitter {
 	}
 
 	fitFeature(feature: Feature<any>) {
+		const featureBounds = getBounds(feature);
+		const currentZoom = this._map.getZoom();
+
+		// get current extent in pixels
+		const { top: t, left: l, width, height } = this.getBoundingClientRect();
+
+		const left = FIT_PADDING;
+		const top = FIT_PADDING;
+		const right = width - l - FIT_PADDING;
+		const bottom = height - t - FIT_PADDING;
+
+		// get geometry extent in pixels
+		const [a, b] = featureBounds.map(this.project);
+
+		// do nothing if the geometry is withing th logical viewport and
+		// the zoom level is within the allowed zoom-range for fitting
+		if (
+			a.x > left && a.x < right &&
+			b.x > left && b.x < right &&
+			a.y > top && a.y < bottom &&
+			b.y > top && b.y < bottom &&
+			currentZoom >= FIT_MIN_ZOOM && currentZoom <= FIT_MAX_ZOOM
+		) {
+			return;
+		}
+
+		const { x, y } = sub(b, a);
+
+		const featureWidth = Math.abs(x);
+		const featureHeight = Math.abs(y);
+
+		const maxZoom = featureWidth < right && featureHeight < bottom
+			? currentZoom >= FIT_MIN_ZOOM
+				? currentZoom <= FIT_MAX_ZOOM
+					? currentZoom
+					: FIT_MAX_ZOOM
+				: FIT_MIN_ZOOM
+			: FIT_MAX_ZOOM;
+
 		const options = {
 			linear: true,
-			maxZoom: 16,
-			padding: 64,
-			duration: 3
+			maxZoom,
+			padding: FIT_PADDING,
+			duration: 500
 		};
 
-		this._map.fitBounds(getBounds(feature), options);
+		this._map.fitBounds(featureBounds, options);
 	}
 
-	getExtent(): Bounds {
-		const { width, height } = this._ref.getBoundingClientRect();
+	// getExtent(): Bounds {
+	// 	const { width, height } = this.getBoundingClientRect();
+	//
+	// 	const a = this._map.unproject({ x: 0, y: height });
+	// 	const b = this._map.unproject({ x: width, y: 0 });
+	//
+	// 	return [llToCo(a), llToCo(b)];
+	// }
 
-		const a = this._map.unproject({ x: 0, y: height });
-		const b = this._map.unproject({ x: width, y: 0 });
-
-		return [llToCo(a), llToCo(b)];
-	}
-
-	setExtent(extent: Bounds) {
-		const options = {
-			linear: true,
-			maxZoom: 16,
-			padding: 0,
-			duration: 3
-		};
-
-		this._map.fitBounds(extent, options);
-	}
+	// setExtent(extent: Bounds) {
+	// 	const options = {
+	// 		linear: true,
+	// 		padding: 0,
+	// 		duration: 3
+	// 	};
+	//
+	// 	this._map.fitBounds(extent, options);
+	// }
 
 	getContainer() {
 		return this._map.getContainer();
@@ -317,14 +382,20 @@ export class MapControl extends EventEmitter {
 			? NAVIGATION_MODE
 			: this._mode === this._drawMode
 				? DRAW_MODE
-				: UPDATE_MODE;
+				: this._mode === this._menuMode
+					? MENU_MODE
+					: UPDATE_MODE;
 	}
 
-	project(lngLat: LngLat) {
-		return this._map.project(lngLat);
+	getBoundingClientRect() {
+		return this.getContainer().getBoundingClientRect();
 	}
 
-	getFeatureAt(lngLat: LngLat) {
-		return this._map.queryRenderedFeatures(this._map.project(lngLat));
+	// getFeatureAt(lngLat: LngLat) {
+	// 	return this._map.queryRenderedFeatures(this._map.project(lngLat));
+	// }
+
+	project(co: Co) {
+		return this._map.project(coToLl(co));
 	}
 }

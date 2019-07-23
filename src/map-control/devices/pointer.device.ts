@@ -154,6 +154,7 @@ export class PointerDevice extends EventEmitter {
         // log('pointerlongpress');
         this.trigger('pointerlongpress', e);
 
+        this._pointerDown = false;
         this._longPressSincePointerDown = true;
     }
 

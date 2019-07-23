@@ -1,5 +1,5 @@
 import React from 'react';
-import { Co } from '../../types';
+import { Co } from '../../../types';
 import { Polygon } from './cp-polygon';
 
 interface Props {

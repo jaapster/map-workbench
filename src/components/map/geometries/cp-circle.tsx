@@ -1,9 +1,9 @@
 import React from 'react';
-import { Co } from '../../types';
-import { Segment } from './cp-segment';
-import { addToPath } from './utils/util-add-to-path';
-import { mergeClasses } from '../../utils/util-merge-classes';
-import { multiPointToLines } from '../../map-control/utils/util-geo-json';
+import { Co } from '../../../types';
+import { Segment } from '../cp-segment';
+import { addToPath } from '../utils/util-add-to-path';
+import { mergeClasses } from '../../../utils/util-merge-classes';
+import { multiPointToLines } from '../../../map-control/utils/util-geo-json';
 
 interface Props {
 	id: string;

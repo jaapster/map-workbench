@@ -6,7 +6,7 @@ import { token } from '../../token';
 import { Layer } from './cp-layer';
 import { ZoomLevel } from './cp-zoom-level';
 import { MapControl } from '../../map-control/map-control';
-import { ContextMenu } from './cp-context-menu';
+import { PopUpMenu } from './cp-pop-up-menu';
 import { ModeSelector } from './cp-mode-selector';
 import { mergeClasses } from '../../utils/util-merge-classes';
 import { TrailService } from '../../services/trail.service';
@@ -29,7 +29,6 @@ interface Props {
 
 interface Context {
 	location: Point;
-	items: any[];
 }
 
 interface State {
@@ -69,6 +68,8 @@ export class Map extends React.Component<Props, State> {
 
 	private _closeContextMenu() {
 		this.setState({ contextMenu: null });
+
+		// MapControl.instance.activateNavigationMode();
 	}
 
 	private _onModeChange() {
@@ -113,9 +114,9 @@ export class Map extends React.Component<Props, State> {
 				{
 					contextMenu !== null
 						? (
-							<ContextMenu
+							<PopUpMenu
 								// @ts-ignore
-								context={ contextMenu }
+								data={ contextMenu }
 								close={ this._closeContextMenu }
 							/>
 						)

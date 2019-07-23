@@ -1,15 +1,15 @@
 import bind from 'autobind-decorator';
 import React from 'react';
-import { Point } from './cp-point';
-import { Circle } from './cp-circle';
-import { Polygon } from './cp-polygon';
-import { Rectangle } from './cp-rectange';
-import { MultiPoint } from './cp-multi-point';
-import { LineString } from './cp-line-string';
+import { Point } from './geometries/cp-point';
+import { Circle } from './geometries/cp-circle';
+import { Polygon } from './geometries/cp-polygon';
+import { Rectangle } from './geometries/cp-rectangle';
+import { MultiPoint } from './geometries/cp-multi-point';
+import { LineString } from './geometries/cp-line-string';
 import { MapControl } from '../../map-control/map-control';
-import { MultiPolygon } from './cp-multi-polygon';
+import { MultiPolygon } from './geometries/cp-multi-polygon';
 import { SelectedVertex } from './cp-selected-vertex';
-import { MultiLineString } from './cp-multi-line-string';
+import { MultiLineString } from './geometries/cp-multi-line-string';
 import { FeatureCollectionModel } from '../../models/feature-collection/feature-collection.model';
 import {
 	POINT,

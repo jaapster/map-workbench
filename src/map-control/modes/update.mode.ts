@@ -54,16 +54,7 @@ export class UpdateMode extends InteractionMode {
 
 	private _triggerContext(e: Ev) {
 		this.trigger('context', {
-			location: e.point,
-			items: [
-				['delete', () => console.log('delete feature')],
-				['copy as geo-json',  () => {
-					if (this._model) {
-						// @ts-ignore
-						console.log(this._model.getFeatureAtIndex(this._model.getSelectedFeatureIndex()));
-					}
-				}]
-			]
+			location: e.point
 		});
 	}
 
