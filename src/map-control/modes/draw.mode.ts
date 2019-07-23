@@ -11,8 +11,6 @@ import {
 	newPolygon,
 	newLineString } from '../utils/util-geo-json';
 
-// test 3
-
 export class DrawMode extends InteractionMode {
 	static create(map: any) {
 		return new DrawMode(map);
@@ -21,7 +19,7 @@ export class DrawMode extends InteractionMode {
 	private _model?: FeatureCollectionModel;
 
 	onPointerDown(e: Ev) {
-		if (!this._model) {
+		if (!this._model && true) {
 			return;
 		}
 
