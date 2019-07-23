@@ -11,7 +11,7 @@ import {
 	newPolygon,
 	newLineString } from '../utils/util-geo-json';
 
-// test 2
+// test 3
 
 export class DrawMode extends InteractionMode {
 	static create(map: any) {
