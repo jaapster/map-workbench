@@ -19,12 +19,13 @@ export class DrawMode extends InteractionMode {
 	private _model?: FeatureCollectionModel;
 
 	onPointerDown(e: Ev) {
-		if (!this._model && true) {
+		if (!this._model) {
 			return;
 		}
 
 		const co = llToCo(e.lngLat);
 
+		// todo: implement drawing of new points, rectangles and circles
 		if (this._model.getSelectedFeatureIndex() == null) {
 			this._model.addFeature(newLineString([co, co]));
 		} else {

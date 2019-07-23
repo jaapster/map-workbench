@@ -32,7 +32,7 @@ const processRing = (_i: number, m: Co[][], co: Co[], l: number) => (
 				? m
 				: m.concat([co])
 			: _i === 0
-				? m.concat([co.slice(1, co.length - 1).concat(co[1])])
+				? m.concat([co.slice(1, co.length - 1).concat([co[1]])])
 				: m.concat([co.reduce(withoutIndex(_i), [])])
 );
 

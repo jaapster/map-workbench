@@ -1,4 +1,5 @@
 import bind from 'autobind-decorator';
+import { POINT } from '../../constants';
 import { addAtIndex } from './fn/add-at-index';
 import { moveGeometry } from './fn/move-geometry';
 import { EventEmitter } from '../../event-emitter';
@@ -12,7 +13,6 @@ import {
 	LngLat,
 	Feature,
 	FeatureCollection } from '../../types';
-import { POINT } from '../../constants';
 
 @bind
 export class FeatureCollectionModel extends EventEmitter {
@@ -34,10 +34,6 @@ export class FeatureCollectionModel extends EventEmitter {
 
 	getTitle() {
 		return this._title;
-	}
-
-	get selection(): number[][] {
-		return this._selection;
 	}
 
 	getSelection() {
@@ -129,12 +125,34 @@ export class FeatureCollectionModel extends EventEmitter {
 				this._featureCollection = deleteAtIndex(this._featureCollection, v);
 
 				if (v.length === 1) {
-					// re-index remaining selections when needed
-					selection = selection.map(w => (
-						w[0] > v[0]
-							? [w[0] - 1, ...w.slice(1)]
-							: w
-					));
+					selection = selection.reduce((m, w) => (
+						w[0] === v[0]
+							? m
+							: w[0] > v[0]
+								? m.concat([[w[0] - 1, ...w.slice(1)]])
+								: m.concat([w])
+					), [] as any);
+				} else if (v.length === 2) {
+					selection = selection.reduce((m, w) => (
+						w[0] === v[0]
+							? w[1] === v[1]
+								? m
+								: w[1] > v[1]
+									? m.concat([w[0], w[1] - 1, ...w.slice(2)])
+									: m.concat([w])
+							: m.concat([w])
+					), [] as any);
+				} else if (v.length === 3) {
+					selection = selection.reduce((m, w) => (
+						w[0] === v[0] &&
+						w[1] === v[1]
+							? w[2] === v[2]
+								? m
+								: w[2] > v[2]
+									? m.concat([w[0], w[1], w[2] - 1])
+									: m.concat([w])
+							: m.concat([w])
+					), [] as any);
 				}
 			}
 		}

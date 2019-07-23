@@ -5,8 +5,8 @@ import { mergeClasses } from '../../../utils/util-merge-classes';
 
 interface Props {
 	id: string;
-	coordinates: Co;
 	selected: boolean;
+	coordinates: Co;
 }
 
 export const Point = ({ coordinates, selected }: Props) => {
@@ -24,7 +24,7 @@ export const Point = ({ coordinates, selected }: Props) => {
 			className={ className }
 			cx={ x }
 			cy={ y }
-			r={ 4 }
+			r={ 3 }
 		/>
 	);
 };
