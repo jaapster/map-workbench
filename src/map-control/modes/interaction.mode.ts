@@ -103,10 +103,6 @@ export class InteractionMode extends EventEmitter {
 	}
 	onPointerMove(e: Ev) {}
 	onPointerClick(e: Ev) {
-		// if (isAlt(e)) {
-		// 	return;
-		// }
-		//
 		// const { lngLat, point } = e;
 		//
 		// const trailHit = this._hit(lngLat, point, TrailService.getModel());

@@ -35,7 +35,6 @@ const FIT_MIN_ZOOM = 14;
 const FIT_MAX_ZOOM = 16;
 const FIT_PADDING = 64;
 
-// @ts-ignore
 mapboxGL.accessToken = token;
 
 interface Props {
@@ -81,7 +80,6 @@ export class MapControl extends EventEmitter {
 	// }
 
 	private readonly _map: any;
-	// private readonly _layers: FeatureCollectionLayer[];
 	private readonly _menuMode: MenuMode;
 	private readonly _drawMode: DrawMode;
 	private readonly _updateMode: UpdateMode;
@@ -114,16 +112,16 @@ export class MapControl extends EventEmitter {
 		this._drawMode = DrawMode.create(this._map);
 		this._drawMode.on('finish', this.activateNavigationMode);
 
+		this._menuMode = MenuMode.create(this._map);
+		this._menuMode.on('select', this._activateUpdateMode);
+		this._menuMode.on('finish', this.activateNavigationMode);
+
 		this._updateMode = UpdateMode.create(this._map);
 		this._updateMode.on('select', this._activateUpdateMode);
 		this._updateMode.on('finish', this.activateNavigationMode);
 
 		this._navigationMode = NavigationMode.create(this._map);
 		this._navigationMode.on('select', this._activateUpdateMode);
-
-		this._menuMode = MenuMode.create(this._map);
-		this._menuMode.on('select', this._activateUpdateMode);
-		this._menuMode.on('finish', this.activateNavigationMode);
 
 		this._pointerDevice = PointerDevice.create(this._map);
 		this._keyboardDevice = KeyboardDevice.create();
