@@ -18,6 +18,12 @@ const OPTIONS: Options = {
 	wheelZoom: true
 };
 
+const isAlt = (e: Ev) => {
+	const { originalEvent: { ctrlKey, button, buttons } } = e;
+
+	return ctrlKey || button === 2 || buttons === 2;
+};
+
 @bind
 export class NavigationMode extends InteractionMode {
 	private _box: HTMLElement | null = null;
@@ -31,12 +37,6 @@ export class NavigationMode extends InteractionMode {
 		return new	NavigationMode(map, { ...OPTIONS, ...options });
 	}
 
-	private _triggerContext({ point }: Ev) {
-		this.trigger('context', {
-			location: point
-		});
-	}
-
 	onPointerDragStart(e: Ev) {
 		this._lastPos = e.point;
 		this._startPos = e.point;
@@ -47,12 +47,12 @@ export class NavigationMode extends InteractionMode {
 			this._frameId = this._map._requestRenderFrame(() => {
 				this._frameId = null;
 
-				const { originalEvent: { shiftKey, ctrlKey } } = e;
+				const { originalEvent: { shiftKey } } = e;
 				const { pitch, rotate, boxZoom } = this._options;
 
 				const tr = this._map.transform;
 
-				if (ctrlKey && (pitch || rotate)) {
+				if (isAlt(e) && (pitch || rotate)) {
 					const bearingDiff = (this._lastPos.x - e.point.x) * 0.5;
 					const pitchDiff = (this._lastPos.y - e.point.y) * -0.5;
 
@@ -139,10 +139,6 @@ export class NavigationMode extends InteractionMode {
 		}
 	}
 
-	onPointerAltClick(e: Ev) {
-		this._triggerContext(e);
-	}
-
 	onPointerDblClick(e: Ev) {
 		this._map.zoomTo(
 			this._map.getZoom() + (e.originalEvent.shiftKey ? -1 : 1),
@@ -168,10 +164,6 @@ export class NavigationMode extends InteractionMode {
 		this._map.fire('zoom');
 
 		e.originalEvent.preventDefault();
-	}
-
-	onPointerLongPress(e: Ev) {
-		this._triggerContext(e);
 	}
 
 	onBlur() {

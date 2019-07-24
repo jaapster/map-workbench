@@ -52,6 +52,8 @@ export class PointerDevice extends EventEmitter {
     constructor(map: any) {
         super();
 
+		// map.on('click', this._onClick);
+
         map.on('mousedown', this._onMouseDown);
         map.on('mousemove', this._onMouseMove);
         map.on('mouseup', this._onMouseUp);
@@ -72,6 +74,7 @@ export class PointerDevice extends EventEmitter {
 
 	private static _onContextMenu(e: any) {
 		e.originalEvent.preventDefault();
+		e.originalEvent.stopPropagation();
 	}
 
     private _reset() {
@@ -138,7 +141,9 @@ export class PointerDevice extends EventEmitter {
 
         const { originalEvent: { button, ctrlKey } } = e;
 
-		this.trigger(
+        // this.trigger('pointerclick', e);
+
+        this.trigger(
 			button === 2 || ctrlKey
 				? 'pointeraltclick'
 				: 'pointerclick'
@@ -157,6 +162,14 @@ export class PointerDevice extends EventEmitter {
         this._pointerDown = false;
         this._longPressSincePointerDown = true;
     }
+
+	// private _onContextMenu(e: mapboxgl.MapMouseEvent) {
+	// 	e.originalEvent.preventDefault();
+	// 	e.originalEvent.stopPropagation();
+	//
+	// 	// this._clearDblClickTimeout();
+	// 	this.trigger('pointeraltclick');
+	// }
 
     private _onMouseDown(e: mapboxgl.MapMouseEvent) {
         // log('mousedown', e);
@@ -205,7 +218,7 @@ export class PointerDevice extends EventEmitter {
 
     private _setDblClickTimeout(e: mapboxgl.MapMouseEvent) {
     	// 220
-        this._timeoutDblClick = setTimeout(() => this._onPointerClick(e), 170);
+        this._timeoutDblClick = setTimeout(() => this._onPointerClick(e), 220);
     }
 
     private _setLongPressTimeout(e: mapboxgl.MapMouseEvent) {

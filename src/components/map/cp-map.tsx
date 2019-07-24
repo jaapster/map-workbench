@@ -4,6 +4,7 @@ import mapboxGL from 'mapbox-gl';
 import './style/cp-map.scss';
 import { token } from '../../token';
 import { Layer } from './cp-layer';
+import { Location } from '../../types';
 import { ZoomLevel } from './cp-zoom-level';
 import { MapControl } from '../../map-control/map-control';
 import { PopUpMenu } from './cp-pop-up-menu';
@@ -16,7 +17,6 @@ import { GeoNoteService } from '../../services/geo-note.service';
 import { MarkerArrowHead } from './cp-marker-arrow-head';
 import { CenterCoordinate } from './cp-center-coordinate';
 import { SelectionService } from '../../services/selection.service';
-import { Location } from '../../types';
 
 // @ts-ignore
 mapboxGL.accessToken = token;

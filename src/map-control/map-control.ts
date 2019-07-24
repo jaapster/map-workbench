@@ -115,12 +115,14 @@ export class MapControl extends EventEmitter {
 		this._drawMode.on('finish', this.activateNavigationMode);
 
 		this._updateMode = UpdateMode.create(this._map);
+		this._updateMode.on('select', this._activateUpdateMode);
 		this._updateMode.on('finish', this.activateNavigationMode);
 
 		this._navigationMode = NavigationMode.create(this._map);
 		this._navigationMode.on('select', this._activateUpdateMode);
 
 		this._menuMode = MenuMode.create(this._map);
+		this._menuMode.on('select', this._activateUpdateMode);
 		this._menuMode.on('finish', this.activateNavigationMode);
 
 		this._pointerDevice = PointerDevice.create(this._map);

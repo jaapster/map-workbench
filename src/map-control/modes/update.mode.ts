@@ -52,11 +52,11 @@ export class UpdateMode extends InteractionMode {
 	// used to store initial rectangle ratio on start drag
 	private _ratio = 1;
 
-	private _triggerContext(e: Ev) {
-		this.trigger('context', {
-			location: e.point
-		});
-	}
+	// private _triggerContext(e: Ev) {
+	// 	this.trigger('context', {
+	// 		location: e.point
+	// 	});
+	// }
 
 	onPointerDragStart({ lngLat, point, originalEvent }: Ev) {
 		if (this._model) {
@@ -175,14 +175,6 @@ export class UpdateMode extends InteractionMode {
 		if (this._model) {
 			MapControl.fitFeature(this._model.getFeatures()[this._model.getSelection()[0][0]]);
 		}
-	}
-
-	onPointerLongPress(e: Ev) {
-		this._triggerContext(e);
-	}
-
-	onPointerAltClick(e: Ev) {
-		this._triggerContext(e);
 	}
 
 	setModel(model: FeatureCollectionModel) {

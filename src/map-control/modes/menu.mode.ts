@@ -7,8 +7,4 @@ export class MenuMode extends InteractionMode {
 	static create(map: mapboxgl.Map) {
 		return new	MenuMode(map);
 	}
-
-	cleanUp() {
-		this.trigger('finish');
-	}
 }
