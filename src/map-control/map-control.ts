@@ -21,7 +21,7 @@ import {
 import {
 	DRAW_MODE,
 	UPDATE_MODE,
-	NAVIGATION_MODE, MENU_MODE
+	NAVIGATION_MODE, MENU_MODE, LINE_STRING, FEATURE
 } from '../constants';
 import {
 	Ev,
@@ -30,6 +30,9 @@ import {
 	Feature,
 	Location, Co } from '../types';
 import { MenuMode } from './modes/menu.mode';
+import { getEnvelope, getTargetZoom } from './utils/util-get-target-zoom';
+import { getCenter } from './utils/util-get-center';
+import { clamp } from '../utils/util-clamp';
 
 const FIT_MIN_ZOOM = 14;
 const FIT_MAX_ZOOM = 16;
@@ -59,8 +62,8 @@ export class MapControl extends EventEmitter {
 		MapControl.instance.resize();
 	}
 
-	static fitFeature(feature: Feature<any>) {
-		MapControl.instance.fitFeature(feature);
+	static fitFeatures(features: Feature<any>[]) {
+		MapControl.instance.fitFeatures(features);
 	}
 
 	static setLocation(location: Location) {
@@ -296,8 +299,30 @@ export class MapControl extends EventEmitter {
 		this._map.setZoom(zoom);
 	}
 
-	fitFeature(feature: Feature<any>) {
-		const featureBounds = getBounds(feature);
+	fitFeatures(features: Feature<any>[]) {
+		if (!this.isInView(features)) {
+			const zoom = getTargetZoom(features, this.getBoundingClientRect());
+			const center = getCenter(features);
+
+			// subtract 1 from zoom for mapbox and clamp within
+			// allowed zoom range
+			this._map.setZoom(clamp(zoom - 1, FIT_MIN_ZOOM, FIT_MAX_ZOOM));
+			this._map.setCenter(center);
+		}
+	}
+
+	isInView(features: Feature<any>[]) {
+		const featureBounds = getBounds({
+			type: FEATURE,
+			geometry: {
+				type: LINE_STRING,
+				coordinates: getEnvelope(features)
+			},
+			properties: {
+				type: LINE_STRING,
+				id: ''
+			}
+		});
 		const currentZoom = this._map.getZoom();
 
 		// get current extent in pixels
@@ -311,39 +336,13 @@ export class MapControl extends EventEmitter {
 		// get geometry extent in pixels
 		const [a, b] = featureBounds.map(this.project);
 
-		// do nothing if the geometry is withing th logical viewport and
-		// the zoom level is within the allowed zoom-range for fitting
-		if (
+		return (
 			a.x > left && a.x < right &&
 			b.x > left && b.x < right &&
 			a.y > top && a.y < bottom &&
 			b.y > top && b.y < bottom &&
 			currentZoom >= FIT_MIN_ZOOM && currentZoom <= FIT_MAX_ZOOM
-		) {
-			return;
-		}
-
-		const { x, y } = sub(b, a);
-
-		const featureWidth = Math.abs(x);
-		const featureHeight = Math.abs(y);
-
-		const maxZoom = featureWidth < right && featureHeight < bottom
-			? currentZoom >= FIT_MIN_ZOOM
-				? currentZoom <= FIT_MAX_ZOOM
-					? currentZoom
-					: FIT_MAX_ZOOM
-				: FIT_MIN_ZOOM
-			: FIT_MAX_ZOOM;
-
-		const options = {
-			linear: true,
-			maxZoom,
-			padding: FIT_PADDING,
-			duration: 500
-		};
-
-		this._map.fitBounds(featureBounds, options);
+		);
 	}
 
 	// getExtent(): Bounds {

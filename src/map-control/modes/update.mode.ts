@@ -171,12 +171,6 @@ export class UpdateMode extends InteractionMode {
 		}
 	}
 
-	onPointerDblClick(e: Ev) {
-		if (this._model) {
-			MapControl.fitFeature(this._model.getFeatures()[this._model.getSelection()[0][0]]);
-		}
-	}
-
 	setModel(model: FeatureCollectionModel) {
 		this._model = model;
 

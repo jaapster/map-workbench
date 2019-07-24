@@ -43,7 +43,7 @@ export class LayerPanel extends React.Component<Props> {
 									model.select([j], e.shiftKey);
 								} }
 								onDoubleClick={ () => {
-									MapControl.fitFeature(model.getFeatureAtIndex(j));
+									MapControl.fitFeatures([model.getFeatureAtIndex(j)]);
 								} }
 							>
 								{ feature.properties.type }
