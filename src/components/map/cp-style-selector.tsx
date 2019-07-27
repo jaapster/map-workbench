@@ -4,9 +4,7 @@ import { MapControl } from '../../map-control/map-control';
 import { Button, ButtonGroup } from '../app/cp-button';
 import { styles } from '../../map-control/utils/util-map';
 
-interface Props {
-	mapControl: MapControl;
-}
+interface Props {}
 
 interface State {
 	style: string;
@@ -23,11 +21,10 @@ export class StyleSelector extends React.Component<Props, State> {
 	}
 
 	private _setStyle(_style: string) {
-		const { mapControl } = this.props;
 		const { style } = this.state;
 
 		if (style !== _style) {
-			mapControl.setStyle(_style);
+			MapControl.setStyle(_style);
 			this.setState({ style: _style });
 		}
 	}
@@ -38,12 +35,12 @@ export class StyleSelector extends React.Component<Props, State> {
 		return (
 			<ButtonGroup>
 				{
-					styles.map(([name, url]) => (
+					styles.map(([name, s]) => (
 						<Button
 							key={ name }
-							onClick={ () => this._setStyle(url) }
+							onClick={ () => this._setStyle(s) }
 							disabled={ styles.length === 1 }
-							depressed={ style === url }
+							depressed={ style === s }
 						>
 							{ name }
 						</Button>

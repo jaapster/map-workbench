@@ -1,53 +1,62 @@
 import bind from 'autobind-decorator';
 import mapboxGL from 'mapbox-gl';
 import { DOM } from './utils/util-dom';
-import { sub } from './utils/util-point';
 import { token } from '../token';
-import { coToLl } from './utils/util-geo';
-// import { llToCo } from './utils/util-geo';
-import { DrawMode } from './modes/draw.mode';
-import { getBounds } from './utils/util-geo-json';
-import { UpdateMode } from './modes/update.mode';
-import { EventEmitter } from '../event-emitter';
-import { TrailService } from '../services/trail.service';
-import { PointerDevice } from './devices/pointer.device';
-import { KeyboardDevice } from './devices/keyboard.device';
-import { NavigationMode } from './modes/navigation.mode';
-import { InteractionMode } from './modes/interaction.mode';
-import { FeatureCollectionModel } from '../models/feature-collection/feature-collection.model';
-import {
-	styles,
-	disableInteractions } from './utils/util-map';
-import {
-	DRAW_MODE,
-	UPDATE_MODE,
-	NAVIGATION_MODE, MENU_MODE, LINE_STRING, FEATURE
-} from '../constants';
-import {
-	Ev,
-	// Bounds,
-	// LngLat,
-	Feature,
-	Location, Co } from '../types';
-import { MenuMode } from './modes/menu.mode';
-import { getEnvelope, getTargetZoom } from './utils/util-get-target-zoom';
-import { getCenter } from './utils/util-get-center';
 import { clamp } from '../utils/util-clamp';
+import { DrawMode } from './modes/mode.draw';
+import { MenuMode } from './modes/mode.menu';
+import { getCenter } from './utils/util-get-center';
+import { getBounds } from './utils/util-geo-json';
+import { ModeUpdate } from './modes/mode.update';
+import { EventEmitter } from '../event-emitter';
+import { PointerDevice } from './devices/device.pointer';
+import { KeyboardDevice } from './devices/device.keyboard';
+import { MessageService } from '../services/service.message';
+import { ModeNavigation } from './modes/mode.navigation';
+import { InteractionMode } from './modes/mode.interaction';
+import { UniverseService } from '../services/service.universe';
+import { FeatureCollection } from '../models/feature-collection/model.feature-collection';
+import { disableInteractions } from './utils/util-map';
+import {
+	FEATURE,
+	MENU_MODE,
+	DRAW_MODE,
+	PROJECTED,
+	GEOGRAPHIC,
+	EMPTY_STYLE,
+	LINE_STRING,
+	UPDATE_MODE,
+	NAVIGATION_MODE,
+	DEFAULT_LOCATION } from '../constants';
+import {
+	Co,
+	Ev,
+	FeatureJSON,
+	Location } from '../types';
+import {
+	getEnvelope,
+	getTargetZoom } from './utils/util-get-target-zoom';
+import {
+	llToCo,
+	coToLl,
+	geoProject,
+	geoUnproject } from './utils/util-geo';
 
+const FIT_PADDING = 64;
 const FIT_MIN_ZOOM = 14;
 const FIT_MAX_ZOOM = 16;
-const FIT_PADDING = 64;
+const GLOBAL_MAX_ZOOM = 24;
 
 mapboxGL.accessToken = token;
 
 interface Props {
+	style?: any;
 	location: Location;
-	style?: string;
 }
 
-const defaultProps: Props = {
-	location: { center: [0, 0], zoom: 1 },
-	style: styles[0][1]
+const DEFAULT_PROPS: Props = {
+	style: EMPTY_STYLE,
+	location: DEFAULT_LOCATION
 };
 
 @bind
@@ -58,45 +67,97 @@ export class MapControl extends EventEmitter {
 		return MapControl.instance || new MapControl(props);
 	}
 
+	static getContainer() {
+		return MapControl.instance.getContainer();
+	}
+
 	static resize() {
 		MapControl.instance.resize();
 	}
 
-	static fitFeatures(features: Feature<any>[]) {
-		MapControl.instance.fitFeatures(features);
+	static fitFeatures(features: FeatureJSON<any>[]) {
+		MapControl.instance.bringInView(features);
 	}
 
 	static setLocation(location: Location) {
 		MapControl.instance.setLocation(location);
 	}
 
-	// static getExtent() {
-	// 	return MapControl.instance.getExtent();
-	// }
+	static getZoom() {
+		return MapControl.instance.getZoom();
+	}
+
+	static setZoom(zoom: number) {
+		MapControl.instance.setZoom(zoom);
+	}
+
+	static getCenter() {
+		return MapControl.instance.getCenter();
+	}
+
+	static getCRS() {
+		return MapControl.instance.getCRS();
+	}
+
+	static getMode() {
+		return MapControl.instance.getMode();
+	}
+
+	static activateNavigationMode() {
+		MapControl.instance.activateNavigationMode();
+	}
+
+	static activateDrawMode(suspended: boolean) {
+		MapControl.instance.activateDrawMode(suspended);
+	}
+
+	static activateProjectedCRS() {
+		MapControl.instance.activateProjectedCRS();
+	}
+
+	static activateGeographicCRS() {
+		MapControl.instance.activateGeographicCRS();
+	}
+
+	static setStyle(style: any) {
+		MapControl.instance.setStyle(style);
+	}
 
 	static project(co: Co) {
 		return MapControl.instance.project(co);
 	}
 
-	// static getFeatureAt(lngLat: LngLat) {
-	// 	return MapControl.instance.getFeatureAt(lngLat);
-	// }
+	static projectToCRS(co: Co) {
+		return MapControl.instance.projectToCRS(co);
+	}
+
+	static onMapMove() {
+		MessageService.trigger('update:center');
+	}
+
+	static onMapZoom() {
+		MessageService.trigger('update:zoom');
+	}
 
 	private readonly _map: any;
 	private readonly _menuMode: MenuMode;
 	private readonly _drawMode: DrawMode;
-	private readonly _updateMode: UpdateMode;
+	private readonly _updateMode: ModeUpdate;
 	private readonly _pointerDevice: PointerDevice;
 	private readonly _keyboardDevice: KeyboardDevice;
-	private readonly _navigationMode: NavigationMode;
+	private readonly _navigationMode: ModeNavigation;
 
 	private _mode: InteractionMode;
+	private _CRS = GEOGRAPHIC;
 
-	constructor(props: Props = defaultProps) {
+	constructor(props: Props = DEFAULT_PROPS) {
 		super();
 
 		// add missing props
-		const { location, style } = { ...defaultProps, ...props };
+		const {
+			style,
+			location
+		} = { ...DEFAULT_PROPS, ...props };
 
 		const { center, zoom } = location;
 		const container = DOM.create('div', 'map-container', document.body);
@@ -105,7 +166,7 @@ export class MapControl extends EventEmitter {
 			zoom,
 			style,
 			center,
-			maxZoom: 24,
+			maxZoom: GLOBAL_MAX_ZOOM,
 			// temporarily attach container element to body to keep
 			// mapbox from complaining about missing CSS file
 			container,
@@ -119,11 +180,11 @@ export class MapControl extends EventEmitter {
 		this._menuMode.on('select', this._activateUpdateMode);
 		this._menuMode.on('finish', this.activateNavigationMode);
 
-		this._updateMode = UpdateMode.create(this._map);
+		this._updateMode = ModeUpdate.create(this._map);
 		this._updateMode.on('select', this._activateUpdateMode);
 		this._updateMode.on('finish', this.activateNavigationMode);
 
-		this._navigationMode = NavigationMode.create(this._map);
+		this._navigationMode = ModeNavigation.create(this._map);
 		this._navigationMode.on('select', this._activateUpdateMode);
 
 		this._pointerDevice = PointerDevice.create(this._map);
@@ -152,8 +213,8 @@ export class MapControl extends EventEmitter {
 		this._keyboardDevice.on('deleteKey', this._onDeleteKey);
 		this._keyboardDevice.on('escapeKey', this._onEscapeKey);
 
-		this._map.on('move', this._onMapMove);
-		this._map.on('zoom', this._onMapZoom);
+		this._map.on('move', MapControl.onMapMove);
+		this._map.on('zoom', MapControl.onMapZoom);
 
 		document.addEventListener('keydown', this._onKeyDown);
 
@@ -171,17 +232,7 @@ export class MapControl extends EventEmitter {
 		this._keyboardDevice.destroy();
 	}
 
-	private _onMapMove() {
-		this.trigger('move');
-	}
-
-	private _onMapZoom() {
-		this.trigger('zoom');
-	}
-
-	private _onModeContext(e: Ev) {
-		this.trigger('context', e);
-
+	private _onModeContext() {
 		this._activateMenuMode();
 	}
 
@@ -255,22 +306,22 @@ export class MapControl extends EventEmitter {
 		document.removeEventListener('keyup', this._onKeyUp);
 	}
 
-	private _activateUpdateMode(model: FeatureCollectionModel) {
+	private _activateUpdateMode(model: FeatureCollection) {
 		this._mode = this._updateMode.setModel(model);
 
-		this.trigger('modeChange', UPDATE_MODE);
+		MessageService.trigger('update:mode');
 	}
 
 	private _activateMenuMode() {
 		this._mode = this._menuMode;
 
-		this.trigger('modeChange', MENU_MODE);
+		MessageService.trigger('update:mode');
 	}
 
 	activateNavigationMode() {
 		this._mode = this._navigationMode;
 
-		this.trigger('modeChange', NAVIGATION_MODE);
+		MessageService.trigger('update:mode');
 	}
 
 	activateDrawMode(suspended: boolean) {
@@ -278,40 +329,40 @@ export class MapControl extends EventEmitter {
 			this._mode.onEscapeKey();
 		}
 
-		this._drawMode.setModel(TrailService.getModel());
+		this._drawMode.setModel(UniverseService.getCurrentWorld().trails);
 		this._mode = this._drawMode;
 
-		this.trigger('modeChange', DRAW_MODE);
+		MessageService.trigger('update:mode');
 	}
 
 	resize() {
 		this._map.resize();
 	}
 
-	setStyle(style: string) {
-		this._map.setStyle(style);
-	}
-
-	setLocation(location: Location) {
-		const { center, zoom } = location;
-
-		this._map.setCenter(center);
-		this._map.setZoom(zoom);
-	}
-
-	fitFeatures(features: Feature<any>[]) {
+	bringInView(features: FeatureJSON<any>[]) {
 		if (!this.isInView(features)) {
-			const zoom = getTargetZoom(features, this.getBoundingClientRect());
-			const center = getCenter(features);
+			const { width, height } = this.getBoundingClientRect();
 
-			// subtract 1 from zoom for mapbox and clamp within
-			// allowed zoom range
-			this._map.setZoom(clamp(zoom - 1, FIT_MIN_ZOOM, FIT_MAX_ZOOM));
-			this._map.setCenter(center);
+			this.setLocation({
+				zoom: clamp(
+					// subtract 1 from zoom for mapbox
+					getTargetZoom(
+						features,
+						{
+							width: width - FIT_PADDING * 2,
+							height: height - FIT_PADDING * 2
+						}
+					) - 1,
+					FIT_MIN_ZOOM,
+					FIT_MAX_ZOOM
+				),
+				center: getCenter(features),
+				epsg: GEOGRAPHIC
+			});
 		}
 	}
 
-	isInView(features: Feature<any>[]) {
+	isInView(features: FeatureJSON<any>[]) {
 		const featureBounds = getBounds({
 			type: FEATURE,
 			geometry: {
@@ -323,7 +374,7 @@ export class MapControl extends EventEmitter {
 				id: ''
 			}
 		});
-		const currentZoom = this._map.getZoom();
+		const currentZoom = this.getZoom(); // this._map.getZoom();
 
 		// get current extent in pixels
 		const { top: t, left: l, width, height } = this.getBoundingClientRect();
@@ -345,35 +396,44 @@ export class MapControl extends EventEmitter {
 		);
 	}
 
-	// getExtent(): Bounds {
-	// 	const { width, height } = this.getBoundingClientRect();
-	//
-	// 	const a = this._map.unproject({ x: 0, y: height });
-	// 	const b = this._map.unproject({ x: width, y: 0 });
-	//
-	// 	return [llToCo(a), llToCo(b)];
-	// }
-
-	// setExtent(extent: Bounds) {
-	// 	const options = {
-	// 		linear: true,
-	// 		padding: 0,
-	// 		duration: 3
-	// 	};
-	//
-	// 	this._map.fitBounds(extent, options);
-	// }
-
 	getContainer() {
 		return this._map.getContainer();
 	}
 
+	setStyle(style: any) {
+		this._map.setStyle(style);
+	}
+
+	setLocation(location: Location) {
+		const { center: [x, y], zoom, epsg } = location;
+
+		if (![GEOGRAPHIC, PROJECTED].includes(epsg)) {
+			throw(new Error('invalid EPSG'));
+		}
+
+		const co = epsg === GEOGRAPHIC
+			? [x, y]
+			: llToCo(geoUnproject({ x, y }));
+
+		this.setCenter(co as Co);
+		this.setZoom(zoom);
+	}
+
 	getCenter() {
-		return this._map.getCenter();
+		return this.projectToCRS(llToCo(this._map.getCenter()));
+	}
+
+	// expects WGS84
+	setCenter(co: Co) {
+		this._map.setCenter(coToLl(co));
 	}
 
 	getZoom() {
-		return this._map.getZoom();
+		return this._map.getZoom() + 1;
+	}
+
+	setZoom(zoom: number) {
+		this._map.setZoom(zoom - 1);
 	}
 
 	getMode() {
@@ -390,11 +450,42 @@ export class MapControl extends EventEmitter {
 		return this.getContainer().getBoundingClientRect();
 	}
 
-	// getFeatureAt(lngLat: LngLat) {
-	// 	return this._map.queryRenderedFeatures(this._map.project(lngLat));
-	// }
-
+	// project to screen coordinates
 	project(co: Co) {
 		return this._map.project(coToLl(co));
+	}
+
+	getCRS() {
+		return this._CRS;
+	}
+
+	activateGeographicCRS() {
+		this._CRS = GEOGRAPHIC;
+
+		MessageService.trigger('update:crs');
+	}
+
+	activateProjectedCRS() {
+		this._CRS = PROJECTED;
+
+		MessageService.trigger('update:crs');
+	}
+
+	// project GEOGRAPHIC to PROJECTED if needed
+	projectToCRS(co: Co) {
+		if (co == null) {
+			return [0, 0];
+		}
+
+		if (this._CRS === GEOGRAPHIC) {
+			return co;
+		}
+
+		const { x, y } = geoProject(coToLl(co));
+
+		return [
+			Math.round(x),
+			Math.round(y)
+		];
 	}
 }

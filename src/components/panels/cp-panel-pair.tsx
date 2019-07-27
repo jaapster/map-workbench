@@ -28,10 +28,12 @@ const DEFAULT_COLLAPSED_POSITION = 10;
 
 @bind
 export class PanelPair extends React.Component<Props, State> {
-	private ref?: HTMLDivElement;
-	private startX: number = 0;
-	private startY: number = 0;
-	private startPosition: number = 0;
+	protected collapsedPosition = DEFAULT_COLLAPSED_POSITION;
+
+	protected ref?: HTMLDivElement;
+	protected startX: number = 0;
+	protected startY: number = 0;
+	protected startPosition: number = 0;
 
 	constructor(props: Props) {
 		super(props);
@@ -52,7 +54,7 @@ export class PanelPair extends React.Component<Props, State> {
 		this.removeListeners();
 	}
 
-	private onPointerDown(e: React.PointerEvent<HTMLDivElement>) {
+	protected onPointerDown(e: React.PointerEvent<HTMLDivElement>) {
 		const { fixed } = this.props;
 
 		if (!fixed) {
@@ -69,7 +71,7 @@ export class PanelPair extends React.Component<Props, State> {
 		}
 	}
 
-	private onPointerMove(e: PointerEvent) {
+	protected onPointerMove(e: PointerEvent) {
 		const { collapsed } = this.state;
 
 		if (!collapsed) {
@@ -97,14 +99,9 @@ export class PanelPair extends React.Component<Props, State> {
 		}
 	}
 
-	private onPointerUp(e: PointerEvent) {
-		const { collapsed } = this.state;
-
+	protected onPointerUp(e: PointerEvent) {
 		if (this.startX === e.clientX  && this.startY === e.clientY) {
-			this.setState(
-				{ collapsed: !collapsed },
-				this.onResize
-			);
+			this.toggle();
 		}
 
 		this.removeListeners();
@@ -112,7 +109,30 @@ export class PanelPair extends React.Component<Props, State> {
 		this.setState({ dragging: false });
 	}
 
-	private onResize() {
+	protected toggle() {
+		const { collapsed } = this.state;
+
+		this.setState(
+			{ collapsed: !collapsed },
+			this.onResize
+		);
+	}
+
+	protected open() {
+		this.setState(
+			{ collapsed: false },
+			this.onResize
+		);
+	}
+
+	protected close() {
+		this.setState(
+			{ collapsed: true },
+			this.onResize
+		);
+	}
+
+	protected onResize() {
 		const { onResize } = this.props;
 
 		if (onResize) {
@@ -120,12 +140,12 @@ export class PanelPair extends React.Component<Props, State> {
 		}
 	}
 
-	private removeListeners() {
+	protected removeListeners() {
 		document.removeEventListener('pointermove', this.onPointerMove);
 		document.removeEventListener('pointerup', this.onPointerUp);
 	}
 
-	private setRef(e: HTMLDivElement) {
+	protected setRef(e: HTMLDivElement) {
 		this.ref = e;
 	}
 
@@ -154,9 +174,11 @@ export class PanelPair extends React.Component<Props, State> {
 		);
 
 		const props = {
+			open: this.open,
+			close: this.close,
 			vertical,
 			horizontal,
-			position: collapsed ? DEFAULT_COLLAPSED_POSITION : position,
+			position: collapsed ? this.collapsedPosition : position,
 			onPointerDown: this.onPointerDown
 		};
 

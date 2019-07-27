@@ -6,19 +6,19 @@ import {
 	DRAW_MODE,
 	MENU_MODE,
 	UPDATE_MODE,
-	NAVIGATION_MODE
-} from '../../constants';
+	NAVIGATION_MODE } from '../../constants';
+import { MessageService } from '../../services/service.message';
 
-interface Props {
-	mapControl: MapControl;
-}
+interface Props {}
 
 @bind
 export class ModeSelector extends React.Component<Props> {
 	componentDidMount() {
-		const { mapControl } = this.props;
+		MessageService.on('update:mode', this._update);
+	}
 
-		mapControl.on('modeChange', this._update);
+	componentWillUnmount() {
+		MessageService.off('update:mode', this._update);
 	}
 
 	_update() {
@@ -26,13 +26,12 @@ export class ModeSelector extends React.Component<Props> {
 	}
 
 	render() {
-		const { mapControl } = this.props;
-		const mode = mapControl.getMode();
+		const mode = MapControl.getMode();
 
 		return (
 			<ButtonGroup>
 				<Button
-					onClick={ mapControl.activateNavigationMode }
+					onClick={ MapControl.activateNavigationMode }
 					depressed={ mode === NAVIGATION_MODE }
 				>
 					Navigate
@@ -50,7 +49,7 @@ export class ModeSelector extends React.Component<Props> {
 					Menu
 				</Button>
 				<Button
-					onClick={ () => mapControl.activateDrawMode(false) }
+					onClick={ () => MapControl.activateDrawMode(false) }
 					depressed={ mode === DRAW_MODE }
 				>
 					Draw

@@ -8,10 +8,13 @@ export interface Ev {
 
 export type Dict<T> = { [key: string]: T };
 
+export type EPSG = 4326 | 3857;
+
 export interface Location {
 	zoom: number;
 	title?: string;
-	center: any;
+	center: Co;
+	epsg: EPSG;
 }
 
 export interface Point {
@@ -24,43 +27,43 @@ export interface LngLat {
 	lat: number;
 }
 
-export type Co = number[];
+export type Co = [number, number];
 
 export type Cos = Co | Co[] | Co[][] | Co[][][];
 
-export interface Geometry {
+export interface GeometryJSON {
 	type: string;
 	coordinates: Cos;
 }
 
-export interface GeometryCollection {
+export interface GeometryCollectionJSON {
 	type: 'GeometryCollection';
-	geometries: Geometry[];
+	geometries: GeometryJSON[];
 }
 
-export interface LineString extends Geometry {
+export interface LineStringJSON extends GeometryJSON {
 	type: 'LineString';
 	coordinates: Co[];
 }
 
-export interface MultiPoint extends Geometry {
+export interface MultiPointJSON extends GeometryJSON {
 	type: 'MultiPoint';
 	coordinates: Co[];
 }
 
-export interface Polygon extends Geometry {
+export interface PolygonJSON extends GeometryJSON {
 	type: 'Polygon';
 	coordinates: Co[][];
 }
 
-export interface MultiPolygon extends Geometry {
+export interface MultiPolygonJSON extends GeometryJSON {
 	type: 'MultiPolygon';
 	coordinates: Co[][][];
 }
 
-export interface Feature<T> {
+export interface FeatureJSON<GeometryJSON> {
 	type: string;
-	geometry: T;
+	geometry: GeometryJSON;
 	properties: {
 		type: string,
 		id: string,
@@ -68,9 +71,25 @@ export interface Feature<T> {
 	};
 }
 
-export interface FeatureCollection {
+export interface FeatureCollectionJSON {
 	type: string;
-	features: Feature[];
+	features: FeatureJSON[];
 }
 
 export type Bounds = [Co, Co];
+
+export interface MapboxLayer {
+	id: string;
+	type: string;
+	source: string;
+}
+
+export interface MapboxSource {
+	type: string;
+	tiles: string[];
+}
+
+export interface MapboxStyle {
+	sources: Dict<MapboxSource>;
+	layers: MapboxLayer[];
+}

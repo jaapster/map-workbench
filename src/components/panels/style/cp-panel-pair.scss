@@ -116,4 +116,34 @@ $panel-border: 0px solid transparent;
 			}
 		}
 	}
+
+	.active-content {
+		position: absolute;
+		top: 0;
+		left: 0;
+		right: 28px;
+		bottom: 0;
+	}
+
+	.toggles {
+		position: absolute;
+		top: 0;
+		right: 0;
+		width: 28px;
+		bottom: 0;
+
+		.toggle {
+			text-align: center;
+			padding: 4px;
+			color: black;
+			cursor: default;
+			height: 20px;
+			margin-bottom: 1px;
+			background: rgba(255, 255, 0, 0.3);
+
+			&.active {
+				background: rgba(255, 255, 0, 0.6);
+			}
+		}
+	}
 }

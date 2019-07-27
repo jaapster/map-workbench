@@ -1,23 +1,29 @@
+import bind from 'autobind-decorator';
 import React from 'react';
 import { MapControl } from '../../map-control/map-control';
-import { FeatureCollectionModel } from '../../models/feature-collection/feature-collection.model';
+import { FeatureCollection } from '../../models/feature-collection/model.feature-collection';
 import { Properties } from './cp-properties';
 
 interface Props {
-	model: FeatureCollectionModel;
+	model: FeatureCollection;
 }
 
+@bind
 export class LayerPanel extends React.Component<Props> {
 	componentDidMount() {
 		const { model } = this.props;
 
-		model.on('update', () => this.forceUpdate());
+		model.on('update', this._update);
 	}
 
 	componentWillUnmount() {
 		const { model } = this.props;
 
-		model.off('update', () => this.forceUpdate());
+		model.off('update', this._update);
+	}
+
+	private _update() {
+		this.forceUpdate();
 	}
 
 	render() {

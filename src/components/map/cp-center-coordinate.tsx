@@ -1,18 +1,20 @@
 import bind from 'autobind-decorator';
 import React from 'react';
 import { MapControl } from '../../map-control/map-control';
+import { MessageService } from '../../services/service.message';
 
-interface Props {
-	mapControl: MapControl;
-}
+interface Props {}
 
 @bind
 export class CenterCoordinate extends React.Component<Props> {
 	componentDidMount() {
-		const { mapControl } = this.props;
+		MessageService.on('update:center', this._update);
+		MessageService.on('update:zoom', this._update);
+	}
 
-		mapControl.on('move', this._update);
-		mapControl.on('zoom', this._update);
+	componentWillUnmount() {
+		MessageService.off('update:center', this._update);
+		MessageService.off('update:zoom', this._update);
 	}
 
 	_update() {
@@ -20,12 +22,17 @@ export class CenterCoordinate extends React.Component<Props> {
 	}
 
 	render() {
-		const { mapControl } = this.props;
-		const { lng, lat } = mapControl.getCenter();
+		const [x, y] = MapControl.getCenter();
+
+		const hasDecimals = Math.round(x) !== x;
 
 		return (
 			<div className="center-coordinate">
-				{ lng.toFixed(3) }, { lat.toFixed(3) }
+				{
+					hasDecimals ? x.toFixed(6) : x
+				}, {
+					hasDecimals ? y.toFixed(6) : y
+				}
 			</div>
 		);
 	}

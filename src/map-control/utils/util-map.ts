@@ -1,3 +1,5 @@
+import { EMPTY_STYLE } from '../../constants';
+
 export const enableInteractions = (map: any) => {
 	if (map != null) {
 		map.boxZoom.enable();
@@ -59,12 +61,8 @@ export const add3dBuildings = (map: any) => {
 	}
 };
 
-export const styles = [
-	['Dark', 'mapbox://styles/mapbox/dark-v10'],
+export const styles: any[] = [
+	['Empty', EMPTY_STYLE],
 	['Light', 'mapbox://styles/mapbox/light-v10'],
-	['Empty', 'mapbox://styles/jaapl/cjy8jar9u0y6y1co8rn1j9kpw']
-	// ['Blue', 'mapbox://styles/jaapl/cjxutkz950m341cnigemqtqmb'],
-	// ['Streets', 'mapbox://styles/mapbox/streets-v11'],
-	// ['Outdoors', 'mapbox://styles/mapbox/outdoors-v10'],
-	// ['Hybrid', 'mapbox://styles/mapbox/satellite-streets-v10'] // ,
+	['Dark', 'mapbox://styles/mapbox/dark-v10']
 ];

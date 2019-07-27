@@ -1,0 +1,81 @@
+[
+	{
+		"crs": 4326,
+		"maps": [
+			{
+				"id": "map_0_universe_0",
+				"layers": [
+					{
+						"id": "layer_0_map_0_universe_0",
+						"style": {
+							"sources": {
+								"source1": {
+									"type": "raster",
+									"tiles": []
+								}
+							},
+							"layers": [
+								{
+									"id": "layer1",
+									"type": "raster",
+									"source": "source1"
+								}
+							]
+						}
+					}
+				]
+			},
+			{
+				"id": "map_1_universe_0",
+				"layers": [
+					{
+						"id": "layer_1_map_0_universe_0",
+						"style": {
+							"sources": {
+								"source2": {
+									"type": "raster",
+									"tiles": []
+								}
+							},
+							"layers": [
+								{
+									"id": "layer2",
+									"type": "raster",
+									"source": "source2"
+								}
+							]
+						}
+					}
+				]
+			}
+		]
+	},
+	{
+		"crs": 3857,
+		"maps": [
+			{
+				"id": "map_0_universe_1",
+				"layers": [
+					{
+						"id": "layer_0_map_0_universe_1",
+						"style": {
+							"sources": {
+								"source3": {
+									"type": "raster",
+									"tiles": []
+								}
+							},
+							"layers": [
+								{
+									"id": "layer3",
+									"type": "raster",
+									"source": "source3"
+								}
+							]
+						}
+					}
+				]
+			}
+		]
+	}
+]

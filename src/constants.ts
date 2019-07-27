@@ -1,13 +1,10 @@
-export const ID_MAP_CONTROL = '__map-control__';
-export const ID_MAP_CONTROL_TOOLS = '__map-control-tools__';
-export const ID_MAP_CONTROL_LAYER_PANELS = '__map-control-layers__';
-export const ID_MAP_CONTROL_SVG = '__map-control-svg__';
+import { Location } from './types';
 
 export const PRECISION = 1;
 export const THRESHOLD = 7;
 
 export const POINT = 'Point';
-export const VERTEX = 'Vertex';
+// export const VERTEX = 'Vertex';
 export const CIRCLE = 'Circle';
 export const FEATURE = 'Feature';
 export const POLYGON = 'Polygon';
@@ -26,44 +23,45 @@ export const MODIFIERS = {
 	CONSERVE_RATIO: 'shiftKey'
 };
 
-export const EMPTY_COLLECTION = {
-	type: FEATURE_COLLECTION,
-	features: []
-};
+export const GEOGRAPHIC = 4326;
 
-export const EMPTY_SOURCE: any = {
-	type: 'geojson',
-	data: EMPTY_COLLECTION
-};
+export const PROJECTED = 3857;
 
-export const EMPTY_STYLE = {
-	version: 8,
-	name: '',
-	glyphs: 'mapbox://fonts/mapbox/{fontstack}/{range}.pbf',
-	sprite: 'mapbox://sprites/mapbox/dark-v10',
-	sources: {},
-	layers: []
-};
-
-export const LOCATIONS = [
+export const LOCATIONS: Location[] = [
 	{
 		title: 'Astoria',
 		center: [-123.8380, 46.1937],
-		zoom: 14
+		zoom: 14,
+		epsg: GEOGRAPHIC
 	},
 	{
 		title: 'Crater Lake',
 		center: [-122.114, 42.937],
-		zoom: 12
+		zoom: 12,
+		epsg: GEOGRAPHIC
 	},
 	{
 		title: 'Lake Quinault',
 		center: [-123.848, 47.468],
-		zoom: 15
+		zoom: 15,
+		epsg: GEOGRAPHIC
 	}
 ];
+
+export const DEFAULT_LOCATION: Location = {
+	center: [0, 0],
+	zoom: 1,
+	epsg: GEOGRAPHIC
+};
 
 export const MENU_MODE = 'menu';
 export const DRAW_MODE = 'draw';
 export const UPDATE_MODE = 'update';
 export const NAVIGATION_MODE = 'navigation';
+
+export const EMPTY_STYLE = { version: 8, sources: {}, layers: [] };
+
+export const EMPTY_FEATURE_COLLECTION = {
+	type: FEATURE_COLLECTION,
+	features: []
+};

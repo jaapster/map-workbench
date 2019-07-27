@@ -1,26 +1,26 @@
 import bind from 'autobind-decorator';
 import React from 'react';
 import { MapControl } from '../../map-control/map-control';
+import { MessageService } from '../../services/service.message';
 
-interface Props {
-	mapControl: MapControl;
-}
+interface Props {}
 
 @bind
 export class ZoomLevel extends React.Component<Props> {
 	componentDidMount() {
-		const { mapControl } = this.props;
-
-		mapControl.on('zoom', this._update);
+		MessageService.on('update:zoom', this._update);
 	}
 
-	_update() {
+	componentWillUnmount() {
+		MessageService.off('update:zoom', this._update);
+	}
+
+	private _update() {
 		this.forceUpdate();
 	}
 
 	render() {
-		const { mapControl } = this.props;
-		const zoom = mapControl.getZoom();
+		const zoom = MapControl.getZoom();
 
 		return (
 			<div className="zoom">

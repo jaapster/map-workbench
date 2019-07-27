@@ -1,35 +1,25 @@
 import bind from 'autobind-decorator';
 import React from 'react';
-import mapboxGL from 'mapbox-gl';
 import './style/cp-map.scss';
-import { token } from '../../token';
-import { Layer } from './cp-layer';
 import { Location } from '../../types';
 import { ZoomLevel } from './cp-zoom-level';
 import { MapControl } from '../../map-control/map-control';
 import { PopUpMenu } from './cp-pop-up-menu';
+import { CRSSelector } from './cp-crs-selector';
 import { ModeSelector } from './cp-mode-selector';
 import { mergeClasses } from '../../utils/util-merge-classes';
-import { TrailService } from '../../services/trail.service';
 import { MarkerVertex } from './cp-marker-vertex';
 import { StyleSelector } from './cp-style-selector';
-import { GeoNoteService } from '../../services/geo-note.service';
+import { MessageService } from '../../services/service.message';
+import { ServiceGeoNote } from '../../services/service.geo-note';
 import { MarkerArrowHead } from './cp-marker-arrow-head';
 import { CenterCoordinate } from './cp-center-coordinate';
-import { SelectionService } from '../../services/selection.service';
-
-// @ts-ignore
-mapboxGL.accessToken = token;
+import { FeatureCollectionLayer } from './cp-feature-collection-layer';
+import { UniverseService } from '../../services/service.universe';
 
 interface Props {
 	location: Location;
 }
-
-const models = [
-	TrailService.getModel(),
-	GeoNoteService.getModel(),
-	SelectionService.getModel()
-];
 
 @bind
 export class Map extends React.Component<Props> {
@@ -44,8 +34,17 @@ export class Map extends React.Component<Props> {
 	}
 
 	componentDidMount() {
-		this._ref.appendChild(this._mapControl.getContainer());
-		this._mapControl.resize();
+		this._ref.appendChild(MapControl.getContainer());
+		MapControl.resize();
+		MessageService.on('update:crs', this._update);
+	}
+
+	componentWillUnmount() {
+		MessageService.off('update:crs', this._update);
+	}
+
+	private _update() {
+		this.forceUpdate();
 	}
 
 	private _setRef(e: any) {
@@ -55,8 +54,13 @@ export class Map extends React.Component<Props> {
 	render() {
 		const className = mergeClasses(
 			'map-container',
-			`mode-${ this._mapControl.getMode() }`
+			`mode-${ MapControl.getMode() }`
 		);
+
+		const models = [
+			UniverseService.getCurrentWorld().trails,
+			ServiceGeoNote.getModel()
+		];
 
 		return (
 			<div>
@@ -66,18 +70,19 @@ export class Map extends React.Component<Props> {
 					<MarkerArrowHead />
 					{
 						models.map(model => (
-							<Layer
+							<FeatureCollectionLayer
 								key={ model.getTitle() }
 								model={ model }
 							/>
 						))
 					}
 				</svg>
-				<CenterCoordinate mapControl={ this._mapControl } />
-				<ZoomLevel mapControl={ this._mapControl } />
+				<CenterCoordinate />
+				<ZoomLevel />
 				<div className="main-tool-bar">
-					<ModeSelector mapControl={ this._mapControl } />
-					<StyleSelector mapControl={ this._mapControl } />
+					<ModeSelector />
+					<StyleSelector />
+					<CRSSelector />
 				</div>
 				<PopUpMenu />
 			</div>

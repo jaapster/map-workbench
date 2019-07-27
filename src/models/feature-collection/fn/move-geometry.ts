@@ -2,7 +2,7 @@ import {
 	Co,
 	Cos,
 	Point,
-	FeatureCollection
+	FeatureCollectionJSON
 } from '../../../types';
 import {
 	POINT,
@@ -16,7 +16,7 @@ import {
 	geoUnproject } from '../../../map-control/utils/util-geo';
 
 export const moveGeometry = (
-	data: FeatureCollection,
+	data: FeatureCollectionJSON,
 	index: number[],
 	{ x: dx, y: dy }: Point
 ) => {

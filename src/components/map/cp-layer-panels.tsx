@@ -1,12 +1,12 @@
 import React from 'react';
 import { LayerPanel } from '../app/cp-layer-panel';
-import { TrailService } from '../../services/trail.service';
-import { GeoNoteService } from '../../services/geo-note.service';
+import { ServiceGeoNote } from '../../services/service.geo-note';
+import { UniverseService } from '../../services/service.universe';
 
 export const LayerPanels = () => {
 	const models = [
-		TrailService.getModel(),
-		GeoNoteService.getModel()
+		UniverseService.getCurrentWorld().trails,
+		ServiceGeoNote.getModel()
 	];
 
 	return (
