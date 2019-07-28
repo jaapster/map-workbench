@@ -2,7 +2,7 @@ import {
 	Co,
 	LngLat,
 	FeatureJSON,
-	FeatureCollectionJSON } from '../../../types';
+	FeatureCollectionData } from '../../../types';
 import {
 	POINT,
 	POLYGON,
@@ -34,7 +34,7 @@ export const nearest = (lngLat: LngLat, coordinates: Co[], index: number[]) => (
 	}, { coordinate: null, distance: Infinity, index })
 );
 
-export const nearestVertex = (lngLat: LngLat, data: FeatureCollectionJSON) => (
+export const nearestVertex = (lngLat: LngLat, data: FeatureCollectionData) => (
 	data.features.reduce((
 		m1: Result,
 		{ geometry: { type, coordinates: co1 }, properties }: FeatureJSON<any>,

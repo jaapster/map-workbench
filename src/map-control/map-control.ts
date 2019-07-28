@@ -154,7 +154,7 @@ export class MapControl extends EventEmitter {
 	constructor(props: Props = DEFAULT_PROPS) {
 		super();
 
-		// add missing props
+		// add missing universeData
 		const {
 			style,
 			location

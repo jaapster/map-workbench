@@ -1,7 +1,7 @@
-import { FeatureCollectionJSON } from '../../../types';
+import { FeatureCollectionData } from '../../../types';
 
 export const setPropertyAtIndex = (
-	data: FeatureCollectionJSON,
+	data: FeatureCollectionData,
 	index: number,
 	key: string,
 	value: any

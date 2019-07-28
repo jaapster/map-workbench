@@ -31,32 +31,32 @@ export type Co = [number, number];
 
 export type Cos = Co | Co[] | Co[][] | Co[][][];
 
-export interface GeometryJSON {
+export interface GeometryData {
 	type: string;
 	coordinates: Cos;
 }
 
 export interface GeometryCollectionJSON {
 	type: 'GeometryCollection';
-	geometries: GeometryJSON[];
+	geometries: GeometryData[];
 }
 
-export interface LineStringJSON extends GeometryJSON {
+export interface LineStringJSON extends GeometryData {
 	type: 'LineString';
 	coordinates: Co[];
 }
 
-export interface MultiPointJSON extends GeometryJSON {
+export interface MultiPointJSON extends GeometryData {
 	type: 'MultiPoint';
 	coordinates: Co[];
 }
 
-export interface PolygonJSON extends GeometryJSON {
+export interface PolygonJSON extends GeometryData {
 	type: 'Polygon';
 	coordinates: Co[][];
 }
 
-export interface MultiPolygonJSON extends GeometryJSON {
+export interface MultiPolygonJSON extends GeometryData {
 	type: 'MultiPolygon';
 	coordinates: Co[][][];
 }
@@ -71,7 +71,7 @@ export interface FeatureJSON<GeometryJSON> {
 	};
 }
 
-export interface FeatureCollectionJSON {
+export interface FeatureCollectionData {
 	type: string;
 	features: FeatureJSON[];
 }

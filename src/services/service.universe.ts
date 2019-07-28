@@ -4,14 +4,31 @@ import { Universe } from '../models/model.universe';
 import { MessageService } from './service.message';
 import { MapControl } from '../map-control/map-control';
 
+import {
+	universeReducer,
+	ActionSetUniverses,
+	ActionAddWorld,
+	UniverseState
+} from '../reducers/reducers.universe';
+
 const worlds: Dict<World> = {};
 let universes: Universe[] = [];
 
 let currentWorld: string;
 
+let state: { universes: UniverseState} = {
+	universes: []
+};
+
 export const UniverseService = {
 	addWorld(props: any) {
 		const { id, trails, universeIndex } = props;
+
+		state = {
+			universes: universeReducer(state.universes, ActionAddWorld.create(props))
+		};
+
+		console.log(state); // remove me
 
 		if (!worlds[id]) {
 			worlds[id] = World.create({
@@ -20,8 +37,6 @@ export const UniverseService = {
 				universe: universes[universeIndex]
 			});
 		}
-
-		console.log(worlds[id].currentMap); // remove me
 
 		UniverseService.setCurrentWorld(id);
 	},
@@ -55,6 +70,10 @@ export const UniverseService = {
 
 	init(data: any) {
 		universes = data.map(Universe.create);
+
+		state = {
+			universes: universeReducer(state.universes, ActionSetUniverses.create(data))
+		};
 
 		const up = () => {
 			UniverseService.getCurrentWorld().setLocation({

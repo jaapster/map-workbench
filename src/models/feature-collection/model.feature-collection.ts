@@ -12,20 +12,20 @@ import {
 	Point,
 	LngLat,
 	FeatureJSON,
-	FeatureCollectionJSON } from '../../types';
+	FeatureCollectionData } from '../../types';
 
 @bind
 export class FeatureCollection extends EventEmitter {
 	private readonly _title: string;
 
-	private _featureCollection: FeatureCollectionJSON;
+	private _featureCollection: FeatureCollectionData;
 	private _selection: number[][] = [];
 
-	static create(data: FeatureCollectionJSON, title: string) {
+	static create(data: FeatureCollectionData, title: string) {
 		return new FeatureCollection(data, title);
 	}
 
-	constructor(data: FeatureCollectionJSON, title: string) {
+	constructor(data: FeatureCollectionData, title: string) {
 		super();
 
 		this._featureCollection = data;
@@ -44,7 +44,7 @@ export class FeatureCollection extends EventEmitter {
 		return this._featureCollection;
 	}
 
-	setFeatureCollection(data: FeatureCollectionJSON) {
+	setFeatureCollection(data: FeatureCollectionData) {
 		this._featureCollection = data;
 		this._selection = [];
 
@@ -224,7 +224,7 @@ export class FeatureCollection extends EventEmitter {
 		}, [] as Co[]);
 	}
 
-	setData(featureCollection: FeatureCollectionJSON) {
+	setData(featureCollection: FeatureCollectionData) {
 		this._featureCollection = featureCollection;
 		this._selection = [];
 

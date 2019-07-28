@@ -6,12 +6,12 @@ import { FeatureCollection } from './feature-collection/model.feature-collection
 import {
 	EPSG,
 	Location,
-	FeatureCollectionJSON, Dict, MapboxStyle
+	FeatureCollectionData, Dict, MapboxStyle
 } from '../types';
 
 export interface WorldProps {
 	id: string;
-	trails: FeatureCollectionJSON;
+	trails: FeatureCollectionData;
 	universe: Universe;
 }
 

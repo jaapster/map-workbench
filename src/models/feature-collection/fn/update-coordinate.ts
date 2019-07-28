@@ -5,7 +5,7 @@ import {
 	LINE_STRING,
 	MULTI_POLYGON,
 	MULTI_LINE_STRING } from '../../../constants';
-import { FeatureCollectionJSON, Co } from '../../../types';
+import { FeatureCollectionData, Co } from '../../../types';
 
 const ringMap = (co: Co, _l: number) => (co3: Co, l: number, xs: Co[]) => (
 	l === _l || (_l === 0 && l === xs.length - 1)
@@ -13,7 +13,7 @@ const ringMap = (co: Co, _l: number) => (co3: Co, l: number, xs: Co[]) => (
 		: co3
 );
 
-export const updateCoordinate = (data: FeatureCollectionJSON, [_i, _j, _k, _l]: number[], co: Co) => (
+export const updateCoordinate = (data: FeatureCollectionData, [_i, _j, _k, _l]: number[], co: Co) => (
 	{
 		...data,
 		features: data.features.map((feature: any, i: number) => {
@@ -54,6 +54,6 @@ export const updateCoordinate = (data: FeatureCollectionJSON, [_i, _j, _k, _l]: 
 	}
 );
 
-export const updateCoordinates = (data: FeatureCollectionJSON, entries: [number[], Co][]) => (
+export const updateCoordinates = (data: FeatureCollectionData, entries: [number[], Co][]) => (
 	entries.reduce((m1, [index, co]) => updateCoordinate(m1, index, co), data)
 );

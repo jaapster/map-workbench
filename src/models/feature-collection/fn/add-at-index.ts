@@ -1,7 +1,7 @@
 import {
 	Co,
 	Cos,
-	FeatureCollectionJSON } from '../../../types';
+	FeatureCollectionData } from '../../../types';
 import {
 	POLYGON,
 	MULTI_POINT,
@@ -16,7 +16,7 @@ const processRing = (index: any, co: any) => (m3: Co[], co1: Co, l: number) => (
 		: m3.concat([co1])
 );
 
-export const addAtIndex = (data: FeatureCollectionJSON, [_i, _j, _k, _l]: number[], co: Co) => (
+export const addAtIndex = (data: FeatureCollectionData, [_i, _j, _k, _l]: number[], co: Co) => (
 	{
 		...data,
 		features: data.features.map((feature, i) => {
