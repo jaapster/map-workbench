@@ -224,9 +224,11 @@ export class FeatureCollection extends EventEmitter {
 		}, [] as Co[]);
 	}
 
-	// setData(featureCollection: FeatureCollectionJSON) {
-	// 	this._featureCollection = featureCollection;
-	//
-	// 	this.trigger('update');
-	// }
+	setData(featureCollection: FeatureCollectionJSON) {
+		this._featureCollection = featureCollection;
+		this._selection = [];
+
+		this.trigger('update');
+		this.trigger('update:selection');
+	}
 }

@@ -18,7 +18,18 @@ export class UniverseMap {
 		this._layers = layers.map(Layer.create);
 	}
 
+	get id(): string {
+		return this._id;
+	}
+
 	get layers(): Layer[] {
 		return [...this._layers];
+	}
+
+	get json() {
+		return {
+			id: this._id,
+			layers: this._layers.map(l => l.json)
+		};
 	}
 }

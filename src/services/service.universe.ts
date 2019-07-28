@@ -2,10 +2,11 @@ import { Dict } from '../types';
 import { World } from '../models/model.world';
 import { Universe } from '../models/model.universe';
 import { MessageService } from './service.message';
+import { MapControl } from '../map-control/map-control';
 
 const worlds: Dict<World> = {};
+let universes: Universe[] = [];
 
-let universes: Universe[];
 let currentWorld: string;
 
 export const UniverseService = {
@@ -19,6 +20,8 @@ export const UniverseService = {
 				universe: universes[universeIndex]
 			});
 		}
+
+		console.log(worlds[id].currentMap); // remove me
 
 		UniverseService.setCurrentWorld(id);
 	},
@@ -35,9 +38,35 @@ export const UniverseService = {
 		currentWorld = id;
 
 		MessageService.trigger('update:world');
+
+		if (MapControl.instance) {
+			MapControl.instance.setCRS(worlds[currentWorld].CRS);
+			MapControl.setLocation(worlds[currentWorld].location);
+		}
 	},
 
-	init(universeData: any) {
-		universes = universeData.map(Universe.create);
+	getWorld(id: string) {
+		return worlds[id];
+	},
+
+	getWorlds() {
+		return Object.keys(worlds).map(key => worlds[key]);
+	},
+
+	init(data: any) {
+		universes = data.map(Universe.create);
+
+		const up = () => {
+			UniverseService.getCurrentWorld().setLocation({
+				zoom: MapControl.instance.getZoom(),
+				// @ts-ignore
+				center: MapControl.instance.getCenter(),
+				// @ts-ignore
+				epsg: MapControl.instance.getCRS()
+			});
+		};
+
+		MessageService.on('update:zoom', up);
+		MessageService.on('update:center', up);
 	}
 };

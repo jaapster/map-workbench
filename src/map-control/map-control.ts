@@ -29,10 +29,11 @@ import {
 	NAVIGATION_MODE,
 	DEFAULT_LOCATION } from '../constants';
 import {
-	Co,
+	Co, EPSG,
 	Ev,
 	FeatureJSON,
-	Location } from '../types';
+	Location
+} from '../types';
 import {
 	getEnvelope,
 	getTargetZoom } from './utils/util-get-target-zoom';
@@ -324,6 +325,7 @@ export class MapControl extends EventEmitter {
 		MessageService.trigger('update:mode');
 	}
 
+	// todo: ehh .. "suspended"?
 	activateDrawMode(suspended: boolean) {
 		if (!suspended) {
 			this._mode.onEscapeKey();
@@ -457,6 +459,10 @@ export class MapControl extends EventEmitter {
 
 	getCRS() {
 		return this._CRS;
+	}
+
+	setCRS(crs: EPSG) {
+		this._CRS = crs;
 	}
 
 	activateGeographicCRS() {

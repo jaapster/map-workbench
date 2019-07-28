@@ -31,19 +31,19 @@ export const LOCATIONS: Location[] = [
 	{
 		title: 'Astoria',
 		center: [-123.8380, 46.1937],
-		zoom: 14,
+		zoom: 15,
 		epsg: GEOGRAPHIC
 	},
 	{
 		title: 'Crater Lake',
 		center: [-122.114, 42.937],
-		zoom: 12,
+		zoom: 13,
 		epsg: GEOGRAPHIC
 	},
 	{
 		title: 'Lake Quinault',
 		center: [-123.848, 47.468],
-		zoom: 15,
+		zoom: 16,
 		epsg: GEOGRAPHIC
 	}
 ];

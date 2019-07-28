@@ -20,14 +20,14 @@ export class Selection extends React.Component<Props, State> {
 	};
 
 	componentDidMount() {
-		SelectionService.on('update:selection', this._update);
 		MessageService.on('update:crs', this._update);
+		SelectionService.on('update:selection', this._update);
 		this._update();
 	}
 
 	componentWillUnmount() {
-		SelectionService.off('update:selection', this._update);
 		MessageService.off('update:crs', this._update);
+		SelectionService.off('update:selection', this._update);
 	}
 
 	private _update() {

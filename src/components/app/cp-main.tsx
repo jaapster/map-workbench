@@ -40,7 +40,7 @@ export const Main = () => {
 							>
 								<Panel primary />
 								<Panel>
-									<Map location={LOCATIONS[0]} />
+									<Map />
 								</Panel>
 							</PanelPair>
 						</Panel>

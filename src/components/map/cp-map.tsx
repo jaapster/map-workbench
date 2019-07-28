@@ -1,7 +1,6 @@
 import bind from 'autobind-decorator';
 import React from 'react';
 import './style/cp-map.scss';
-import { Location } from '../../types';
 import { ZoomLevel } from './cp-zoom-level';
 import { MapControl } from '../../map-control/map-control';
 import { PopUpMenu } from './cp-pop-up-menu';
@@ -16,31 +15,21 @@ import { MarkerArrowHead } from './cp-marker-arrow-head';
 import { CenterCoordinate } from './cp-center-coordinate';
 import { FeatureCollectionLayer } from './cp-feature-collection-layer';
 import { UniverseService } from '../../services/service.universe';
-
-interface Props {
-	location: Location;
-}
+import { WorldSelector } from './cp-world-selector';
 
 @bind
-export class Map extends React.Component<Props> {
-	private readonly _mapControl: MapControl;
-
+export class Map extends React.Component {
 	private _ref: any;
-
-	constructor(props: Props) {
-		super(props);
-
-		this._mapControl = MapControl.create(props);
-	}
 
 	componentDidMount() {
 		this._ref.appendChild(MapControl.getContainer());
 		MapControl.resize();
-		MessageService.on('update:crs', this._update);
+
+		MessageService.on('update:world', this._update);
 	}
 
 	componentWillUnmount() {
-		MessageService.off('update:crs', this._update);
+		MessageService.off('update:world', this._update);
 	}
 
 	private _update() {
@@ -83,6 +72,7 @@ export class Map extends React.Component<Props> {
 					<ModeSelector />
 					<StyleSelector />
 					<CRSSelector />
+					<WorldSelector />
 				</div>
 				<PopUpMenu />
 			</div>

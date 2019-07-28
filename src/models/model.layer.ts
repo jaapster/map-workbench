@@ -25,4 +25,11 @@ export class Layer {
 	get style(): MapboxStyle {
 		return this._style;
 	}
+
+	get json() {
+		return {
+			id: this._id,
+			style: this._style
+		};
+	}
 }

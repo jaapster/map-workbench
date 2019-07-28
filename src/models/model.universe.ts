@@ -1,5 +1,7 @@
-import { MapProps, UniverseMap } from './model.map';
 import { EPSG } from '../types';
+import {
+	MapProps,
+	UniverseMap } from './model.map';
 
 export interface UniverseProps {
 	crs: EPSG;
@@ -27,6 +29,10 @@ export class Universe {
 
 	get maps(): UniverseMap[] {
 		return [...this._maps];
+	}
+
+	getMap(id: string) {
+		return this.maps.find(map => map.id === id);
 	}
 
 	get index(): number {

@@ -64,5 +64,26 @@ export const add3dBuildings = (map: any) => {
 export const styles: any[] = [
 	['Empty', EMPTY_STYLE],
 	['Light', 'mapbox://styles/mapbox/light-v10'],
-	['Dark', 'mapbox://styles/mapbox/dark-v10']
+	['Dark', 'mapbox://styles/mapbox/dark-v10'],
+	['Raster', {
+		version: 8,
+		sources: {
+			osm: {
+				type: 'raster',
+				tiles: [
+					'https://a.tile.openstreetmap.org/{z}/{x}/{y}.png',
+					'https://b.tile.openstreetmap.org/{z}/{x}/{y}.png',
+					'https://c.tile.openstreetmap.org/{z}/{x}/{y}.png'
+				],
+				tileSize: 256
+			}
+		},
+		layers: [
+			{
+				id: 'osm',
+				type: 'raster',
+				source: 'osm'
+			}
+		]
+	}]
 ];

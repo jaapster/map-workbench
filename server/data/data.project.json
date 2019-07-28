@@ -1,0 +1,61 @@
+{
+	"id": "project1",
+	"universes": [
+		{
+			"crs": 4326
+		},
+		{
+			"crs": 3857
+		}
+	],
+	"maps": [
+		{
+			"id": "map_0_universe_0",
+			"universeIndex": 0,
+			"layers": [
+				{
+					"id": "layer_0_map_0_universe_0",
+					"style": {
+						"sources": {
+							"source1": {
+								"type": "raster",
+								"tiles": []
+							}
+						},
+						"layers": [
+							{
+								"id": "layer1",
+								"type": "raster",
+								"source": "source1"
+							}
+						]
+					}
+				}
+			]
+		},
+		{
+			"id": "map_0_universe_1",
+			"universeIndex": 1,
+			"layers": [
+				{
+					"id": "layer_0_map_0_universe_1",
+					"style": {
+						"sources": {
+							"source3": {
+								"type": "raster",
+								"tiles": []
+							}
+						},
+						"layers": [
+							{
+								"id": "layer3",
+								"type": "raster",
+								"source": "source3"
+							}
+						]
+					}
+				}
+			]
+		}
+	]
+}

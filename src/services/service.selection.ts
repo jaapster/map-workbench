@@ -1,6 +1,7 @@
 import { ServiceGeoNote } from './service.geo-note';
 import { EventEmitter } from '../event-emitter';
 import { UniverseService } from './service.universe';
+import { MessageService } from './service.message';
 
 const eventEmitter = new EventEmitter();
 
@@ -30,9 +31,20 @@ export const SelectionService = {
 	}
 };
 
-setTimeout(() => {
-	[
-		UniverseService.getCurrentWorld().trails,
-		ServiceGeoNote.getModel()
-	].forEach(m => m.on('update:selection', () => eventEmitter.trigger('update:selection')));
-}, 1000);
+const emitMessage = () => {
+	eventEmitter.trigger('update:selection');
+};
+
+MessageService.on('update:world', () => {
+	UniverseService.getWorlds().forEach(world => (
+		world.trails.off('update', emitMessage)
+	));
+
+	const currentWorld = UniverseService.getCurrentWorld();
+
+	if (currentWorld) {
+		currentWorld.trails.on('update', emitMessage);
+	}
+
+	eventEmitter.trigger('update:selection');
+});

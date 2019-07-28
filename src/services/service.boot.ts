@@ -1,8 +1,12 @@
 import axios from 'axios';
+import { MapControl } from '../map-control/map-control';
 import { UniverseService } from './service.universe';
+import { LOCATIONS } from '../constants';
 
 export const BootService = {
 	boot() {
+		MapControl.create({ location: LOCATIONS[0] });
+
 		return Promise
 			.all([
 				axios.get('/universes'),
@@ -12,7 +16,8 @@ export const BootService = {
 				const [universes, worlds] = responses.map(r => r.data);
 
 				UniverseService.init(universes);
-				UniverseService.addWorld(worlds[0]);
+
+				worlds.forEach(UniverseService.addWorld);
 			});
 	}
 };

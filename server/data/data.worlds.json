@@ -1,8 +1,8 @@
 [
 	{
 		"id": "world1",
-		"universeIndex": 0,
 		"extent": [],
+		"universeIndex": 0,
 		"homeExtent": [],
 		"trails": {
 			"type": "FeatureCollection",
@@ -129,6 +129,63 @@
 					"properties": {
 						"type": "Rectangle",
 						"id": "a4530b10-a3b3-11e9-a2a2-5511273102b0"
+					}
+				}
+			]
+		}
+	},
+	{
+		"id": "world2",
+		"extent": [],
+		"universeIndex": 1,
+		"homeExtent": [],
+		"trails": {
+			"type": "FeatureCollection",
+			"features": [
+				{
+					"type": "Feature",
+					"geometry": {
+						"type": "Point",
+						"coordinates": [
+							-123.84677582550688,
+							46.19473437827497
+						]
+					},
+					"properties": {
+						"type": "Point",
+						"id": "6ced3830-a3b3-11e9-969f-874b30e3a365"
+					}
+				},
+				{
+					"type": "Feature",
+					"geometry": {
+						"type": "LineString",
+						"coordinates": [
+							[
+								-123.83854902682879,
+								46.19947770219255
+							],
+							[
+								-123.83859194183685,
+								46.19665576385509
+							],
+							[
+								-123.83408583069064,
+								46.196239887092986
+							],
+							[
+								-123.834514984136,
+								46.19329895447109
+							],
+							[
+								-123.83108175693133,
+								46.192704808167235
+							]
+						]
+					},
+					"properties": {
+						"type": "LineString",
+						"id": "8f60ccb0-a3b3-11e9-91f3-e33c2b894ae6"
 					}
 				}
 			]
