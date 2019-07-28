@@ -61,7 +61,7 @@ export interface MultiPolygonJSON extends GeometryData {
 	coordinates: Co[][][];
 }
 
-export interface FeatureJSON<GeometryJSON> {
+export interface FeatureData<GeometryJSON> {
 	type: string;
 	geometry: GeometryJSON;
 	properties: {
@@ -73,7 +73,7 @@ export interface FeatureJSON<GeometryJSON> {
 
 export interface FeatureCollectionData {
 	type: string;
-	features: FeatureJSON[];
+	features: FeatureData[];
 }
 
 export type Bounds = [Co, Co];

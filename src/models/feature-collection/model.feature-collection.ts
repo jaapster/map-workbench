@@ -11,7 +11,7 @@ import {
 	Co,
 	Point,
 	LngLat,
-	FeatureJSON,
+	FeatureData,
 	FeatureCollectionData } from '../../types';
 
 @bind
@@ -58,118 +58,6 @@ export class FeatureCollection extends EventEmitter {
 
 	getFeatureAtIndex(index: number) {
 		return this._featureCollection.features[index];
-	}
-
-	select(index: number[] = [], add: boolean = false) {
-		// check if already selected
-		const same = this._selection.find(v => (
-			JSON.stringify(v) === JSON.stringify(index)
-		));
-
-		if (same) {
-			if (!add) {
-				// selecting the same thing again
-				return;
-			}
-
-			this._selection = this._selection.filter(v => (
-				JSON.stringify(v) !== JSON.stringify(index)
-			));
-		} else {
-			this._selection = index.length
-				? add
-					? [...this._selection, index]
-					: [index]
-				: [];
-		}
-
-		this.trigger('update');
-		this.trigger('update:selection');
-	}
-
-	moveGeometry(index: number[], movement: Point) {
-		this._featureCollection = moveGeometry(this._featureCollection, index, movement);
-
-		this.trigger('update');
-	}
-
-	updateCoordinates(entries: [number[], Co][]) {
-		this._featureCollection = updateCoordinates(this._featureCollection, entries);
-
-		this.trigger('update');
-	}
-
-	addFeature(feature: FeatureJSON<any>) {
-		this._featureCollection = {
-			...this._featureCollection,
-			features: this._featureCollection.features.concat({ ...feature })
-		};
-
-		this.select([this._featureCollection.features.length - 1]);
-	}
-
-	addAtIndex(coordinate: Co, index: Co) {
-		this._featureCollection = addAtIndex(
-			this._featureCollection,
-			index,
-			coordinate
-		);
-
-		this.trigger('update');
-	}
-
-	deleteSelection() {
-		let selection = this._selection.slice();
-
-		while (selection.length) {
-			const v = selection.pop();
-
-			if (v && v.length) {
-				this._featureCollection = deleteAtIndex(this._featureCollection, v);
-
-				if (v.length === 1) {
-					selection = selection.reduce((m, w) => (
-						w[0] === v[0]
-							? m
-							: w[0] > v[0]
-								? m.concat([[w[0] - 1, ...w.slice(1)]])
-								: m.concat([w])
-					), [] as any);
-				} else if (v.length === 2) {
-					selection = selection.reduce((m, w) => (
-						w[0] === v[0]
-							? w[1] === v[1]
-								? m
-								: w[1] > v[1]
-									? m.concat([w[0], w[1] - 1, ...w.slice(2)])
-									: m.concat([w])
-							: m.concat([w])
-					), [] as any);
-				} else if (v.length === 3) {
-					selection = selection.reduce((m, w) => (
-						w[0] === v[0] &&
-						w[1] === v[1]
-							? w[2] === v[2]
-								? m
-								: w[2] > v[2]
-									? m.concat([w[0], w[1], w[2] - 1])
-									: m.concat([w])
-							: m.concat([w])
-					), [] as any);
-				}
-			}
-		}
-
-		this._selection = [];
-
-		this.trigger('update');
-		this.trigger('update:selection');
-	}
-
-	clearSelection() {
-		if (this._selection.length) {
-			this.select([]);
-		}
 	}
 
 	getNearestVertex(lngLat: LngLat) {
@@ -230,5 +118,117 @@ export class FeatureCollection extends EventEmitter {
 
 		this.trigger('update');
 		this.trigger('update:selection');
+	}
+
+	select(index: number[] = [], add: boolean = false) { // *
+		// check if already selected
+		const same = this._selection.find(v => (
+			JSON.stringify(v) === JSON.stringify(index)
+		));
+
+		if (same) {
+			if (!add) {
+				// selecting the same thing again
+				return;
+			}
+
+			this._selection = this._selection.filter(v => (
+				JSON.stringify(v) !== JSON.stringify(index)
+			));
+		} else {
+			this._selection = index.length
+				? add
+					? [...this._selection, index]
+					: [index]
+				: [];
+		}
+
+		this.trigger('update');
+		this.trigger('update:selection');
+	}
+
+	moveGeometry(index: number[], movement: Point) { // *
+		this._featureCollection = moveGeometry(this._featureCollection, index, movement);
+
+		this.trigger('update');
+	}
+
+	updateCoordinates(entries: [number[], Co][]) { // *
+		this._featureCollection = updateCoordinates(this._featureCollection, entries);
+
+		this.trigger('update');
+	}
+
+	addFeature(feature: FeatureData<any>) { // *
+		this._featureCollection = {
+			...this._featureCollection,
+			features: this._featureCollection.features.concat({ ...feature })
+		};
+
+		this.select([this._featureCollection.features.length - 1]);
+	}
+
+	addAtIndex(coordinate: Co, index: Co) { // *
+		this._featureCollection = addAtIndex(
+			this._featureCollection,
+			index,
+			coordinate
+		);
+
+		this.trigger('update');
+	}
+
+	deleteSelection() { // *
+		let selection = this._selection.slice();
+
+		while (selection.length) {
+			const v = selection.pop();
+
+			if (v && v.length) {
+				this._featureCollection = deleteAtIndex(this._featureCollection, v);
+
+				if (v.length === 1) {
+					selection = selection.reduce((m, w) => (
+						w[0] === v[0]
+							? m
+							: w[0] > v[0]
+								? m.concat([[w[0] - 1, ...w.slice(1)]])
+								: m.concat([w])
+					), [] as any);
+				} else if (v.length === 2) {
+					selection = selection.reduce((m, w) => (
+						w[0] === v[0]
+							? w[1] === v[1]
+								? m
+								: w[1] > v[1]
+									? m.concat([w[0], w[1] - 1, ...w.slice(2)])
+									: m.concat([w])
+							: m.concat([w])
+					), [] as any);
+				} else if (v.length === 3) {
+					selection = selection.reduce((m, w) => (
+						w[0] === v[0] &&
+						w[1] === v[1]
+							? w[2] === v[2]
+								? m
+								: w[2] > v[2]
+									? m.concat([w[0], w[1], w[2] - 1])
+									: m.concat([w])
+							: m.concat([w])
+					), [] as any);
+				}
+			}
+		}
+
+		this._selection = [];
+
+		this.trigger('update');
+		this.trigger('update:selection');
+	}
+
+	clearSelection() { // *
+		if (this._selection.length) {
+			this.select([]);
+		}
 	}
 }

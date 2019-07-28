@@ -1,4 +1,4 @@
-import { Co, FeatureJSON } from '../../types';
+import { Co, FeatureData } from '../../types';
 import {
 	LINE_STRING,
 	MULTI_LINE_STRING,
@@ -7,7 +7,7 @@ import {
 	POLYGON, RECTANGLE
 } from '../../constants';
 
-export const getCoordinates = (features: FeatureJSON<any>[]) => {
+export const getCoordinates = (features: FeatureData<any>[]) => {
 	return features.reduce((m, { geometry: { coordinates, type } }) => {
 		return type === POINT
 			? m.concat([coordinates])
@@ -21,7 +21,7 @@ export const getCoordinates = (features: FeatureJSON<any>[]) => {
 	}, [] as Co[]);
 };
 
-export const getCenter = (features: FeatureJSON<any>[]) => {
+export const getCenter = (features: FeatureData<any>[]) => {
 	const coordinates = getCoordinates(features);
 	const sum = coordinates.reduce(([a, b], [c, d]) => [a + c, b + d], [0, 0]);
 

@@ -1,6 +1,6 @@
 import React from 'react';
 import './style/feature-card.scss';
-import { FeatureJSON } from '../../types';
+import { FeatureData } from '../../types';
 import {
 	getRadius,
 	getCoordinate,
@@ -9,7 +9,7 @@ import {
 import { MapControl } from '../../map-control/map-control';
 
 interface Props {
-	features: FeatureJSON<any>[];
+	features: FeatureData<any>[];
 }
 
 const Value = ({ value: v, unit, precision = 0 }: any) => (

@@ -5,30 +5,22 @@ import { MessageService } from './service.message';
 import { MapControl } from '../map-control/map-control';
 
 import {
-	universeReducer,
-	ActionSetUniverses,
 	ActionAddWorld,
-	UniverseState
-} from '../reducers/reducers.universe';
+	ActionSetUniverses
+} from '../reducers/reducer.multiverse';
+import { dispatch } from '../reducers/store';
 
 const worlds: Dict<World> = {};
 let universes: Universe[] = [];
 
 let currentWorld: string;
 
-let state: { universes: UniverseState} = {
-	universes: []
-};
 
 export const UniverseService = {
 	addWorld(props: any) {
+		dispatch(ActionAddWorld.create(props));
+
 		const { id, trails, universeIndex } = props;
-
-		state = {
-			universes: universeReducer(state.universes, ActionAddWorld.create(props))
-		};
-
-		console.log(state); // remove me
 
 		if (!worlds[id]) {
 			worlds[id] = World.create({
@@ -71,9 +63,7 @@ export const UniverseService = {
 	init(data: any) {
 		universes = data.map(Universe.create);
 
-		state = {
-			universes: universeReducer(state.universes, ActionSetUniverses.create(data))
-		};
+		dispatch(ActionSetUniverses.create(data));
 
 		const up = () => {
 			UniverseService.getCurrentWorld().setLocation({

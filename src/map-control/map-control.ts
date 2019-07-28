@@ -31,7 +31,7 @@ import {
 import {
 	Co, EPSG,
 	Ev,
-	FeatureJSON,
+	FeatureData,
 	Location
 } from '../types';
 import {
@@ -76,7 +76,7 @@ export class MapControl extends EventEmitter {
 		MapControl.instance.resize();
 	}
 
-	static fitFeatures(features: FeatureJSON<any>[]) {
+	static fitFeatures(features: FeatureData<any>[]) {
 		MapControl.instance.bringInView(features);
 	}
 
@@ -341,7 +341,7 @@ export class MapControl extends EventEmitter {
 		this._map.resize();
 	}
 
-	bringInView(features: FeatureJSON<any>[]) {
+	bringInView(features: FeatureData<any>[]) {
 		if (!this.isInView(features)) {
 			const { width, height } = this.getBoundingClientRect();
 
@@ -364,7 +364,7 @@ export class MapControl extends EventEmitter {
 		}
 	}
 
-	isInView(features: FeatureJSON<any>[]) {
+	isInView(features: FeatureData<any>[]) {
 		const featureBounds = getBounds({
 			type: FEATURE,
 			geometry: {

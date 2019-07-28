@@ -3,14 +3,14 @@ import React from 'react';
 import './style/properties.scss';
 import { SelectionService } from '../../services/service.selection';
 import { Properties } from './cp-properties';
-import { FeatureJSON } from '../../types';
+import { FeatureData } from '../../types';
 import { FeatureProperties } from './cp-feature-properties';
 import { MessageService } from '../../services/service.message';
 
 interface Props {}
 
 interface State {
-	features: FeatureJSON<any>[];
+	features: FeatureData<any>[];
 }
 
 @bind

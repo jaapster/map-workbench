@@ -6,7 +6,7 @@ import {
 import {
 	Co,
 	Bounds,
-	FeatureJSON,
+	FeatureData,
 	MultiPointJSON } from '../../types';
 import {
 	POINT,
@@ -71,7 +71,7 @@ export const multiPointToLines = ([co1, co2]: Co[]) => {
 	return [coordinates, [co1, co2]];
 };
 
-export const multiPointToCircle = (feature: FeatureJSON<MultiPointJSON>) => {
+export const multiPointToCircle = (feature: FeatureData<MultiPointJSON>) => {
 	const { geometry: { coordinates: [co1, co2] }, properties: { id } } = feature;
 
 	const [coordinates] = multiPointToLines([co1, co2]);
@@ -118,7 +118,7 @@ export const multiPointToCircle = (feature: FeatureJSON<MultiPointJSON>) => {
 	];
 };
 
-export const getBounds = (feature: FeatureJSON<any>): Bounds => {
+export const getBounds = (feature: FeatureData<any>): Bounds => {
 	const { geometry: { coordinates } } = getEnvelope(feature);
 
 	// envelope has a fixed order so we can do this
@@ -128,7 +128,7 @@ export const getBounds = (feature: FeatureJSON<any>): Bounds => {
 	] as any;
 };
 
-export const getEnvelope = (feature: FeatureJSON<any>) => {
+export const getEnvelope = (feature: FeatureData<any>) => {
 	const f = feature.properties.type === CIRCLE
 		? multiPointToCircle(feature)[0]
 		: feature;
@@ -157,7 +157,7 @@ export const getEnvelope = (feature: FeatureJSON<any>) => {
 	};
 };
 
-export const apply = (feature: FeatureJSON<any>, fn: (co: Co) => any) => {
+export const apply = (feature: FeatureData<any>, fn: (co: Co) => any) => {
 	const { geometry: { coordinates }, properties: { type } } = feature;
 
 	return {
@@ -174,7 +174,7 @@ export const apply = (feature: FeatureJSON<any>, fn: (co: Co) => any) => {
 	};
 };
 
-export const project = (feature: FeatureJSON<any>) => (
+export const project = (feature: FeatureData<any>) => (
 	apply(feature, (co: Co) => {
 		return geoProject(coToLl(co));
 	})

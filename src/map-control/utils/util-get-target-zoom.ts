@@ -1,4 +1,4 @@
-import { Co, FeatureJSON } from '../../types';
+import { Co, FeatureData } from '../../types';
 import {
 	POINT,
 	POLYGON,
@@ -15,7 +15,7 @@ interface Box {
 	height: number;
 }
 
-export const getCoordinates = (features: FeatureJSON<any>[]) => {
+export const getCoordinates = (features: FeatureData<any>[]) => {
 	return features.reduce((m, { geometry: { coordinates, type } }) => {
 		return type === POINT
 			? m.concat([coordinates])
@@ -29,7 +29,7 @@ export const getCoordinates = (features: FeatureJSON<any>[]) => {
 	}, [] as Co[]);
 };
 
-export const getEnvelope = (features: FeatureJSON<any>[]) => {
+export const getEnvelope = (features: FeatureData<any>[]) => {
 	const cos = getCoordinates(features);
 
 	return [
@@ -44,7 +44,7 @@ export const getEnvelope = (features: FeatureJSON<any>[]) => {
 	];
 };
 
-export const getTargetZoom = (features: FeatureJSON<any>[], box: Box) => {
+export const getTargetZoom = (features: FeatureData<any>[], box: Box) => {
 	const [a, b]: any = getEnvelope(features);
 
 	const width = geoDistance(a, [b[0], a[1]]);
