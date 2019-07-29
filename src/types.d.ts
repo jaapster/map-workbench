@@ -93,3 +93,43 @@ export interface MapboxStyle {
 	sources: Dict<MapboxSource>;
 	layers: MapboxLayer[];
 }
+
+type SelectionVector = number[];
+
+interface CollectionData {
+	featureCollection: FeatureCollectionData;
+	selection: SelectionVector[];
+}
+
+interface LayerData {
+	id: string;
+	style: MapboxStyle;
+}
+
+interface MapData {
+	id: string;
+	layers: LayerData[];
+	opacity: number;
+	visible: boolean;
+}
+
+interface WorldData {
+	id: string;
+	maps: MapData[];
+	collections: Dict<CollectionData>;
+	currentMapId: string;
+	currentCollectionId: string;
+	universeIndex: number;
+}
+
+interface UniverseData {
+	crs: EPSG;
+	maps: MapData[];
+	worlds: WorldData[];
+}
+
+export interface MultiverseData {
+	worlds: Dict<WorldData>;
+	universes: UniverseData[];
+	currentWorldId: string;
+}

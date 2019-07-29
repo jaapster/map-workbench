@@ -7,7 +7,8 @@ import { MapControl } from '../map-control/map-control';
 import {
 	ActionAddWorld,
 	ActionSetUniverses
-} from '../reducers/reducer.multiverse';
+} from '../reducers/actions';
+
 import { dispatch } from '../reducers/store';
 
 const worlds: Dict<World> = {};
@@ -18,14 +19,14 @@ let currentWorld: string;
 
 export const UniverseService = {
 	addWorld(props: any) {
-		dispatch(ActionAddWorld.create(props));
+		dispatch(ActionAddWorld.create({ worldData: props }));
 
-		const { id, trails, universeIndex } = props;
+		const { id, collections, universeIndex } = props;
 
 		if (!worlds[id]) {
 			worlds[id] = World.create({
 				id,
-				trails,
+				trails: collections.trails,
 				universe: universes[universeIndex]
 			});
 		}
@@ -63,7 +64,7 @@ export const UniverseService = {
 	init(data: any) {
 		universes = data.map(Universe.create);
 
-		dispatch(ActionSetUniverses.create(data));
+		dispatch(ActionSetUniverses.create({ universeData: data }));
 
 		const up = () => {
 			UniverseService.getCurrentWorld().setLocation({
