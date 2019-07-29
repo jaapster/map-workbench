@@ -1,12 +1,12 @@
 import bind from 'autobind-decorator';
 import React from 'react';
-import './style/cp-map.scss';
+import './scss/cp-map.scss';
 import { ZoomLevel } from './cp-zoom-level';
 import { MapControl } from '../../map-control/map-control';
 import { PopUpMenu } from './cp-pop-up-menu';
 import { CRSSelector } from './cp-crs-selector';
 import { ModeSelector } from './cp-mode-selector';
-import { mergeClasses } from '../../utils/util-merge-classes';
+import { mergeClasses } from '../app/utils/util-merge-classes';
 import { MarkerVertex } from './cp-marker-vertex';
 import { StyleSelector } from './cp-style-selector';
 import { MessageService } from '../../services/service.message';

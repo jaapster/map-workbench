@@ -1,6 +1,6 @@
 import React from 'react';
-import './style/cp-main.scss';
-import './style/list.scss';
+import './scss/cp-main.scss';
+import './scss/list.scss';
 import { Map } from '../map/cp-map';
 import { Panel } from '../panels/cp-panel';
 import { Selection } from './cp-selection';

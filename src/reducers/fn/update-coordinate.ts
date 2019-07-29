@@ -4,8 +4,8 @@ import {
 	MULTI_POINT,
 	LINE_STRING,
 	MULTI_POLYGON,
-	MULTI_LINE_STRING } from '../../../constants';
-import { FeatureCollectionData, Co } from '../../../types';
+	MULTI_LINE_STRING } from '../../constants';
+import { FeatureCollectionData, Co } from '../../types';
 
 const ringMap = (co: Co, _l: number) => (co3: Co, l: number, xs: Co[]) => (
 	l === _l || (_l === 0 && l === xs.length - 1)

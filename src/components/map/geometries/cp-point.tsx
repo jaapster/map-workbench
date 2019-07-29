@@ -1,7 +1,7 @@
 import React from 'react';
 import { Co } from '../../../types';
 import { MapControl } from '../../../map-control/map-control';
-import { mergeClasses } from '../../../utils/util-merge-classes';
+import { mergeClasses } from '../../app/utils/util-merge-classes';
 
 interface Props {
 	id: string;

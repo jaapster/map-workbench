@@ -1,5 +1,5 @@
 import bind from 'autobind-decorator';
-import './style/cp-panel-pair.scss';
+import './scss/cp-panel-pair.scss';
 import { PanelPair } from './cp-panel-pair';
 
 const DEFAULT_COLLAPSED_POSITION = 0;

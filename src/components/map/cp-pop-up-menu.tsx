@@ -4,7 +4,7 @@ import { Point } from '../../types';
 import { MENU_MODE } from '../../constants';
 import { MapControl } from '../../map-control/map-control';
 import { SelectionService } from '../../services/service.selection';
-import { mergeClasses } from '../../utils/util-merge-classes';
+import { mergeClasses } from '../app/utils/util-merge-classes';
 import { MessageService } from '../../services/service.message';
 
 interface Props {}

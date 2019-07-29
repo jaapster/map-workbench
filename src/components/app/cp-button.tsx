@@ -1,6 +1,6 @@
 import React from 'react';
-import './style/cp-button.scss';
-import { mergeClasses } from '../../utils/util-merge-classes';
+import './scss/cp-button.scss';
+import { mergeClasses } from './utils/util-merge-classes';
 
 interface Props {
 	onClick?: () => void;

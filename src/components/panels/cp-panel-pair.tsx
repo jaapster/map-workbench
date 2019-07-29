@@ -1,8 +1,8 @@
 import React from 'react';
 import bind from 'autobind-decorator';
-import './style/cp-panel-pair.scss';
+import './scss/cp-panel-pair.scss';
 import { clamp } from '../../utils/util-clamp';
-import { mergeClasses } from '../../utils/util-merge-classes';
+import { mergeClasses } from '../app/utils/util-merge-classes';
 
 interface Props {
 	min?: number;

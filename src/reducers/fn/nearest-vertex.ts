@@ -2,16 +2,16 @@ import {
 	Co,
 	LngLat,
 	FeatureData,
-	FeatureCollectionData } from '../../../types';
+	FeatureCollectionData } from '../../types';
 import {
 	POINT,
 	POLYGON,
 	MULTI_POINT,
 	LINE_STRING,
 	MULTI_POLYGON,
-	MULTI_LINE_STRING } from '../../../constants';
-import { dis } from '../../../map-control/utils/util-point';
-import { coToLl, geoProject } from '../../../map-control/utils/util-geo';
+	MULTI_LINE_STRING } from '../../constants';
+import { dis } from '../../map-control/utils/util-point';
+import { coToLl, geoProject } from '../../map-control/utils/util-geo';
 
 interface Result {
 	index: number[];

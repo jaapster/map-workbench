@@ -11,10 +11,10 @@ export type Dict<T> = { [key: string]: T };
 export type EPSG = 4326 | 3857;
 
 export interface Location {
+	epsg: EPSG;
 	zoom: number;
 	title?: string;
 	center: Co;
-	epsg: EPSG;
 }
 
 export interface Point {
@@ -90,20 +90,22 @@ export interface MapboxSource {
 }
 
 export interface MapboxStyle {
-	sources: Dict<MapboxSource>;
 	layers: MapboxLayer[];
+	sources: Dict<MapboxSource>;
 }
 
 type SelectionVector = number[];
 
 interface CollectionData {
-	featureCollection: FeatureCollectionData;
 	selection: SelectionVector[];
+	featureCollection: FeatureCollectionData;
 }
 
 interface LayerData {
 	id: string;
 	style: MapboxStyle;
+	opacity: number;
+	visible: boolean;
 }
 
 interface MapData {
@@ -115,11 +117,11 @@ interface MapData {
 
 interface WorldData {
 	id: string;
-	maps: MapData[];
+	maps: Dict<MapData>;
 	collections: Dict<CollectionData>;
 	currentMapId: string;
-	currentCollectionId: string;
 	universeIndex: number;
+	currentCollectionId: string;
 }
 
 interface UniverseData {

@@ -1,11 +1,12 @@
-import { Action } from './actions';
-import { addAtIndex } from '../models/feature-collection/fn/add-at-index';
-import { moveGeometry } from '../models/feature-collection/fn/move-geometry';
-import { deleteAtIndex } from '../models/feature-collection/fn/delete-at-index';
+import { oc } from 'ts-optchain';
+import { addAtIndex } from './fn/add-at-index';
+import { moveGeometry } from './fn/move-geometry';
+import { deleteAtIndex } from './fn/delete-at-index';
 import { MultiverseData } from '../types';
-import { updateCoordinates } from '../models/feature-collection/fn/update-coordinate';
+import { updateCoordinates } from './fn/update-coordinate';
 import { EMPTY_FEATURE_COLLECTION } from '../constants';
 import {
+	Action,
 	ActionSelect,
 	ActionAddWorld,
 	ActionAddVertex,
@@ -18,17 +19,47 @@ import {
 	ActionDeleteSelection,
 	ActionUpdateCoordinates } from './actions';
 
-const DEFAULT_STATE: MultiverseData = {
+const STATE: MultiverseData = {
 	worlds: {},
 	universes: [],
 	currentWorldId: 'default'
 };
 
-const sameVector = (v1: number[], v2: number[]) => {
+const not = (fn: (...args: any[]) => any) => (...args: any[]) => !fn(...args);
+
+const sameAs = (v1: number[]) => (v2: number[]) => {
 	return JSON.stringify(v1) === JSON.stringify(v2);
 };
 
-export const multiverseReducer = (state: MultiverseData = DEFAULT_STATE, action: Action) => {
+const updateCollection = (state: MultiverseData, collectionId: string, data: any) => {
+	const { worlds, currentWorldId } = state;
+	const world = worlds[currentWorldId];
+	const collection = world.collections[collectionId];
+
+	return {
+		...state,
+		worlds: {
+			...worlds,
+			[world.id]: {
+				...world,
+				collections: {
+					...world.collections,
+					[collectionId]: {
+						...collection,
+						...data
+					}
+				}
+			}
+		}
+	};
+};
+
+export const multiverseReducer = (
+	state: MultiverseData = STATE,
+	action: Action
+) => {
+	const { worlds, currentWorldId } = state;
+
 	if (ActionSetUniverses.validate(action)) {
 		return {
 			...state,
@@ -39,17 +70,35 @@ export const multiverseReducer = (state: MultiverseData = DEFAULT_STATE, action:
 	if (ActionAddWorld.validate(action)) {
 		const { worldData } = ActionAddWorld.data(action);
 		const { worlds, universes } = state;
+		const { universeIndex, collections, id } = worldData;
+		const universe = universes[universeIndex];
 
 		return {
 			...state,
 			worlds: {
 				...worlds,
-				[worldData.id]: {
+				[id]: {
 					...worldData,
-					maps: [...universes[worldData.universeIndex].maps]
+					maps: universe.maps.reduce((m, map) => (
+						{
+							...m,
+							[map.id]: {
+								...map,
+								layers: map.layers.map(layer => (
+									{
+										...layer,
+										visible: true,
+										opacity: 1
+									}
+								))
+							}
+						}
+					), {}),
+					currentMapId: oc(universe.maps[0]).id(''),
+					currentCollectionId: Object.keys(collections)[0]
 				}
 			},
-			currentWorldId: worldData.id
+			currentWorldId: id
 		};
 	}
 
@@ -62,229 +111,89 @@ export const multiverseReducer = (state: MultiverseData = DEFAULT_STATE, action:
 
 	if (ActionUpdateCoordinates.validate(action)) {
 		const { collectionId, entries } = ActionUpdateCoordinates.data(action);
-		const { worlds, currentWorldId } = state;
-		const world = worlds[currentWorldId];
-		const collection = world.collections[collectionId];
+		const { featureCollection } = worlds[currentWorldId].collections[collectionId];
 
-		return {
-			...state,
-			worlds: {
-				...worlds,
-				[world.id]: {
-					...world,
-					features: {
-						...world.collections,
-						[collectionId]: {
-							...collection,
-							featureCollection: updateCoordinates(
-								collection.featureCollection,
-								entries
-							)
-						}
-					}
-				}
-			}
-		};
+		return updateCollection(state, collectionId, {
+			featureCollection: updateCoordinates(featureCollection, entries)
+		});
 	}
 
 	if (ActionMoveGeometry.validate(action)) {
 		const { collectionId, vector, amount } = ActionMoveGeometry.data(action);
-		const { worlds, currentWorldId } = state;
-		const world = worlds[currentWorldId];
-		const collection = world.collections[collectionId];
+		const { featureCollection } = worlds[currentWorldId].collections[collectionId];
 
-		return {
-			...state,
-			worlds: {
-				...worlds,
-				[world.id]: {
-					...world,
-					features: {
-						...world.collections,
-						[collectionId]: {
-							...collection,
-							featureCollection: moveGeometry(
-								collection.featureCollection,
-								vector,
-								amount
-							)
-						}
-					}
-				}
-			}
-		};
+		return updateCollection(state, collectionId, {
+			featureCollection: moveGeometry(featureCollection, vector, amount)
+		});
 	}
 
 	if (ActionSelect.validate(action)) {
 		const { collectionId, vector, multi } = ActionSelect.data(action);
-		const { worlds, currentWorldId } = state;
-		const world = worlds[currentWorldId];
-		const collection = world.collections[collectionId];
+		const { selection } = worlds[currentWorldId].collections[collectionId];
 
-		// check if already selected
-		const exists = collection.selection.find(v => sameVector(v, vector));
-
-		if (exists) {
-			return !multi
-				// selecting the same thing again
+		return selection.find(sameAs(vector))
+			? !multi
 				? state
-				: {
-					...state,
-					worlds: {
-						...worlds,
-						[world.id]: {
-							...world,
-							features: {
-								...world.collections,
-								[collectionId]: {
-									...collection,
-									selection: collection.selection.filter(v => (
-										!sameVector(v, vector)
-									))
-								}
-							}
-						}
-					}
-				};
-		}
-
-		return {
-			...state,
-			worlds: {
-				...worlds,
-				[world.id]: {
-					...world,
-					features: {
-						...world.collections,
-						[collectionId]: {
-							...collection,
-							selection: vector.length
-								? multi
-									? [...collection.selection, vector]
-									: [vector]
-								: []
-						}
-					}
-				}
-			}
-		};
+				: updateCollection(state, collectionId, {
+					selection: selection.filter(not(sameAs(vector)))
+				})
+			: updateCollection(state, collectionId, {
+				selection: vector.length
+					? multi
+						? [...selection, vector]
+						: [vector]
+					: []
+			});
 	}
 
 	if (ActionClearSelection.validate(action)) {
 		const { collectionId } = ActionClearSelection.data(action);
-		const { worlds, currentWorldId } = state;
-		const world = worlds[currentWorldId];
-		const collection = world.collections[collectionId];
 
-		return {
-			...state,
-			worlds: {
-				...worlds,
-				[world.id]: {
-					...world,
-					features: {
-						...world.collections,
-						[collectionId]: {
-							...collection,
-							selection: []
-						}
-					}
-				}
-			}
-		};
+		return updateCollection(state, collectionId, { selection: [] });
 	}
 
 	if (ActionClearCollection.validate(action)) {
 		const { collectionId } = ActionClearCollection.data(action);
-		const { worlds, currentWorldId } = state;
-		const world = worlds[currentWorldId];
 
-		return {
-			...state,
-			worlds: {
-				...worlds,
-				[world.id]: {
-					...world,
-					features: {
-						...world.collections,
-						[collectionId]: {
-							featureCollection: EMPTY_FEATURE_COLLECTION,
-							selection: []
-						}
-					}
-				}
-			}
-		};
+		return updateCollection(state, collectionId, {
+			featureCollection: EMPTY_FEATURE_COLLECTION,
+			selection: []
+		});
 	}
 
 	if (ActionAddFeature.validate(action)) {
 		const { collectionId, feature } = ActionAddFeature.data(action);
-		const { worlds, currentWorldId } = state;
-		const world = worlds[currentWorldId];
-		const collection = world.collections[collectionId];
+		const { featureCollection } = worlds[currentWorldId].collections[collectionId];
 
-		return {
-			...state,
-			worlds: {
-				...worlds,
-				[world.id]: {
-					...world,
-					features: {
-						...world.collections,
-						[collectionId]: {
-							...collection,
-							featureCollection: {
-								...collection.featureCollection,
-								features: collection.featureCollection.features.concat(feature)
-							}
-						}
-					}
-				}
+		return updateCollection(state, collectionId, {
+			featureCollection: {
+				...featureCollection,
+				features: featureCollection.features.concat(feature)
 			}
-		};
+		});
 	}
 
 	if (ActionAddVertex.validate(action)) {
 		const { collectionId, coordinate, vector } = ActionAddVertex.data(action);
-		const { worlds, currentWorldId } = state;
-		const world = worlds[currentWorldId];
-		const collection = world.collections[collectionId];
+		const { featureCollection } = worlds[currentWorldId].collections[collectionId];
 
-		return {
-			...state,
-			worlds: {
-				...worlds,
-				[world.id]: {
-					...world,
-					features: {
-						...world.collections,
-						[collectionId]: {
-							...collection,
-							featureCollection: addAtIndex(
-								collection.featureCollection,
-								vector,
-								coordinate
-							)
-						}
-					}
-				}
-			}
-		};
+		return updateCollection(state, collectionId, {
+			featureCollection: addAtIndex(featureCollection, vector, coordinate)
+		});
 	}
 
 	if (ActionDeleteSelection.validate(action)) {
 		const { collectionId } = ActionDeleteSelection.data(action);
-		const { worlds, currentWorldId } = state;
 
 		return {
 			...state,
-			worlds: Object.keys(worlds).reduce((w, key) => {
+			worlds: Object.keys(worlds).reduce((m, key) => {
 				const world = worlds[key];
 				const collection = world.collections[collectionId];
 
 				if (world.id !== currentWorldId) {
 					return {
-						...w,
+						...m,
 						[world.id]: world
 					};
 				}
@@ -294,17 +203,20 @@ export const multiverseReducer = (state: MultiverseData = DEFAULT_STATE, action:
 					.map(([i]) => i);
 
 				return {
-					...w,
+					...m,
 					[world.id]: {
 						...world,
-						features: {
+						collections: {
 							...world.collections,
 							[collectionId]: {
 								featureCollection: {
 									...collection.featureCollection,
 									features: collection.selection
 										.filter(v => v.length > 1)
-										.reduce(deleteAtIndex, collection.featureCollection)
+										.reduce(
+											deleteAtIndex,
+											collection.featureCollection
+										)
 										.features
 										.filter((f, i) => !fs.includes(i))
 								},

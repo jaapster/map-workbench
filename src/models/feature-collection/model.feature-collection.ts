@@ -1,12 +1,12 @@
 import bind from 'autobind-decorator';
 import { POINT } from '../../constants';
-import { addAtIndex } from './fn/add-at-index';
-import { moveGeometry } from './fn/move-geometry';
+import { addAtIndex } from '../../reducers/fn/add-at-index';
+import { moveGeometry } from '../../reducers/fn/move-geometry';
 import { EventEmitter } from '../../event-emitter';
-import { deleteAtIndex } from './fn/delete-at-index';
-import { nearestVertex } from './fn/nearest-vertex';
-import { updateCoordinates } from './fn/update-coordinate';
-import { nearestPointOnGeometry } from './fn/nearest-point-on-geometry';
+import { deleteAtIndex } from '../../reducers/fn/delete-at-index';
+import { nearestVertex } from '../../reducers/fn/nearest-vertex';
+import { updateCoordinates } from '../../reducers/fn/update-coordinate';
+import { nearestPointOnGeometry } from '../../reducers/fn/nearest-point-on-geometry';
 import {
 	Co,
 	Point,

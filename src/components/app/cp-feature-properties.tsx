@@ -1,5 +1,5 @@
 import React from 'react';
-import './style/feature-card.scss';
+import './scss/feature-card.scss';
 import { FeatureData } from '../../types';
 import {
 	getRadius,

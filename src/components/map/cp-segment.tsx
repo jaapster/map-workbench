@@ -3,7 +3,7 @@ import { Co } from '../../types';
 import { PRECISION } from '../../constants';
 import { addToPath } from './utils/util-add-to-path';
 import { geoDistance } from '../../map-control/utils/util-geo';
-import { mergeClasses } from '../../utils/util-merge-classes';
+import { mergeClasses } from '../app/utils/util-merge-classes';
 
 interface Props {
 	coordinates: Co[];

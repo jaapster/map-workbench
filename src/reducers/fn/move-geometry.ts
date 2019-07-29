@@ -3,17 +3,17 @@ import {
 	Cos,
 	Point,
 	FeatureCollectionData
-} from '../../../types';
+} from '../../types';
 import {
 	POINT,
 	POLYGON,
 	LINE_STRING,
 	MULTI_POINT,
 	MULTI_POLYGON,
-	MULTI_LINE_STRING } from '../../../constants';
+	MULTI_LINE_STRING } from '../../constants';
 import {
 	geoProject,
-	geoUnproject } from '../../../map-control/utils/util-geo';
+	geoUnproject } from '../../map-control/utils/util-geo';
 
 export const moveGeometry = (
 	data: FeatureCollectionData,

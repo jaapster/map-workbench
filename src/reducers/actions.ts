@@ -1,16 +1,17 @@
-import { getActionCreator } from './util';
+import { getActionCreator } from './util-get-action-creator';
 import {
 	Co,
+	Dict,
 	Point,
 	WorldData,
 	FeatureData,
 	UniverseData,
-	SelectionVector, Dict
-} from '../types';
+	SelectionVector } from '../types';
 
 export interface Action {
 	type: string;
 	data: Dict<any>;
+	token: Symbol;
 }
 
 export const ActionSetUniverses = getActionCreator<{

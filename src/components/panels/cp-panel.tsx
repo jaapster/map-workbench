@@ -1,5 +1,5 @@
 import React from 'react';
-import { mergeClasses } from '../../utils/util-merge-classes';
+import { mergeClasses } from '../app/utils/util-merge-classes';
 
 interface Props {
 	first?: boolean;

@@ -1,14 +1,14 @@
 import {
 	Co,
 	Cos,
-	FeatureCollectionData } from '../../../types';
+	FeatureCollectionData } from '../../types';
 import {
 	POLYGON,
 	LINE_STRING,
 	MULTI_POINT,
 	MULTI_POLYGON,
 	MULTI_LINE_STRING, CIRCLE, RECTANGLE
-} from '../../../constants';
+} from '../../constants';
 
 const withoutIndex = (index: number) => (m: any[], e: any, i: number) => (
 	i === index ? m : m.concat([e])

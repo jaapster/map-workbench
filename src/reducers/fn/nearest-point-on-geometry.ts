@@ -1,10 +1,10 @@
 import {
 	Co,
 	Point,
-	FeatureCollectionData, LngLat } from '../../../types';
+	FeatureCollectionData, LngLat } from '../../types';
 import {
 	getDistanceToSegment,
-	nearestPointOnSegment } from '../../../map-control/utils/util-math';
+	nearestPointOnSegment } from '../../map-control/utils/util-math';
 import {
 	POINT,
 	CIRCLE,
@@ -12,19 +12,19 @@ import {
 	MULTI_POINT,
 	LINE_STRING,
 	MULTI_POLYGON,
-	MULTI_LINE_STRING } from '../../../constants';
+	MULTI_LINE_STRING } from '../../constants';
 import {
 	add,
 	sub,
 	mul,
 	div,
 	dis,
-	hyp } from '../../../map-control/utils/util-point';
+	hyp } from '../../map-control/utils/util-point';
 import {
 	llToCo,
 	coToLl,
 	geoProject,
-	geoUnproject } from '../../../map-control/utils/util-geo';
+	geoUnproject } from '../../map-control/utils/util-geo';
 
 const roll = (p0: Point, index: number[]) =>
 	(m: any, co: Co, i: number, xs: any) => {

@@ -1,6 +1,6 @@
 import bind from 'autobind-decorator';
 import React from 'react';
-import './style/properties.scss';
+import './scss/properties.scss';
 import { SelectionService } from '../../services/service.selection';
 import { Properties } from './cp-properties';
 import { FeatureData } from '../../types';

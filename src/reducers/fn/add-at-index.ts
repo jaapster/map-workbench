@@ -1,14 +1,14 @@
 import {
 	Co,
 	Cos,
-	FeatureCollectionData } from '../../../types';
+	FeatureCollectionData } from '../../types';
 import {
 	POLYGON,
 	MULTI_POINT,
 	LINE_STRING,
 	MULTI_POLYGON,
 	MULTI_LINE_STRING, RECTANGLE, CIRCLE
-} from '../../../constants';
+} from '../../constants';
 
 const processRing = (index: any, co: any) => (m3: Co[], co1: Co, l: number) => (
 	l === index

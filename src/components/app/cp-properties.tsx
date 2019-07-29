@@ -1,5 +1,5 @@
 import React from 'react';
-import './style/properties.scss';
+import './scss/properties.scss';
 
 export const Properties = ({ children }: any) => {
 	return (
