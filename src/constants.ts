@@ -57,7 +57,7 @@ export const DEFAULT_LOCATION: Location = {
 export const MENU_MODE = 'menu';
 export const DRAW_MODE = 'draw';
 export const UPDATE_MODE = 'update';
-export const NAVIGATION_MODE = 'navigation';
+export const NAVIGATION_MODE = 'navigate';
 
 export const EMPTY_STYLE = { version: 8, sources: {}, layers: [] };
 

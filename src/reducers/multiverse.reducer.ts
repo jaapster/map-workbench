@@ -17,7 +17,8 @@ import {
 	ActionClearSelection,
 	ActionClearCollection,
 	ActionDeleteSelection,
-	ActionUpdateCoordinates } from './actions';
+	ActionUpdateCoordinates, ActionSetCollection, ActionSetCollectionData
+} from './actions';
 
 const STATE: MultiverseData = {
 	worlds: {},
@@ -94,6 +95,15 @@ export const multiverseReducer = (
 							}
 						}
 					), {}),
+					collections: Object.keys(worldData.collections).reduce((m, key) => {
+						return {
+							...m,
+							[key]: {
+								featureCollection: worldData.collections[key],
+								selection: []
+							}
+						};
+					}, {}),
 					currentMapId: oc(universe.maps[0]).id(''),
 					currentCollectionId: Object.keys(collections)[0]
 				}
@@ -119,11 +129,11 @@ export const multiverseReducer = (
 	}
 
 	if (ActionMoveGeometry.validate(action)) {
-		const { collectionId, vector, amount } = ActionMoveGeometry.data(action);
+		const { collectionId, vector, movement } = ActionMoveGeometry.data(action);
 		const { featureCollection } = worlds[currentWorldId].collections[collectionId];
 
 		return updateCollection(state, collectionId, {
-			featureCollection: moveGeometry(featureCollection, vector, amount)
+			featureCollection: moveGeometry(featureCollection, vector, movement)
 		});
 	}
 
@@ -163,13 +173,14 @@ export const multiverseReducer = (
 
 	if (ActionAddFeature.validate(action)) {
 		const { collectionId, feature } = ActionAddFeature.data(action);
-		const { featureCollection } = worlds[currentWorldId].collections[collectionId];
+		const { featureCollection, selection } = worlds[currentWorldId].collections[collectionId];
 
 		return updateCollection(state, collectionId, {
 			featureCollection: {
 				...featureCollection,
 				features: featureCollection.features.concat(feature)
-			}
+			},
+			selection: selection.concat([[featureCollection.features.length]])
 		});
 	}
 
@@ -180,6 +191,21 @@ export const multiverseReducer = (
 		return updateCollection(state, collectionId, {
 			featureCollection: addAtIndex(featureCollection, vector, coordinate)
 		});
+	}
+
+	if (ActionSetCollection.validate(action)) {
+		const { collectionId } = ActionSetCollection.data(action);
+
+		return {
+			...state,
+			worlds: {
+				...worlds,
+				[currentWorldId]: {
+					...worlds[currentWorldId],
+					currentCollection: collectionId
+				}
+			}
+		};
 	}
 
 	if (ActionDeleteSelection.validate(action)) {
@@ -227,6 +253,15 @@ export const multiverseReducer = (
 				};
 			}, {})
 		};
+	}
+
+	if (ActionSetCollectionData.validate(action)) {
+		const { collectionId, featureCollection } = ActionSetCollectionData.data(action);
+
+		return updateCollection(state, collectionId, {
+			featureCollection,
+			selection: []
+		});
 	}
 
 	return state;

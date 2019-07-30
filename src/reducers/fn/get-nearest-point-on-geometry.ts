@@ -47,7 +47,7 @@ const roll = (p0: Point, index: number[]) =>
 		return m;
 	};
 
-export const nearestPointOnGeometry = (
+export const getNearestPointOnGeometry = (
 	lngLat: LngLat,
 	data: FeatureCollectionData,
 	project: any = geoProject,

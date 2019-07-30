@@ -1,7 +1,11 @@
 import axios from 'axios';
-import { MapControl } from '../map-control/map-control';
-import { UniverseService } from './service.universe';
+import { dispatch } from '../reducers/store';
+import { WorldData } from '../types';
 import { LOCATIONS } from '../constants';
+import { MapControl } from '../map-control/map-control';
+import {
+	ActionAddWorld,
+	ActionSetUniverses } from '../reducers/actions';
 
 export const BootService = {
 	boot() {
@@ -15,9 +19,11 @@ export const BootService = {
 			.then((responses) => {
 				const [universes, worlds] = responses.map(r => r.data);
 
-				UniverseService.init(universes);
+				dispatch(ActionSetUniverses.create({ universeData: universes }));
 
-				worlds.forEach(UniverseService.addWorld);
+				worlds.forEach((worldData: WorldData) => (
+					dispatch(ActionAddWorld.create({ worldData }))
+				));
 			});
 	}
 };

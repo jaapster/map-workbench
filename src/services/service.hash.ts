@@ -1,6 +1,7 @@
 import { debounce } from 'lodash';
 import { MapControl } from '../map-control/map-control';
 import { MessageService } from './service.message';
+import { getState } from '../reducers/store';
 
 const SEPARATOR = '/';
 const ASSIGN = ':';
@@ -59,7 +60,7 @@ const update = () => {
 	setHashParams({
 		center: [round(x, 6), round(y, 6)],
 		zoom: round(zoom, 1),
-		epsg: MapControl.getCRS()
+		epsg: getState().mapControl.CRS
 	});
 };
 

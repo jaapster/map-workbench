@@ -1,16 +1,23 @@
 import * as mapboxgl from 'mapbox-gl';
 import { dis } from '../utils/util-point';
 import { coToLl } from '../utils/util-geo';
+import { dispatch } from '../../reducers/store';
 import { THRESHOLD } from '../../constants';
 import { EventEmitter } from '../../event-emitter';
-import { ServiceGeoNote } from '../../services/service.geo-note';
-import { UniverseService } from '../../services/service.universe';
-import { FeatureCollection } from '../../models/feature-collection/model.feature-collection';
+import { getNearestVertex } from '../../reducers/fn/get-nearest-vertex';
+import { getFeatureCollection } from '../../reducers/selectors/index.selectors';
+import { getNearestPointOnGeometry } from '../../reducers/fn/get-nearest-point-on-geometry';
 import {
 	Ev,
 	Dict,
 	Point,
-	LngLat } from '../../types';
+	LngLat,
+	FeatureCollectionData } from '../../types';
+import {
+	ActionSelect,
+	ActionSetCollection,
+	ActionClearSelection,
+	ActionDeleteSelection } from '../../reducers/actions';
 
 export class InteractionMode extends EventEmitter {
 	protected readonly _el: HTMLElement;
@@ -31,11 +38,11 @@ export class InteractionMode extends EventEmitter {
 
 	protected _onStyleLoaded() {}
 
-	_hit(lngLat: LngLat, point: Point, model: FeatureCollection) {
+	_hit(lngLat: LngLat, point: Point, featureCollection: FeatureCollectionData) {
 		const {
 			index: i1,
 			coordinate: co1
-		} = model.getNearestVertex(lngLat);
+		} = getNearestVertex(lngLat, featureCollection);
 
 		if (co1 === null) {
 			return null;
@@ -50,7 +57,7 @@ export class InteractionMode extends EventEmitter {
 		const {
 			index: i2,
 			coordinate: co2
-		} = model.getNearestPointOnGeometry(lngLat);
+		} = getNearestPointOnGeometry(lngLat, featureCollection);
 
 		if (co2 === null) {
 			return null;
@@ -79,25 +86,23 @@ export class InteractionMode extends EventEmitter {
 		const { lngLat, point, originalEvent } = e;
 		const add = originalEvent.shiftKey;
 
-		const trailModel = UniverseService.getCurrentWorld().trails;
-		const geoNotesModel = ServiceGeoNote.getModel();
+		const featureCollections = getFeatureCollection('trails');
 
-		const trailHit = this._hit(lngLat, point, trailModel);
-		const geoNoteHit = this._hit(lngLat, point, geoNotesModel);
+		const trailHit = this._hit(lngLat, point, featureCollections);
 
 		if (trailHit != null) {
-			if (!add) {
-				geoNotesModel.clearSelection();
-			}
-			trailModel.select(trailHit, add);
-			this.trigger('select', trailModel);
-		} else if (geoNoteHit != null) {
-			if (!add) {
-				trailModel.clearSelection();
-			}
-			geoNotesModel.select(geoNoteHit, add);
-			this.trigger('select', geoNotesModel);
-		} else {
+			dispatch(ActionSetCollection.create({
+				collectionId: 'trails'
+			}));
+
+			dispatch(ActionSelect.create({
+				collectionId: 'trails',
+				vector: trailHit,
+				multi: add
+			}));
+
+			this.trigger('select');
+		}  else {
 			if (!add) {
 				this.trigger('finish');
 			}
@@ -123,12 +128,10 @@ export class InteractionMode extends EventEmitter {
 	}
 
 	onDeleteKey() {
-		UniverseService.getCurrentWorld().trails.deleteSelection();
-		ServiceGeoNote.deleteSelection();
+		dispatch(ActionDeleteSelection.create({ collectionId: 'trails' }));
 	}
 
 	cleanUp() {
-		UniverseService.getCurrentWorld().trails.clearSelection();
-		ServiceGeoNote.clearSelection();
+		dispatch(ActionClearSelection.create({ collectionId: 'trails' }));
 	}
 }

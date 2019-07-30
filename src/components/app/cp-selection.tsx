@@ -1,49 +1,26 @@
-import bind from 'autobind-decorator';
 import React from 'react';
 import './scss/properties.scss';
-import { SelectionService } from '../../services/service.selection';
 import { Properties } from './cp-properties';
 import { FeatureData } from '../../types';
 import { FeatureProperties } from './cp-feature-properties';
-import { MessageService } from '../../services/service.message';
+import { getSelectedFeatures } from '../../reducers/selectors/index.selectors';
+import { connect } from 'react-redux';
 
-interface Props {}
-
-interface State {
+interface Props {
 	features: FeatureData<any>[];
 }
 
-@bind
-export class Selection extends React.Component<Props, State> {
-	state = {
-		features: []
-	};
+export const _Selection = ({ features }: Props) => (
+	<Properties>
+		<h2>Selection properties</h2>
+		<FeatureProperties features={ features } />
+	</Properties>
+);
 
-	componentDidMount() {
-		MessageService.on('update:crs', this._update);
-		SelectionService.on('update:selection', this._update);
-		this._update();
+const mapStateToProps = () => (
+	{
+		features: getSelectedFeatures('trails')
 	}
+);
 
-	componentWillUnmount() {
-		MessageService.off('update:crs', this._update);
-		SelectionService.off('update:selection', this._update);
-	}
-
-	private _update() {
-		this.setState({
-			features: SelectionService.getSelection()
-		});
-	}
-
-	render() {
-		const { features } = this.state;
-
-		return (
-			<Properties>
-				<h2>Selection properties</h2>
-				<FeatureProperties features={ features } />
-			</Properties>
-		);
-	}
-}
+export const Selection = connect(mapStateToProps)(_Selection);

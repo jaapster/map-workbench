@@ -94,7 +94,7 @@ export const FeatureProperties = (props: Props) => {
 						<Value
 							value={
 								features.length === 1
-									? MapControl.projectToCRS(getCoordinate(features[0]))
+									? MapControl.projectToCurrentCRS(getCoordinate(features[0]))
 									: null
 							}
 						/>

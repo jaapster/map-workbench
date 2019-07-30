@@ -1,6 +1,7 @@
 import bind from 'autobind-decorator';
 import React from 'react';
 import './scss/cp-map.scss';
+import { connect } from 'react-redux';
 import { ZoomLevel } from './cp-zoom-level';
 import { MapControl } from '../../map-control/map-control';
 import { PopUpMenu } from './cp-pop-up-menu';
@@ -8,32 +9,30 @@ import { CRSSelector } from './cp-crs-selector';
 import { ModeSelector } from './cp-mode-selector';
 import { mergeClasses } from '../app/utils/util-merge-classes';
 import { MarkerVertex } from './cp-marker-vertex';
+import { WorldSelector } from './cp-world-selector';
 import { StyleSelector } from './cp-style-selector';
-import { MessageService } from '../../services/service.message';
-import { ServiceGeoNote } from '../../services/service.geo-note';
 import { MarkerArrowHead } from './cp-marker-arrow-head';
 import { CenterCoordinate } from './cp-center-coordinate';
 import { FeatureCollectionLayer } from './cp-feature-collection-layer';
-import { UniverseService } from '../../services/service.universe';
-import { WorldSelector } from './cp-world-selector';
+import {
+	Dict,
+	CollectionData,
+	MultiverseData,
+	MapControlData,
+	MapControlMode } from '../../types';
+
+interface Props {
+	collections: Dict<CollectionData>;
+	mode: MapControlMode;
+}
 
 @bind
-export class Map extends React.Component {
+export class _Map extends React.Component<Props> {
 	private _ref: any;
 
 	componentDidMount() {
 		this._ref.appendChild(MapControl.getContainer());
 		MapControl.resize();
-
-		MessageService.on('update:world', this._update);
-	}
-
-	componentWillUnmount() {
-		MessageService.off('update:world', this._update);
-	}
-
-	private _update() {
-		this.forceUpdate();
 	}
 
 	private _setRef(e: any) {
@@ -41,15 +40,12 @@ export class Map extends React.Component {
 	}
 
 	render() {
+		const { collections, mode } = this.props;
+
 		const className = mergeClasses(
 			'map-container',
-			`mode-${ MapControl.getMode() }`
+			`mode-${ mode }`
 		);
-
-		const models = [
-			UniverseService.getCurrentWorld().trails,
-			ServiceGeoNote.getModel()
-		];
 
 		return (
 			<div>
@@ -58,12 +54,17 @@ export class Map extends React.Component {
 					<MarkerVertex />
 					<MarkerArrowHead />
 					{
-						models.map(model => (
-							<FeatureCollectionLayer
-								key={ model.getTitle() }
-								model={ model }
-							/>
-						))
+						Object.keys(collections).map((key) => {
+							const { featureCollection, selection } = collections[key];
+
+							return (
+								<FeatureCollectionLayer
+									key={ key }
+									featureCollection={ featureCollection }
+									selection={ selection }
+								/>
+							);
+						})
 					}
 				</svg>
 				<CenterCoordinate />
@@ -79,3 +80,14 @@ export class Map extends React.Component {
 		);
 	}
 }
+
+const mapStateToProps = (state: { multiverse: MultiverseData, mapControl: MapControlData }) => {
+	const { multiverse: { worlds, currentWorldId } } = state;
+
+	return {
+		collections: worlds[currentWorldId].collections,
+		mode: state.mapControl.mode
+	};
+};
+
+export const Map = connect(mapStateToProps)(_Map);

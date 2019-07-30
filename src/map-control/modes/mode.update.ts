@@ -1,7 +1,8 @@
 import bind from 'autobind-decorator';
-// import { MapControl } from '../map-control';
+import { dispatch } from '../../reducers/store';
 import { InteractionMode } from './mode.interaction';
-import { FeatureCollection } from '../../models/feature-collection/model.feature-collection';
+import { analyseRectangle } from '../../reducers/fn/analyse-rectangle';
+import { getNearestPointOnGeometry } from '../../reducers/fn/get-nearest-point-on-geometry';
 import {
 	pointAtLength,
 	nearestPointOnLine } from '../utils/util-math';
@@ -10,7 +11,6 @@ import {
 	dis,
 	rot } from '../utils/util-point';
 import {
-	Co,
 	Ev,
 	Point } from '../../types';
 import {
@@ -21,26 +21,17 @@ import {
 import {
 	coToLl,
 	llToCo,
-	geoUnproject, geoProject } from '../utils/util-geo';
-
-const analyseRectangle = (coordinates: Co[][], nv: number) => {
-	const [cos] = coordinates;
-
-	// get the coordinate indices of the points
-	// opposite, clockwise and counter clockwise from
-	// the point that is dragged
-	const n0 = [2, 3, 0, 1, 2][nv];
-	const n1 = [1, 2, 3, 0, 1][nv];
-	const n2 = [3, 0, 1, 2, 3][nv];
-
-	// get screen positions for the coordinates
-	const p0 = geoProject(coToLl(cos[n0]));
-	const p1 = geoProject(coToLl(cos[n1]));
-	const p2 = geoProject(coToLl(cos[n2]));
-	const p3 = geoProject(coToLl(cos[nv]));
-
-	return { p0, p1, p2, p3, n0, n1, n2 };
-};
+	geoUnproject } from '../utils/util-geo';
+import {
+	ActionSelect,
+	ActionAddVertex,
+	ActionMoveGeometry,
+	ActionUpdateCoordinates } from '../../reducers/actions';
+import {
+	getSelection,
+	getFeatureAtIndex,
+	getFeatureCollection,
+	getCurrentCollectionId } from '../../reducers/selectors/index.selectors';
 
 @bind
 export class ModeUpdate extends InteractionMode {
@@ -48,39 +39,45 @@ export class ModeUpdate extends InteractionMode {
 		return new	ModeUpdate(map);
 	}
 
-	private _model?: FeatureCollection;
 	// used to store initial rectangle ratio on start drag
 	private _ratio = 1;
 
-	// private _triggerContext(e: Ev) {
-	// 	this.trigger('context', {
-	// 		location: e.point
-	// 	});
-	// }
-
 	onPointerDragStart({ lngLat, point, originalEvent }: Ev) {
-		if (this._model) {
-			const [_i, , _k] = this._model.getSelection()[0];
+		const collectionId = getCurrentCollectionId();
 
-			if (this._model && _i != null) {
+		if (collectionId) {
+			const [_i, , _k] = getSelection(collectionId)[0];
+
+			if (_i != null) {
+				const featureCollection = getFeatureCollection(collectionId);
+
 				const {
 					geometry: { coordinates },
 					properties: { type }
-				} = this._model.getFeatureAtIndex(_i);
+				} = featureCollection.features[_i];
 
 				if (originalEvent[MODIFIERS.ADD_VERTEX]) {
 					if (![RECTANGLE, CIRCLE].includes(type)) {
 						const {
-							index,
+							index: vector,
 							coordinate
-						} = this._model.getNearestPointOnGeometry(lngLat);
+						} = getNearestPointOnGeometry(lngLat, featureCollection);
 
 						const p = this._map.project(coToLl(coordinate));
 						const d = dis(point, p);
 
 						if (d < THRESHOLD) {
-							this._model.select(index);
-							this._model.addAtIndex(coordinate, index);
+							dispatch(ActionSelect.create({
+								multi: false,
+								vector,
+								collectionId
+							}));
+
+							dispatch(ActionAddVertex.create({
+								vector,
+								coordinate,
+								collectionId
+							}));
 						}
 					}
 				}
@@ -95,8 +92,10 @@ export class ModeUpdate extends InteractionMode {
 	}
 
 	onPointerDragMove({ merc, lngLat, movement, originalEvent }: Ev) {
-		if (this._model) {
-			const [_i, _j, _k, _l] = this._model.getSelection()[0];
+		const collectionId = getCurrentCollectionId();
+
+		if (collectionId) {
+			const [_i, _j, _k, _l] = getSelection(collectionId)[0];
 
 			if (_i != null) {
 				if (_j != null) {
@@ -106,7 +105,7 @@ export class ModeUpdate extends InteractionMode {
 					const {
 						geometry: { coordinates },
 						properties: { type }
-					} = this._model.getFeatureAtIndex(_i);
+					} = getFeatureAtIndex(collectionId, _i);
 
 					if (type === RECTANGLE) {
 						const { p0, p1, p2, p3, n1, n2 } = analyseRectangle(
@@ -144,36 +143,36 @@ export class ModeUpdate extends InteractionMode {
 						}
 
 						// update the coordinates in the feature collection
-						this._model.updateCoordinates(
-							[
+						dispatch(ActionUpdateCoordinates.create({
+							collectionId,
+							entries: [
 								[[_i, 0, n1], llToCo(geoUnproject(A))],
 								[[_i, 0, n2], llToCo(geoUnproject(B))],
 								[[_i, 0, _k], llToCo(geoUnproject(C))]
 							]
-						);
+						}));
 					} else {
 						// change one coordinate in de the feature collection
 						// at vector [_i, _j, _k]
 
 						// only the second coordinate in circle can be updated
 						if (type !== CIRCLE || _j === 1) {
-							this._model.updateCoordinates(
-								[[[_i, _j, _k, _l], llToCo(lngLat)]]
-							);
+							dispatch(ActionUpdateCoordinates.create({
+								collectionId,
+								entries: [[[_i, _j, _k, _l], llToCo(lngLat)]]
+							}));
 						}
 					}
 				} else {
 					// the index contains only the feature so we're going to
 					// move its entire geometry
-					this._model.moveGeometry([_i], movement);
+					dispatch(ActionMoveGeometry.create({
+						collectionId,
+						movement,
+						vector: [_i]
+					}));
 				}
 			}
 		}
-	}
-
-	setModel(model: FeatureCollection) {
-		this._model = model;
-
-		return this;
 	}
 }

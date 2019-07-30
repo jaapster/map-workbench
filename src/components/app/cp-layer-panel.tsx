@@ -1,74 +1,98 @@
-import bind from 'autobind-decorator';
 import React from 'react';
+import { connect } from 'react-redux';
 import { MapControl } from '../../map-control/map-control';
-import { FeatureCollection } from '../../models/feature-collection/model.feature-collection';
 import { Properties } from './cp-properties';
+import {
+	SelectionVector,
+	FeatureCollectionData } from '../../types';
+import {
+	getSelection,
+	getFeatureAtIndex,
+	getFeatureCollection,
+	getCurrentCollectionId } from '../../reducers/selectors/index.selectors';
+import {
+	ActionSelect,
+	ActionDeleteSelection } from '../../reducers/actions';
 
 interface Props {
-	model: FeatureCollection;
+	del: (collectionId: string, vector: SelectionVector) => void;
+	select: (props: { collectionId: string, vector: SelectionVector, multi: boolean }) => void;
+	selection: SelectionVector[];
+	collectionId: string;
+	featureCollection: FeatureCollectionData;
 }
 
-@bind
-export class LayerPanel extends React.Component<Props> {
-	componentDidMount() {
-		const { model } = this.props;
+export const _LayerPanel = (props: Props) => {
+	const {
+		del,
+		select,
+		selection,
+		collectionId,
+		featureCollection } = props;
+	const indices = selection.map(([i]: any) => i);
 
-		model.on('update', this._update);
-	}
-
-	componentWillUnmount() {
-		const { model } = this.props;
-
-		model.off('update', this._update);
-	}
-
-	private _update() {
-		this.forceUpdate();
-	}
-
-	render() {
-		const { model } = this.props;
-		const indices = model.getSelection().map(([i]: any) => i);
-
-		return (
-			<Properties>
-				<h2>{ model.getTitle() }</h2>
-				<div className="list">
-					{
-						model.getFeatures().map((feature: any, j: number) => (
+	return (
+		<Properties>
+			<h2>{ collectionId }</h2>
+			<div className="list">
+				{
+					featureCollection.features.map((feature: any, j: number) => (
+						<div
+							key={ feature.properties.id }
+							className={
+								`list-item ${
+									indices.includes(j)
+										? 'selected'
+										: ''
+								}`
+							}
+							onClick={ (e: React.MouseEvent<HTMLElement>) => {
+								select({ collectionId, vector: [j], multi: e.shiftKey });
+							} }
+							onDoubleClick={ () => {
+								MapControl.fitFeatures([getFeatureAtIndex(collectionId, j)]);
+							} }
+						>
+							{ feature.properties.type }
 							<div
-								key={ feature.properties.id }
-								className={
-									`list-item ${
-										indices.includes(j)
-											? 'selected'
-											: ''
-									}`
-								}
+								className="delete"
 								onClick={ (e: React.MouseEvent<HTMLElement>) => {
-									model.select([j], e.shiftKey);
-								} }
-								onDoubleClick={ () => {
-									MapControl.fitFeatures([model.getFeatureAtIndex(j)]);
+									e.stopPropagation();
+
+									del(collectionId, [j]);
 								} }
 							>
-								{ feature.properties.type }
-								<div
-									className="delete"
-									onClick={ (e: React.MouseEvent<HTMLElement>) => {
-										e.stopPropagation();
-
-										model.select([j], e.shiftKey);
-										model.deleteSelection();
-									} }
-								>
-									&#10761;
-								</div>
+								&#10761;
 							</div>
-						))
-					}
-				</div>
-			</Properties>
-		);
+						</div>
+					))
+				}
+			</div>
+		</Properties>
+	);
+};
+
+const mapStateToProps = () => {
+	const collectionId = getCurrentCollectionId();
+
+	return {
+		selection: getSelection(collectionId),
+		collectionId,
+		featureCollection: getFeatureCollection(collectionId)
+	};
+};
+
+const mapDispatchToProps = (dispatch: any) => (
+	{
+		select(props: { collectionId: string, vector: SelectionVector, multi: boolean }) {
+			dispatch(ActionSelect.create(props));
+		},
+
+		del(collectionId: string, vector: SelectionVector) {
+			dispatch(ActionSelect.create({ collectionId, vector, multi: false }));
+			dispatch(ActionDeleteSelection.create({ collectionId }));
+		}
 	}
-}
+);
+
+export const LayerPanel = connect(mapStateToProps, mapDispatchToProps)(_LayerPanel);

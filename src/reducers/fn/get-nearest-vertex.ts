@@ -34,7 +34,7 @@ export const nearest = (lngLat: LngLat, coordinates: Co[], index: number[]) => (
 	}, { coordinate: null, distance: Infinity, index })
 );
 
-export const nearestVertex = (lngLat: LngLat, data: FeatureCollectionData) => (
+export const getNearestVertex = (lngLat: LngLat, data: FeatureCollectionData) => (
 	data.features.reduce((
 		m1: Result,
 		{ geometry: { type, coordinates: co1 }, properties }: FeatureData<any>,

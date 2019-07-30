@@ -4,11 +4,7 @@ import './index.scss';
 import { App } from './components/app/cp-app';
 import { Provider } from 'react-redux';
 import * as serviceWorker from './serviceWorker';
-import { store, getState } from './reducers/store';
-
-store.subscribe(() => {
-	console.log(getState()); // remove me
-});
+import { store } from './reducers/store';
 
 ReactDOM.render((
 	<Provider store={ store }>

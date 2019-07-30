@@ -135,3 +135,10 @@ export interface MultiverseData {
 	universes: UniverseData[];
 	currentWorldId: string;
 }
+
+export type MapControlMode = 'navigate' | 'update' | 'draw' | 'menu';
+
+export interface MapControlData {
+	CRS: EPSG;
+	mode: MapControlMode;
+}

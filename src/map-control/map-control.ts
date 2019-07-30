@@ -3,6 +3,7 @@ import mapboxGL from 'mapbox-gl';
 import { DOM } from './utils/util-dom';
 import { token } from '../token';
 import { clamp } from '../utils/util-clamp';
+import { dispatch, getState } from '../reducers/store';
 import { DrawMode } from './modes/mode.draw';
 import { MenuMode } from './modes/mode.menu';
 import { getCenter } from './utils/util-get-center';
@@ -13,9 +14,6 @@ import { PointerDevice } from './devices/device.pointer';
 import { KeyboardDevice } from './devices/device.keyboard';
 import { MessageService } from '../services/service.message';
 import { ModeNavigation } from './modes/mode.navigation';
-import { InteractionMode } from './modes/mode.interaction';
-import { UniverseService } from '../services/service.universe';
-import { FeatureCollection } from '../models/feature-collection/model.feature-collection';
 import { disableInteractions } from './utils/util-map';
 import {
 	FEATURE,
@@ -29,11 +27,10 @@ import {
 	NAVIGATION_MODE,
 	DEFAULT_LOCATION } from '../constants';
 import {
-	Co, EPSG,
+	Co,
 	Ev,
-	FeatureData,
-	Location
-} from '../types';
+	Location,
+	FeatureData } from '../types';
 import {
 	getEnvelope,
 	getTargetZoom } from './utils/util-get-target-zoom';
@@ -42,6 +39,8 @@ import {
 	coToLl,
 	geoProject,
 	geoUnproject } from './utils/util-geo';
+import { getCurrentCRS } from '../reducers/selectors/index.selectors';
+import { ActionSetMapControlMode } from '../reducers/actions';
 
 const FIT_PADDING = 64;
 const FIT_MIN_ZOOM = 14;
@@ -96,28 +95,20 @@ export class MapControl extends EventEmitter {
 		return MapControl.instance.getCenter();
 	}
 
-	static getCRS() {
-		return MapControl.instance.getCRS();
+	static activateUpdateMode() {
+		dispatch(ActionSetMapControlMode.create({ mode: UPDATE_MODE }));
 	}
 
-	static getMode() {
-		return MapControl.instance.getMode();
+	static activateMenuMode() {
+		dispatch(ActionSetMapControlMode.create({ mode: MENU_MODE }));
 	}
 
 	static activateNavigationMode() {
-		MapControl.instance.activateNavigationMode();
+		dispatch(ActionSetMapControlMode.create({ mode: NAVIGATION_MODE }));
 	}
 
-	static activateDrawMode(suspended: boolean) {
-		MapControl.instance.activateDrawMode(suspended);
-	}
-
-	static activateProjectedCRS() {
-		MapControl.instance.activateProjectedCRS();
-	}
-
-	static activateGeographicCRS() {
-		MapControl.instance.activateGeographicCRS();
+	static activateDrawMode() {
+		dispatch(ActionSetMapControlMode.create({ mode: DRAW_MODE }));
 	}
 
 	static setStyle(style: any) {
@@ -128,8 +119,21 @@ export class MapControl extends EventEmitter {
 		return MapControl.instance.project(co);
 	}
 
-	static projectToCRS(co: Co) {
-		return MapControl.instance.projectToCRS(co);
+	static projectToCurrentCRS(co: Co) {
+		if (co == null) {
+			return [0, 0];
+		}
+
+		if (getCurrentCRS() === GEOGRAPHIC) {
+			return co;
+		}
+
+		const { x, y } = geoProject(coToLl(co));
+
+		return [
+			Math.round(x),
+			Math.round(y)
+		];
 	}
 
 	static onMapMove() {
@@ -148,8 +152,7 @@ export class MapControl extends EventEmitter {
 	private readonly _keyboardDevice: KeyboardDevice;
 	private readonly _navigationMode: ModeNavigation;
 
-	private _mode: InteractionMode;
-	private _CRS = GEOGRAPHIC;
+	// private _mode: InteractionMode;
 
 	constructor(props: Props = DEFAULT_PROPS) {
 		super();
@@ -175,25 +178,25 @@ export class MapControl extends EventEmitter {
 		});
 
 		this._drawMode = DrawMode.create(this._map);
-		this._drawMode.on('finish', this.activateNavigationMode);
+		this._drawMode.on('finish', MapControl.activateNavigationMode);
 
 		this._menuMode = MenuMode.create(this._map);
-		this._menuMode.on('select', this._activateUpdateMode);
-		this._menuMode.on('finish', this.activateNavigationMode);
+		this._menuMode.on('select', MapControl.activateUpdateMode);
+		this._menuMode.on('finish', MapControl.activateNavigationMode);
 
 		this._updateMode = ModeUpdate.create(this._map);
-		this._updateMode.on('select', this._activateUpdateMode);
-		this._updateMode.on('finish', this.activateNavigationMode);
+		this._updateMode.on('select', MapControl.activateUpdateMode);
+		this._updateMode.on('finish', MapControl.activateNavigationMode);
 
 		this._navigationMode = ModeNavigation.create(this._map);
-		this._navigationMode.on('select', this._activateUpdateMode);
+		this._navigationMode.on('select', MapControl.activateUpdateMode);
 
 		this._pointerDevice = PointerDevice.create(this._map);
 		this._keyboardDevice = KeyboardDevice.create();
 
-		this._drawMode.on('context', this._onModeContext);
-		this._updateMode.on('context', this._onModeContext);
-		this._navigationMode.on('context', this._onModeContext);
+		this._drawMode.on('context', MapControl.activateMenuMode);
+		this._updateMode.on('context', MapControl.activateMenuMode);
+		this._navigationMode.on('context', MapControl.activateMenuMode);
 
 		this._pointerDevice.on('pointerup', this._onPointerUp);
 		this._pointerDevice.on('pointerdown', this._onPointerDown);
@@ -217,13 +220,13 @@ export class MapControl extends EventEmitter {
 		this._map.on('move', MapControl.onMapMove);
 		this._map.on('zoom', MapControl.onMapZoom);
 
-		document.addEventListener('keydown', this._onKeyDown);
+		// document.addEventListener('keydown', this._onKeyDown);
 
 		disableInteractions(this._map);
 
 		MapControl.instance = this;
 
-		this._mode = this._navigationMode;
+		// this._mode = this._navigationMode;
 	}
 
 	destroy() {
@@ -233,108 +236,72 @@ export class MapControl extends EventEmitter {
 		this._keyboardDevice.destroy();
 	}
 
-	private _onModeContext() {
-		this._activateMenuMode();
+	private _mode() {
+		const mode = getState().mapControl.mode;
+
+		return mode === NAVIGATION_MODE
+			? this._navigationMode
+			: mode === DRAW_MODE
+				? this._drawMode
+				: mode === UPDATE_MODE
+					? this._updateMode
+					: this._menuMode;
 	}
 
 	private _onPointerDown(e: Ev) {
-		this._mode.onPointerDown(e);
+		this._mode().onPointerDown(e);
 	}
 
 	private _onPointerMove(e: Ev) {
-		this._mode.onPointerMove(e);
+		this._mode().onPointerMove(e);
 	}
 
 	private _onPointerUp(e: Ev) {
-		this._mode.onPointerUp(e);
+		this._mode().onPointerUp(e);
 	}
 
 	private _onPointerDragStart(e: Ev) {
-		this._mode.onPointerDragStart(e);
+		this._mode().onPointerDragStart(e);
 	}
 
 	private _onPointerDragMove(e: Ev) {
-		this._mode.onPointerDragMove(e);
+		this._mode().onPointerDragMove(e);
 	}
 
 	private _onPointerDragEnd(e: Ev) {
-		this._mode.onPointerDragEnd(e);
+		this._mode().onPointerDragEnd(e);
 	}
 
 	private _onPointerClick(e: Ev) {
-		this._mode.onPointerClick(e);
+		this._mode().onPointerClick(e);
 	}
 
 	private _onPointerAltClick(e: Ev) {
-		this._mode.onPointerAltClick(e);
+		this._mode().onPointerAltClick(e);
 	}
 
 	private _onPointerDblClick(e: Ev) {
-		this._mode.onPointerDblClick(e);
+		this._mode().onPointerDblClick(e);
 	}
 
 	private _onPointerLongPress(e: Ev) {
-		this._mode.onPointerLongPress(e);
+		this._mode().onPointerLongPress(e);
 	}
 
 	private _onBlur() {
-		this._mode.onBlur();
+		this._mode().onBlur();
 	}
 
 	private _onWheel(e: Ev) {
-		this._mode.onWheel(e);
+		this._mode().onWheel(e);
 	}
 
 	private _onDeleteKey() {
-		this._mode.onDeleteKey();
+		this._mode().onDeleteKey();
 	}
 
 	private _onEscapeKey() {
-		this._mode.onEscapeKey();
-	}
-
-	private _onKeyDown(e: any) {
-		if (e.key === ' ') {
-			if (this._mode instanceof DrawMode) {
-				this.activateNavigationMode();
-				document.addEventListener('keyup', this._onKeyUp);
-			}
-		}
-	}
-
-	private _onKeyUp() {
-		this.activateDrawMode(true);
-		document.removeEventListener('keyup', this._onKeyUp);
-	}
-
-	private _activateUpdateMode(model: FeatureCollection) {
-		this._mode = this._updateMode.setModel(model);
-
-		MessageService.trigger('update:mode');
-	}
-
-	private _activateMenuMode() {
-		this._mode = this._menuMode;
-
-		MessageService.trigger('update:mode');
-	}
-
-	activateNavigationMode() {
-		this._mode = this._navigationMode;
-
-		MessageService.trigger('update:mode');
-	}
-
-	// todo: ehh .. "suspended"?
-	activateDrawMode(suspended: boolean) {
-		if (!suspended) {
-			this._mode.onEscapeKey();
-		}
-
-		this._drawMode.setModel(UniverseService.getCurrentWorld().trails);
-		this._mode = this._drawMode;
-
-		MessageService.trigger('update:mode');
+		this._mode().onEscapeKey();
 	}
 
 	resize() {
@@ -422,7 +389,7 @@ export class MapControl extends EventEmitter {
 	}
 
 	getCenter() {
-		return this.projectToCRS(llToCo(this._map.getCenter()));
+		return MapControl.projectToCurrentCRS(llToCo(this._map.getCenter()));
 	}
 
 	// expects WGS84
@@ -438,16 +405,6 @@ export class MapControl extends EventEmitter {
 		this._map.setZoom(zoom - 1);
 	}
 
-	getMode() {
-		return this._mode === this._navigationMode
-			? NAVIGATION_MODE
-			: this._mode === this._drawMode
-				? DRAW_MODE
-				: this._mode === this._menuMode
-					? MENU_MODE
-					: UPDATE_MODE;
-	}
-
 	getBoundingClientRect() {
 		return this.getContainer().getBoundingClientRect();
 	}
@@ -455,43 +412,5 @@ export class MapControl extends EventEmitter {
 	// project to screen coordinates
 	project(co: Co) {
 		return this._map.project(coToLl(co));
-	}
-
-	getCRS() {
-		return this._CRS;
-	}
-
-	setCRS(crs: EPSG) {
-		this._CRS = crs;
-	}
-
-	activateGeographicCRS() {
-		this._CRS = GEOGRAPHIC;
-
-		MessageService.trigger('update:crs');
-	}
-
-	activateProjectedCRS() {
-		this._CRS = PROJECTED;
-
-		MessageService.trigger('update:crs');
-	}
-
-	// project GEOGRAPHIC to PROJECTED if needed
-	projectToCRS(co: Co) {
-		if (co == null) {
-			return [0, 0];
-		}
-
-		if (this._CRS === GEOGRAPHIC) {
-			return co;
-		}
-
-		const { x, y } = geoProject(coToLl(co));
-
-		return [
-			Math.round(x),
-			Math.round(y)
-		];
 	}
 }

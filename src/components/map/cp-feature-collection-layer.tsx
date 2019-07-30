@@ -9,7 +9,6 @@ import { LineString } from './geometries/cp-line-string';
 import { MultiPolygon } from './geometries/cp-multi-polygon';
 import { SelectedVertex } from './cp-selected-vertex';
 import { MultiLineString } from './geometries/cp-multi-line-string';
-import { FeatureCollection } from '../../models/feature-collection/model.feature-collection';
 import {
 	POINT,
 	CIRCLE,
@@ -20,27 +19,51 @@ import {
 	MULTI_POLYGON,
 	MULTI_LINE_STRING } from '../../constants';
 import { MessageService } from '../../services/service.message';
+import { Co, FeatureCollectionData, SelectionVector } from '../../types';
 
 interface Props {
-	model: FeatureCollection;
+	featureCollection: FeatureCollectionData;
+	selection: SelectionVector[];
 }
+
+const getSelectedVertices = ({ features }: any, selection: any): Co[] => {
+	return selection.reduce((m: any, s: any) => {
+		const l = s.length;
+		const [_i, _j, _k, _l] = s;
+
+		const {
+			geometry: { coordinates },
+			properties: { type }
+		} = features[_i];
+
+		if (_j == null) {
+			return type === POINT
+				? m.concat([coordinates])
+				: m;
+		}
+
+		return m.concat([
+			l === 0
+				? [0, 0]
+				: l === 1
+				? coordinates
+				: l === 2
+					? coordinates[_j]
+					: l === 3
+						? coordinates[_j][_k]
+						: coordinates[_j][_k][_l]
+		]);
+	}, [] as Co[]);
+};
 
 @bind
 export class FeatureCollectionLayer extends React.Component<Props> {
 	componentDidMount() {
-		const { model } = this.props;
-
-		model.on('update', this._update);
-
 		MessageService.on('update:center', this._update);
 		MessageService.on('update:zoom', this._update);
 	}
 
 	componentWillUnmount() {
-		const { model } = this.props;
-
-		model.off('update', this._update);
-
 		MessageService.off('update:center', this._update);
 		MessageService.off('update:zoom', this._update);
 	}
@@ -50,19 +73,19 @@ export class FeatureCollectionLayer extends React.Component<Props> {
 	}
 
 	render() {
-		const { model } = this.props;
+		const { featureCollection, selection } = this.props;
 
-		const selection = model.getSelectedFeatureIndices();
+		const selectedFeatureIndices = selection.map(([i]) => i);
 
 		return (
 			<g>
 				<g>
 					{
-						model.getFeatures().map((f, i) => {
+						featureCollection.features.map((f, i) => {
 							const p = {
 								id: f.properties.id,
 								key: f.properties.id,
-								selected: selection.includes(i),
+								selected: selectedFeatureIndices.includes(i),
 								coordinates: f.geometry.coordinates
 							};
 
@@ -91,13 +114,14 @@ export class FeatureCollectionLayer extends React.Component<Props> {
 				</g>
 				<g>
 					{
-						model.getSelectedVertices().map((coordinates, i) => (
-							<SelectedVertex
-								key={ i }
-								animate={ true }
-								coordinates={ coordinates }
-							/>
-						))
+						getSelectedVertices(featureCollection, selection)
+							.map((coordinates, i) => (
+								<SelectedVertex
+									key={ i }
+									animate={ true }
+									coordinates={ coordinates }
+								/>
+							))
 					}
 				</g>
 			</g>

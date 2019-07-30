@@ -1,56 +1,74 @@
 import { Ev } from '../../types';
 import { dis } from '../utils/util-point';
+import { dispatch } from '../../reducers/store';
 import { dropLast } from '../utils/util-list';
 import { THRESHOLD } from '../../constants';
 import { InteractionMode } from './mode.interaction';
-import { FeatureCollection } from '../../models/feature-collection/model.feature-collection';
 import {
 	coToLl,
 	llToCo } from '../utils/util-geo';
 import {
 	newPolygon,
 	newLineString } from '../utils/util-geo-json';
+import {
+	ActionAddVertex,
+	ActionAddFeature,
+	ActionDeleteSelection,
+	ActionSetCollectionData,
+	ActionUpdateCoordinates } from '../../reducers/actions';
+import {
+	getSelection,
+	getFeatureAtIndex,
+	getFeatureCollection,
+	getCurrentCollectionId } from '../../reducers/selectors/index.selectors';
 
 export class DrawMode extends InteractionMode {
 	static create(map: any) {
 		return new DrawMode(map);
 	}
 
-	private _model?: FeatureCollection;
-
 	onPointerDown(e: Ev) {
-		if (!this._model) {
+		const collectionId = getCurrentCollectionId();
+
+		if (!collectionId) {
 			return;
 		}
 
 		const co = llToCo(e.lngLat);
 
 		// todo: implement drawing of new points, rectangles and circles
-		if (this._model.getSelectedFeatureIndex() == null) {
-			this._model.addFeature(newLineString([co, co]));
+		const selection = getSelection(collectionId);
+		const _i = selection[0]
+			? selection[0][0]
+			: undefined;
+
+		if (_i == null) {
+			dispatch(ActionAddFeature.create({
+				collectionId,
+				feature: newLineString([co, co])
+			}));
+
 		} else {
-			const _i = this._model.getSelectedFeatureIndex();
-
-			if (_i == null) {
-				return;
-			}
-
 			const {
 				geometry: { coordinates: cos }
-			} = this._model.getFeatureAtIndex(_i);
+			} = getFeatureAtIndex(collectionId, _i);
 
 			if (cos.length > 2) {
 				const p0 = this._map.project(coToLl(cos[0]));
+				const featureCollection = getFeatureCollection(collectionId);
 
 				if (dis(p0, e.point) < THRESHOLD) {
-					this._model.setFeatureCollection({
-						...this._model.getFeatureCollection(),
-						features: this._model.getFeatures().map((f, i) => (
-							i !== _i
-								? f
-								: newPolygon([dropLast(1, cos).concat([cos[0]])])
-						))
-					});
+					dispatch(ActionSetCollectionData.create({
+						collectionId,
+						featureCollection: {
+							...featureCollection,
+							features: featureCollection.features.map((f: any, i: any) => (
+								i !== _i
+									? f
+									: newPolygon([dropLast(1, cos).concat([cos[0]])])
+							))
+						}
+					}));
 
 					this.trigger('finish');
 
@@ -58,69 +76,92 @@ export class DrawMode extends InteractionMode {
 				}
 			}
 
-			this._model.addAtIndex(co, [_i, cos.length - 1]);
+			dispatch(ActionAddVertex.create({
+				collectionId,
+				coordinate: co,
+				vector: [_i, cos.length - 1]
+			}));
 		}
 	}
 
 	onPointerMove(e: Ev) {
-		if (!this._model) {
+		const collectionId = getCurrentCollectionId();
+
+		if (!collectionId) {
 			return;
 		}
 
-		const _i = this._model.getSelectedFeatureIndex();
+		// todo: implement drawing of new points, rectangles and circles
+		const selection = getSelection(collectionId);
+		const _i = selection[0]
+			? selection[0][0]
+			: undefined;
 
 		if (_i == null) {
 			return;
 		}
 
-		const { geometry: { coordinates } } = this._model.getFeatureAtIndex(_i);
+		const { geometry: { coordinates } } = getFeatureAtIndex(collectionId, _i);
 
-		this._model.updateCoordinates([
-			[[_i, coordinates.length - 1], llToCo(e.lngLat)]
-		]);
+		dispatch(ActionUpdateCoordinates.create({
+			collectionId,
+			entries: [
+				[[_i, coordinates.length - 1], llToCo(e.lngLat)]
+			]
+		}));
 	}
 
 	onPointerUp(e: Ev) {}
 
 	onPointerDblClick() {
-		if (!this._model) {
+		const collectionId = getCurrentCollectionId();
+
+		if (!collectionId) {
 			return;
 		}
 
-		const _i = this._model.getSelectedFeatureIndex();
+		// todo: implement drawing of new points, rectangles and circles
+		const selection = getSelection(collectionId);
+		const _i = selection[0]
+			? selection[0][0]
+			: undefined;
 
 		if (_i == null) {
 			return;
 		}
 
-		this._model.setFeatureCollection({
-			...this._model.getFeatureCollection(),
-			features: this._model.getFeatures().map((f, i) => (
-				i !== _i
-					? f
-					: {
-						...f,
-						geometry: {
-							...f.geometry,
-							coordinates: dropLast(2, f.geometry.coordinates)
+		const featureCollection = getFeatureCollection(collectionId);
+
+		dispatch(ActionSetCollectionData.create({
+			collectionId,
+			featureCollection: {
+				...featureCollection,
+				features: featureCollection.features.map((f: any, i: any) => (
+					i !== _i
+						? f
+						: {
+							...f,
+							geometry: {
+								...f.geometry,
+								coordinates: dropLast(2, f.geometry.coordinates)
+							}
 						}
-					}
-			))
-		});
+				))
+			}
+		}));
 
 		this.trigger('finish');
 	}
 
 	onEscapeKey() {
-		if (this._model) {
-			this._model.deleteSelection();
-			this._model.clearSelection();
+		const collectionId = getCurrentCollectionId();
+
+		if (!collectionId) {
+			return;
 		}
 
-		this.trigger('finish');
-	}
+		dispatch(ActionDeleteSelection.create({ collectionId }));
 
-	setModel(model: FeatureCollection) {
-		this._model = model;
+		this.trigger('finish');
 	}
 }

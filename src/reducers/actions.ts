@@ -6,7 +6,9 @@ import {
 	WorldData,
 	FeatureData,
 	UniverseData,
-	SelectionVector } from '../types';
+	SelectionVector,
+	FeatureCollectionData, EPSG, MapControlMode
+} from '../types';
 
 export interface Action {
 	type: string;
@@ -33,8 +35,8 @@ export const ActionUpdateCoordinates = getActionCreator<{
 
 export const ActionMoveGeometry = getActionCreator<{
 	collectionId: string,
-	vector: SelectionVector,
-	amount: Point
+	movement: Point,
+	vector: SelectionVector
 }>('ActionMoveGeometry');
 
 export const ActionSelect = getActionCreator<{
@@ -51,6 +53,11 @@ export const ActionClearCollection = getActionCreator<{
 	collectionId: string
 }>('ActionClearCollection');
 
+export const ActionSetCollectionData = getActionCreator<{
+	collectionId: string,
+	featureCollection: FeatureCollectionData
+}>('ActionClearCollection');
+
 export const ActionAddFeature = getActionCreator<{
 	collectionId: string,
 	feature: FeatureData<any>
@@ -65,3 +72,15 @@ export const ActionAddVertex = getActionCreator<{
 export const ActionDeleteSelection = getActionCreator<{
 	collectionId: string
 }>('ActionDeleteSelection');
+
+export const ActionSetCollection = getActionCreator<{
+	collectionId: string
+}>('ActionSetCollection');
+
+export const ActionSetMapControlCRS = getActionCreator<{
+	CRS: EPSG
+}>('ActionSetMapControlCRS');
+
+export const ActionSetMapControlMode = getActionCreator<{
+	mode: MapControlMode
+}>('ActionSetMapControlMode');
