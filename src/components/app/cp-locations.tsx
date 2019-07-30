@@ -7,7 +7,7 @@ interface Props {
 	locations: Location[];
 }
 
-export const Locations = ({ locations }: Props) => {
+export const Locations = React.memo(({ locations }: Props) => {
 	return (
 		<Properties>
 			<h2>Locations</h2>
@@ -26,4 +26,4 @@ export const Locations = ({ locations }: Props) => {
 			</div>
 		</Properties>
 	);
-};
+});

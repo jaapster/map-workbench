@@ -2,7 +2,7 @@ import { Ev } from '../../types';
 import { dis } from '../utils/util-point';
 import { dispatch } from '../../reducers/store';
 import { dropLast } from '../utils/util-list';
-import { THRESHOLD } from '../../constants';
+import { NAVIGATION_MODE, THRESHOLD } from '../../constants';
 import { InteractionMode } from './mode.interaction';
 import {
 	coToLl,
@@ -15,7 +15,8 @@ import {
 	ActionAddFeature,
 	ActionDeleteSelection,
 	ActionSetCollectionData,
-	ActionUpdateCoordinates } from '../../reducers/actions';
+	ActionUpdateCoordinates, ActionSetMapControlMode
+} from '../../reducers/actions';
 import {
 	getSelection,
 	getFeatureAtIndex,
@@ -70,7 +71,8 @@ export class DrawMode extends InteractionMode {
 						}
 					}));
 
-					this.trigger('finish');
+					// this.trigger('finish');
+					dispatch(ActionSetMapControlMode.create({ mode: NAVIGATION_MODE }));
 
 					return;
 				}
@@ -150,7 +152,8 @@ export class DrawMode extends InteractionMode {
 			}
 		}));
 
-		this.trigger('finish');
+		// this.trigger('finish');
+		dispatch(ActionSetMapControlMode.create({ mode: NAVIGATION_MODE }));
 	}
 
 	onEscapeKey() {
@@ -162,6 +165,7 @@ export class DrawMode extends InteractionMode {
 
 		dispatch(ActionDeleteSelection.create({ collectionId }));
 
-		this.trigger('finish');
+		// this.trigger('finish');
+		dispatch(ActionSetMapControlMode.create({ mode: NAVIGATION_MODE }));
 	}
 }

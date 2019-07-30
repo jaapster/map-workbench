@@ -1,6 +1,6 @@
 import React from 'react';
 import './scss/feature-card.scss';
-import { FeatureData } from '../../types';
+import { EPSG, FeatureData } from '../../types';
 import {
 	getRadius,
 	getCoordinate,
@@ -10,6 +10,7 @@ import { MapControl } from '../../map-control/map-control';
 
 interface Props {
 	features: FeatureData<any>[];
+	CRS: EPSG;
 }
 
 const Value = ({ value: v, unit, precision = 0 }: any) => (
@@ -23,8 +24,8 @@ const Value = ({ value: v, unit, precision = 0 }: any) => (
 	</span>
 );
 
-export const FeatureProperties = (props: Props) => {
-	const { features } = props;
+export const FeatureProperties = React.memo((props: Props) => {
+	const { features, CRS } = props;
 
 	return (
 		<div className="feature-card">
@@ -94,7 +95,7 @@ export const FeatureProperties = (props: Props) => {
 						<Value
 							value={
 								features.length === 1
-									? MapControl.projectToCurrentCRS(getCoordinate(features[0]))
+									? MapControl.projectToCRS(getCoordinate(features[0]), CRS)
 									: null
 							}
 						/>
@@ -117,4 +118,4 @@ export const FeatureProperties = (props: Props) => {
 			</div>
 		</div>
 	);
-};
+});

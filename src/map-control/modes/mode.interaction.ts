@@ -2,7 +2,12 @@ import * as mapboxgl from 'mapbox-gl';
 import { dis } from '../utils/util-point';
 import { coToLl } from '../utils/util-geo';
 import { dispatch } from '../../reducers/store';
-import { THRESHOLD } from '../../constants';
+import {
+	MENU_MODE,
+	NAVIGATION_MODE,
+	THRESHOLD,
+	UPDATE_MODE
+} from '../../constants';
 import { EventEmitter } from '../../event-emitter';
 import { getNearestVertex } from '../../reducers/fn/get-nearest-vertex';
 import { getFeatureCollection } from '../../reducers/selectors/index.selectors';
@@ -17,7 +22,9 @@ import {
 	ActionSelect,
 	ActionSetCollection,
 	ActionClearSelection,
-	ActionDeleteSelection } from '../../reducers/actions';
+	ActionDeleteSelection, ActionSetMapControlMode
+} from '../../reducers/actions';
+import { DOM } from '../utils/util-dom';
 
 export class InteractionMode extends EventEmitter {
 	protected readonly _el: HTMLElement;
@@ -77,7 +84,25 @@ export class InteractionMode extends EventEmitter {
 	}
 
 	onBlur() {}
-	onWheel(e: Ev) {}
+
+	onWheel(e: Ev) {
+		const pos = DOM.mousePos(this._el, e.originalEvent);
+		const lngLat = this._map.unproject(pos);
+
+		const delta = e.originalEvent.shiftKey
+			? e.originalEvent.deltaY / 400
+			: e.originalEvent.deltaY / 100;
+
+		const tr = this._map.transform;
+
+		tr.zoom = tr.zoom - delta;
+		tr.setLocationAtPoint(lngLat, pos);
+
+		// we need to do this to make the map re-render correctly
+		this._map.fire('zoom');
+		e.originalEvent.preventDefault();
+	}
+
 	onPointerUp(e: Ev) {
 		// this.trigger('finish');
 	}
@@ -101,10 +126,12 @@ export class InteractionMode extends EventEmitter {
 				multi: add
 			}));
 
-			this.trigger('select');
+			// this.trigger('select');
+			dispatch(ActionSetMapControlMode.create({ mode: UPDATE_MODE }));
 		}  else {
 			if (!add) {
-				this.trigger('finish');
+				dispatch(ActionSetMapControlMode.create({ mode: NAVIGATION_MODE }));
+				// this.trigger('finish');
 			}
 		}
 	}
@@ -116,11 +143,13 @@ export class InteractionMode extends EventEmitter {
 	onPointerDragStart(e: Ev) {}
 
 	onPointerAltClick(e: Ev) {
-		this.trigger('context');
+		// this.trigger('context');
+		dispatch(ActionSetMapControlMode.create({ mode: MENU_MODE }));
 	}
 
 	onPointerLongPress(e: Ev) {
-		this.trigger('context');
+		// this.trigger('context');
+		dispatch(ActionSetMapControlMode.create({ mode: MENU_MODE }));
 	}
 
 	onEscapeKey() {

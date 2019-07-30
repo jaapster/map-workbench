@@ -141,4 +141,11 @@ export type MapControlMode = 'navigate' | 'update' | 'draw' | 'menu';
 export interface MapControlData {
 	CRS: EPSG;
 	mode: MapControlMode;
+	zoom: number;
+	center: Co;
+}
+
+export interface State {
+	multiverse: MultiverseData;
+	mapControl: MapControlData;
 }

@@ -3,8 +3,9 @@ import React from 'react';
 import './scss/cp-map.scss';
 import { connect } from 'react-redux';
 import { ZoomLevel } from './cp-zoom-level';
-import { MapControl } from '../../map-control/map-control';
+import { HashParams } from '../app/cp-hash';
 import { PopUpMenu } from './cp-pop-up-menu';
+import { MapControl } from '../../map-control/map-control';
 import { CRSSelector } from './cp-crs-selector';
 import { ModeSelector } from './cp-mode-selector';
 import { mergeClasses } from '../app/utils/util-merge-classes';
@@ -16,10 +17,10 @@ import { CenterCoordinate } from './cp-center-coordinate';
 import { FeatureCollectionLayer } from './cp-feature-collection-layer';
 import {
 	Dict,
+	State,
 	CollectionData,
-	MultiverseData,
-	MapControlData,
-	MapControlMode } from '../../types';
+	MapControlMode
+} from '../../types';
 
 interface Props {
 	collections: Dict<CollectionData>;
@@ -27,7 +28,7 @@ interface Props {
 }
 
 @bind
-export class _Map extends React.Component<Props> {
+export class _Map extends React.PureComponent<Props> {
 	private _ref: any;
 
 	componentDidMount() {
@@ -76,12 +77,13 @@ export class _Map extends React.Component<Props> {
 					<WorldSelector />
 				</div>
 				<PopUpMenu />
+				<HashParams />
 			</div>
 		);
 	}
 }
 
-const mapStateToProps = (state: { multiverse: MultiverseData, mapControl: MapControlData }) => {
+const mapStateToProps = (state: State) => {
 	const { multiverse: { worlds, currentWorldId } } = state;
 
 	return {

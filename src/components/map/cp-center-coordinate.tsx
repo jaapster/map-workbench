@@ -1,39 +1,37 @@
-import bind from 'autobind-decorator';
 import React from 'react';
+import { connect } from 'react-redux';
 import { MapControl } from '../../map-control/map-control';
-import { MessageService } from '../../services/service.message';
+import {
+	Co,
+	EPSG,
+	State } from '../../types';
 
-interface Props {}
-
-@bind
-export class CenterCoordinate extends React.Component<Props> {
-	componentDidMount() {
-		MessageService.on('update:center', this._update);
-		MessageService.on('update:zoom', this._update);
-	}
-
-	componentWillUnmount() {
-		MessageService.off('update:center', this._update);
-		MessageService.off('update:zoom', this._update);
-	}
-
-	_update() {
-		this.forceUpdate();
-	}
-
-	render() {
-		const [x, y] = MapControl.getCenter();
-
-		const hasDecimals = Math.round(x) !== x;
-
-		return (
-			<div className="center-coordinate">
-				{
-					hasDecimals ? x.toFixed(6) : x
-				}, {
-					hasDecimals ? y.toFixed(6) : y
-				}
-			</div>
-		);
-	}
+interface Props {
+	CRS: EPSG;
+	center: Co;
 }
+
+export const _CenterCoordinate = React.memo(({ center, CRS }: Props) => {
+	const [x, y] = MapControl.projectToCRS(center, CRS);
+
+	const hasDecimals = Math.round(x) !== x;
+
+	return (
+		<div className="center-coordinate">
+			{
+				hasDecimals ? x.toFixed(6) : x
+			}, {
+				hasDecimals ? y.toFixed(6) : y
+			}
+		</div>
+	);
+});
+
+const mapStateToProps = (state: State) => (
+	{
+		CRS: state.mapControl.CRS,
+		center: state.mapControl.center
+	}
+);
+
+export const CenterCoordinate = connect(mapStateToProps)(_CenterCoordinate);

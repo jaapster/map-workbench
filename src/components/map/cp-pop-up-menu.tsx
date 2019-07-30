@@ -1,12 +1,19 @@
 import React from 'react';
-import { MapControlData, MapControlMode, Point } from '../../types';
-import { MENU_MODE } from '../../constants';
-import { MapControl } from '../../map-control/map-control';
-import { mergeClasses } from '../app/utils/util-merge-classes';
 import { connect } from 'react-redux';
+import { mergeClasses } from '../app/utils/util-merge-classes';
+import { ActionSetMapControlMode } from '../../reducers/actions';
+import {
+	MENU_MODE,
+	NAVIGATION_MODE } from '../../constants';
+import {
+	Point,
+	State,
+	MapControlMode } from '../../types';
+import { Dispatch } from 'redux';
 
 interface Props {
 	mode: MapControlMode;
+	close: () => void;
 }
 
 let mouse: Point = { x: 0, y: 0 };
@@ -26,23 +33,23 @@ const getItems = () => [
 	]
 ];
 
-const onKeyDown = (e: KeyboardEvent) => {
-	if (e.key === 'Escape') {
-		document.removeEventListener('keydown', onKeyDown);
-		MapControl.activateNavigationMode();
-	}
-};
+// const onKeyDown = (e: KeyboardEvent) => {
+// 	if (e.key === 'Escape') {
+// 		document.removeEventListener('keydown', onKeyDown);
+// 		dispatch(ActionSetMapControlMode.create({ mode: NAVIGATION_MODE }));
+// 	}
+// };
 
-export const _PopUpMenu = ({ mode }: Props) => {
+export const _PopUpMenu = React.memo(({ mode, close }: Props) => {
 	const { x, y } = mouse;
 	const style = { top: y, left: x };
 
-	document.addEventListener('keydown', onKeyDown);
+	// document.addEventListener('keydown', onKeyDown);
 
 	return mode === MENU_MODE
 		? (
 			<div
-				onMouseDown={ MapControl.activateNavigationMode }
+				onMouseDown={ close }
 				className="context-menu list"
 				style={ style }
 			>
@@ -69,12 +76,20 @@ export const _PopUpMenu = ({ mode }: Props) => {
 			</div>
 		)
 		: null;
-};
+});
 
-const mapStateToProps = (state: { mapControl: MapControlData }) => (
+const mapStateToProps = (state: State) => (
 	{
 		mode: state.mapControl.mode
 	}
 );
 
-export const PopUpMenu = connect(mapStateToProps)(_PopUpMenu);
+const mapDispatchToProps = (dispatch: Dispatch) => (
+	{
+		close() {
+			dispatch(ActionSetMapControlMode.create({ mode: NAVIGATION_MODE }))
+		}
+	}
+);
+
+export const PopUpMenu = connect(mapStateToProps, mapDispatchToProps)(_PopUpMenu);

@@ -147,25 +147,6 @@ export class ModeNavigation extends InteractionMode {
 		);
 	}
 
-	onWheel(e: Ev) {
-		const pos = DOM.mousePos(this._el, e.originalEvent);
-		const lngLat = this._map.unproject(pos);
-
-		const delta = e.originalEvent.shiftKey
-			? e.originalEvent.deltaY / 400
-			: e.originalEvent.deltaY / 100;
-
-		const tr = this._map.transform;
-
-		tr.zoom = tr.zoom - delta;
-		tr.setLocationAtPoint(lngLat, pos);
-
-		// we need to do this to make the map re-render correctly
-		this._map.fire('zoom');
-
-		e.originalEvent.preventDefault();
-	}
-
 	onBlur() {
 		this.cleanUp();
 	}

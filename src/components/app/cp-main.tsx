@@ -11,9 +11,8 @@ import { MapControl } from '../../map-control/map-control';
 import { LayerPanels } from '../map/cp-layer-panels';
 import { PanelTabbed } from '../panels/cp-panel-tabbed';
 import { PanelPairTabbed } from '../panels/cp-panel-pair-tabbed';
-import '../../services/service.hash';
 
-export const Main = () => {
+export const Main = React.memo(() => {
 	return (
 		<div className="app">
 			<PanelPairTabbed // panel right
@@ -60,4 +59,4 @@ export const Main = () => {
 			</PanelPairTabbed>
 		</div>
 	);
-};
+});

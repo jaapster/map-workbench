@@ -1,11 +1,12 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { MapControl } from '../../map-control/map-control';
+import { Dispatch } from 'redux';
+import { ActionSetMapControlMode } from '../../reducers/actions';
 import {
 	Button,
 	ButtonGroup } from '../app/cp-button';
 import {
-	MapControlData,
+	State,
 	MapControlMode } from '../../types';
 import {
 	DRAW_MODE,
@@ -15,12 +16,14 @@ import {
 
 interface Props {
 	mode: MapControlMode;
+	activateDrawMode: () => void;
+	activateNavigationMode: () => void;
 }
 
-export const _ModeSelector = ({ mode }: Props) => (
+export const _ModeSelector = React.memo(({ mode, activateDrawMode, activateNavigationMode }: Props) => (
 	<ButtonGroup>
 		<Button
-			onClick={ MapControl.activateNavigationMode }
+			onClick={ activateNavigationMode }
 			depressed={ mode === NAVIGATION_MODE }
 		>
 			Navigate
@@ -38,18 +41,29 @@ export const _ModeSelector = ({ mode }: Props) => (
 			Menu
 		</Button>
 		<Button
-			onClick={ () => MapControl.activateDrawMode() }
+			onClick={ activateDrawMode }
 			depressed={ mode === DRAW_MODE }
 		>
 			Draw
 		</Button>
 	</ButtonGroup>
-);
+));
 
-const mapStateToProps = (state: { mapControl: MapControlData }) => (
+const mapStateToProps = (state: State) => (
 	{
 		mode: state.mapControl.mode
 	}
 );
 
-export const ModeSelector = connect(mapStateToProps)(_ModeSelector);
+const mapDispatchToProps = (dispatch: Dispatch) => (
+	{
+		activateDrawMode() {
+			dispatch(ActionSetMapControlMode.create({ mode: DRAW_MODE }));
+		},
+		activateNavigationMode() {
+			dispatch(ActionSetMapControlMode.create({ mode: NAVIGATION_MODE }));
+		}
+	}
+);
+
+export const ModeSelector = connect(mapStateToProps, mapDispatchToProps)(_ModeSelector);

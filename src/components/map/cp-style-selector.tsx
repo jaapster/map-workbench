@@ -11,7 +11,7 @@ interface State {
 }
 
 @bind
-export class StyleSelector extends React.Component<Props, State> {
+export class StyleSelector extends React.PureComponent<Props, State> {
 	constructor(props: Props) {
 		super(props);
 

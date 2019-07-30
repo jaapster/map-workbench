@@ -13,6 +13,7 @@ import {
 import {
 	ActionSelect,
 	ActionDeleteSelection } from '../../reducers/actions';
+import { Dispatch } from 'redux';
 
 interface Props {
 	del: (collectionId: string, vector: SelectionVector) => void;
@@ -22,7 +23,7 @@ interface Props {
 	featureCollection: FeatureCollectionData;
 }
 
-export const _LayerPanel = (props: Props) => {
+export const _LayerPanel = React.memo((props: Props) => {
 	const {
 		del,
 		select,
@@ -70,7 +71,7 @@ export const _LayerPanel = (props: Props) => {
 			</div>
 		</Properties>
 	);
-};
+});
 
 const mapStateToProps = () => {
 	const collectionId = getCurrentCollectionId();
@@ -82,7 +83,7 @@ const mapStateToProps = () => {
 	};
 };
 
-const mapDispatchToProps = (dispatch: any) => (
+const mapDispatchToProps = (dispatch: Dispatch) => (
 	{
 		select(props: { collectionId: string, vector: SelectionVector, multi: boolean }) {
 			dispatch(ActionSelect.create(props));

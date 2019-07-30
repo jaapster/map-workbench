@@ -84,3 +84,11 @@ export const ActionSetMapControlCRS = getActionCreator<{
 export const ActionSetMapControlMode = getActionCreator<{
 	mode: MapControlMode
 }>('ActionSetMapControlMode');
+
+export const ActionSetMapControlZoom = getActionCreator<{
+	zoom: number
+}>('ActionSetMapControlZoom');
+
+export const ActionSetMapControlCenter = getActionCreator<{
+	center: Co
+}>('ActionSetMapControlCenter');

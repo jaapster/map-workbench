@@ -1,7 +1,7 @@
-import bind from 'autobind-decorator';
 import React from 'react';
 import { Point } from './geometries/cp-point';
 import { Circle } from './geometries/cp-circle';
+import { connect } from 'react-redux';
 import { Polygon } from './geometries/cp-polygon';
 import { Rectangle } from './geometries/cp-rectangle';
 import { MultiPoint } from './geometries/cp-multi-point';
@@ -18,12 +18,17 @@ import {
 	MULTI_POINT,
 	MULTI_POLYGON,
 	MULTI_LINE_STRING } from '../../constants';
-import { MessageService } from '../../services/service.message';
-import { Co, FeatureCollectionData, SelectionVector } from '../../types';
+import {
+	Co,
+	State,
+	SelectionVector,
+	FeatureCollectionData } from '../../types';
 
 interface Props {
 	featureCollection: FeatureCollectionData;
 	selection: SelectionVector[];
+	center: Co;
+	zoom: number;
 }
 
 const getSelectedVertices = ({ features }: any, selection: any): Co[] => {
@@ -56,75 +61,65 @@ const getSelectedVertices = ({ features }: any, selection: any): Co[] => {
 	}, [] as Co[]);
 };
 
-@bind
-export class FeatureCollectionLayer extends React.Component<Props> {
-	componentDidMount() {
-		MessageService.on('update:center', this._update);
-		MessageService.on('update:zoom', this._update);
-	}
+export const _FeatureCollectionLayer = React.memo(({ featureCollection, selection, zoom, center }: Props) => {
+	const selectedFeatureIndices = selection.map(([i]) => i);
 
-	componentWillUnmount() {
-		MessageService.off('update:center', this._update);
-		MessageService.off('update:zoom', this._update);
-	}
-
-	private _update() {
-		this.forceUpdate();
-	}
-
-	render() {
-		const { featureCollection, selection } = this.props;
-
-		const selectedFeatureIndices = selection.map(([i]) => i);
-
-		return (
+	return (
+		<g>
 			<g>
-				<g>
-					{
-						featureCollection.features.map((f, i) => {
-							const p = {
-								id: f.properties.id,
-								key: f.properties.id,
-								selected: selectedFeatureIndices.includes(i),
-								coordinates: f.geometry.coordinates
-							};
+				{
+					featureCollection.features.map((f, i) => {
+						const p = {
+							id: f.properties.id,
+							key: f.properties.id,
+							selected: selectedFeatureIndices.includes(i),
+							coordinates: f.geometry.coordinates
+						};
 
-							switch (f.properties.type) {
-								case POINT:
-									return <Point { ...p } />;
-								case MULTI_POINT:
-									return <MultiPoint { ...p } />;
-								case LINE_STRING:
-									return <LineString { ...p } />;
-								case MULTI_LINE_STRING:
-									return <MultiLineString { ...p } />;
-								case POLYGON:
-									return <Polygon { ...p } />;
-								case MULTI_POLYGON:
-									return <MultiPolygon { ...p } />;
-								case CIRCLE:
-									return <Circle { ...p } />;
-								case RECTANGLE:
-									return <Rectangle { ...p } />;
-								default:
-									return null;
-							}
-						})
-					}
-				</g>
-				<g>
-					{
-						getSelectedVertices(featureCollection, selection)
-							.map((coordinates, i) => (
-								<SelectedVertex
-									key={ i }
-									animate={ true }
-									coordinates={ coordinates }
-								/>
-							))
-					}
-				</g>
+						switch (f.properties.type) {
+							case POINT:
+								return <Point { ...p } />;
+							case MULTI_POINT:
+								return <MultiPoint { ...p } />;
+							case LINE_STRING:
+								return <LineString { ...p } />;
+							case MULTI_LINE_STRING:
+								return <MultiLineString { ...p } />;
+							case POLYGON:
+								return <Polygon { ...p } />;
+							case MULTI_POLYGON:
+								return <MultiPolygon { ...p } />;
+							case CIRCLE:
+								return <Circle { ...p } />;
+							case RECTANGLE:
+								return <Rectangle { ...p } />;
+							default:
+								return null;
+						}
+					})
+				}
 			</g>
-		);
+			<g>
+				{
+					getSelectedVertices(featureCollection, selection)
+						.map((coordinates, i) => (
+							<SelectedVertex
+								key={ i }
+								animate={ true }
+								coordinates={ coordinates }
+							/>
+						))
+				}
+			</g>
+		</g>
+	);
+});
+
+const mapStateToProps = (state: State) => (
+	{
+		zoom: state.mapControl.zoom,
+		center: state.mapControl.center
 	}
-}
+);
+
+export const FeatureCollectionLayer = connect(mapStateToProps)(_FeatureCollectionLayer);

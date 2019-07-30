@@ -16,7 +16,7 @@ interface Props {
 	setCRS: (CRS: EPSG) => void;
 }
 
-export const _CRSSelector = ({ CRS, setCRS }: Props) => (
+export const _CRSSelector = React.memo(({ CRS, setCRS }: Props) => (
 	<ButtonGroup>
 		<Button
 			onClick={ () => setCRS(PROJECTED) }
@@ -31,7 +31,7 @@ export const _CRSSelector = ({ CRS, setCRS }: Props) => (
 			{ GEOGRAPHIC }
 		</Button>
 	</ButtonGroup>
-);
+));
 
 const mapStateToProps = () => (
 	{

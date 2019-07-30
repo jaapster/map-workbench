@@ -1,10 +1,10 @@
 import React from 'react';
 import './scss/properties.scss';
 
-export const Properties = ({ children }: any) => {
+export const Properties = React.memo(({ children }: any) => {
 	return (
 		<div className="properties">
 			{ children }
 		</div>
 	);
-};
+});

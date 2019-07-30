@@ -1,31 +1,21 @@
-import bind from 'autobind-decorator';
 import React from 'react';
-import { MapControl } from '../../map-control/map-control';
-import { MessageService } from '../../services/service.message';
+import { State } from '../../types';
+import { connect } from 'react-redux';
 
-interface Props {}
-
-@bind
-export class ZoomLevel extends React.Component<Props> {
-	componentDidMount() {
-		MessageService.on('update:zoom', this._update);
-	}
-
-	componentWillUnmount() {
-		MessageService.off('update:zoom', this._update);
-	}
-
-	private _update() {
-		this.forceUpdate();
-	}
-
-	render() {
-		const zoom = MapControl.getZoom();
-
-		return (
-			<div className="zoom">
-				{ zoom.toFixed(2) }
-			</div>
-		);
-	}
+interface Props {
+	zoom: number;
 }
+
+export const _ZoomLevel = React.memo(({ zoom }: Props) => (
+	<div className="zoom">
+		{ zoom.toFixed(2) }
+	</div>
+));
+
+const mapStateToProps = (state: State) => (
+	{
+		zoom: state.mapControl.zoom
+	}
+);
+
+export const ZoomLevel = connect(mapStateToProps)(_ZoomLevel);
