@@ -1,13 +1,8 @@
 import * as mapboxgl from 'mapbox-gl';
 import { dis } from '../utils/util-point';
+import { DOM } from '../utils/util-dom';
 import { coToLl } from '../utils/util-geo';
 import { dispatch } from '../../reducers/store';
-import {
-	MENU_MODE,
-	NAVIGATION_MODE,
-	THRESHOLD,
-	UPDATE_MODE
-} from '../../constants';
 import { EventEmitter } from '../../event-emitter';
 import { getNearestVertex } from '../../reducers/fn/get-nearest-vertex';
 import { getFeatureCollection } from '../../reducers/selectors/index.selectors';
@@ -19,12 +14,16 @@ import {
 	LngLat,
 	FeatureCollectionData } from '../../types';
 import {
+	MENU_MODE,
+	THRESHOLD,
+	UPDATE_MODE,
+	NAVIGATION_MODE } from '../../constants';
+import {
 	ActionSelect,
 	ActionSetCollection,
 	ActionClearSelection,
-	ActionDeleteSelection, ActionSetMapControlMode
-} from '../../reducers/actions';
-import { DOM } from '../utils/util-dom';
+	ActionDeleteSelection,
+	ActionSetMapControlMode } from '../../reducers/actions';
 
 export class InteractionMode extends EventEmitter {
 	protected readonly _el: HTMLElement;
@@ -107,7 +106,6 @@ export class InteractionMode extends EventEmitter {
 		// this.trigger('finish');
 	}
 	onPointerDown(e: Ev) {
-		// this.trigger('finish');
 		const { lngLat, point, originalEvent } = e;
 		const add = originalEvent.shiftKey;
 
@@ -126,12 +124,10 @@ export class InteractionMode extends EventEmitter {
 				multi: add
 			}));
 
-			// this.trigger('select');
 			dispatch(ActionSetMapControlMode.create({ mode: UPDATE_MODE }));
 		}  else {
 			if (!add) {
 				dispatch(ActionSetMapControlMode.create({ mode: NAVIGATION_MODE }));
-				// this.trigger('finish');
 			}
 		}
 	}
@@ -143,12 +139,10 @@ export class InteractionMode extends EventEmitter {
 	onPointerDragStart(e: Ev) {}
 
 	onPointerAltClick(e: Ev) {
-		// this.trigger('context');
 		dispatch(ActionSetMapControlMode.create({ mode: MENU_MODE }));
 	}
 
 	onPointerLongPress(e: Ev) {
-		// this.trigger('context');
 		dispatch(ActionSetMapControlMode.create({ mode: MENU_MODE }));
 	}
 
