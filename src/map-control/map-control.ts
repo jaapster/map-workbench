@@ -23,7 +23,7 @@ import {
 	DRAW_MODE,
 	PROJECTED,
 	GEOGRAPHIC,
-	EMPTY_STYLE,
+	// EMPTY_STYLE,
 	LINE_STRING,
 	UPDATE_MODE,
 	NAVIGATION_MODE,
@@ -56,7 +56,7 @@ interface Props {
 }
 
 const DEFAULT_PROPS: Props = {
-	style: EMPTY_STYLE,
+	style: 'mapbox://styles/mapbox/light-v10', // EMPTY_STYLE,
 	location: DEFAULT_LOCATION
 };
 
@@ -122,7 +122,7 @@ export class MapControl {
 	}
 
 	static onMapZoom() {
-		dispatch(ActionSetMapControlZoom.create({ zoom: this.getZoom() }));
+		dispatch(ActionSetMapControlZoom.create({ zoom: MapControl.instance.getZoom() }));
 	}
 
 	private readonly _map: any;
@@ -144,7 +144,7 @@ export class MapControl {
 		const container = DOM.create('div', 'map-container', document.body);
 
 		this._map = new mapboxGL.Map({
-			zoom,
+			zoom: zoom - 1,
 			style,
 			center,
 			maxZoom: GLOBAL_MAX_ZOOM,

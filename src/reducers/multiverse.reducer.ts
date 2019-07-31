@@ -193,8 +193,9 @@ export const multiverseReducer = (
 	}
 
 	if (ActionAddFeature.validate(action)) {
+		const world = worlds[state.currentWorldId];
 		const { collectionId, feature } = ActionAddFeature.data(action);
-		const { featureCollection, selection } = worlds[currentWorldId].collections[collectionId];
+		const { featureCollection, selection } = world.collections[collectionId];
 
 		return updateCollection(state, collectionId, {
 			featureCollection: {

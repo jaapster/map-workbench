@@ -1,61 +1,48 @@
 import React from 'react';
+import { mode } from '../../reducers/selectors/index.selectors';
 import { connect } from 'react-redux';
+import { Dispatch } from 'redux';
 import { mergeClasses } from '../app/utils/util-merge-classes';
-import { ActionSetMapControlMode } from '../../reducers/actions';
+import {
+	ActionClearSelection,
+	ActionDeleteSelection,
+	ActionSetMapControlMode } from '../../reducers/actions';
 import {
 	MENU_MODE,
 	NAVIGATION_MODE } from '../../constants';
 import {
-	Point,
 	State,
 	MapControlMode } from '../../types';
-import { Dispatch } from 'redux';
-import { mode } from '../../reducers/selectors/index.selectors';
 
-interface Props {
+interface P1 {
 	mode: MapControlMode;
-	close: () => void;
 }
 
-let mouse: Point = { x: 0, y: 0 };
+interface P2 {
+	close: () => void;
+	clearSelection: () => void;
+	deleteSelection: () => void;
+}
+
+let mouse: { left: number, top: number } = { left: 0, top: 0 };
 
 window.addEventListener('mousemove', ({ clientX, clientY }: any) => {
-	mouse = { x: clientX, y: clientY };
+	mouse = { left: clientX, top: clientY };
 });
 
-const getItems = () => [
-	[
-		'clear selection',
-		() => 0
-	],
-	[
-		'delete selection',
-		() => 0
-	]
-];
-
-// const onKeyDown = (e: KeyboardEvent) => {
-// 	if (e.key === 'Escape') {
-// 		document.removeEventListener('keydown', onKeyDown);
-// 		dispatch(ActionSetMapControlMode.create({ mode: NAVIGATION_MODE }));
-// 	}
-// };
-
-export const _PopUpMenu = React.memo(({ mode, close }: Props) => {
-	const { x, y } = mouse;
-	const style = { top: y, left: x };
-
-	// document.addEventListener('keydown', onKeyDown);
-
-	return mode === MENU_MODE
+export const _PopUpMenu = React.memo(({ mode, close, clearSelection, deleteSelection }: P1 & P2) => (
+	mode === MENU_MODE
 		? (
 			<div
 				onMouseDown={ close }
 				className="context-menu list"
-				style={ style }
+				style={ mouse }
 			>
 				{
-					getItems().map(([label, fn]: any) => {
+					[
+						['clear selection', clearSelection],
+						['delete selection', deleteSelection]
+					].map(([label, fn]: any) => {
 						const className = mergeClasses(
 							'list-item',
 							{
@@ -76,19 +63,25 @@ export const _PopUpMenu = React.memo(({ mode, close }: Props) => {
 				}
 			</div>
 		)
-		: null;
-});
+		: null
+));
 
-const mapStateToProps = (state: State) => (
+const mapStateToProps = (state: State): P1 => (
 	{
 		mode: mode(state)
 	}
 );
 
-const mapDispatchToProps = (dispatch: Dispatch) => (
+const mapDispatchToProps = (dispatch: Dispatch): P2 => (
 	{
 		close() {
-			dispatch(ActionSetMapControlMode.create({ mode: NAVIGATION_MODE }))
+			dispatch(ActionSetMapControlMode.create({ mode: NAVIGATION_MODE }));
+		},
+		clearSelection() {
+			dispatch(ActionClearSelection.create({}));
+		},
+		deleteSelection() {
+			dispatch(ActionDeleteSelection.create({}));
 		}
 	}
 );

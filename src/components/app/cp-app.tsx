@@ -7,12 +7,15 @@ import { Dispatch } from 'redux';
 import { BootService } from '../../services/service.boot';
 import { ActionSetAppPhase } from '../../reducers/actions';
 
-interface Props {
+interface P1 {
 	appPhase: string;
+}
+
+interface P2 {
 	setAppPhaseToBooted: () => void;
 }
 
-export const _App = React.memo(({ appPhase, setAppPhaseToBooted }: Props) => {
+export const _App = React.memo(({ appPhase, setAppPhaseToBooted }: P1 & P2) => {
 		if (appPhase !== 'booted') {
 			BootService
 				.boot()
@@ -24,13 +27,13 @@ export const _App = React.memo(({ appPhase, setAppPhaseToBooted }: Props) => {
 		return <Main />;
 });
 
-const mapStateToProps = (state: State) => (
+const mapStateToProps = (state: State): P1 => (
 	{
 		appPhase: appPhase(state)
 	}
 );
 
-const mapDispatchToProps = (dispatch: Dispatch) => (
+const mapDispatchToProps = (dispatch: Dispatch): P2 => (
 	{
 		setAppPhaseToBooted() {
 			dispatch(ActionSetAppPhase.create({ phase: 'booted' }));
