@@ -18,7 +18,7 @@ export const _App = React.memo(({ appPhase, setAppPhaseToBooted }: Props) => {
 				.boot()
 				.then(setAppPhaseToBooted);
 
-			return <div>BOOTING APP</div>;
+			return <div>Booting...</div>;
 		}
 
 		return <Main />;

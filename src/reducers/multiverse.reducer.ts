@@ -248,7 +248,7 @@ export const multiverseReducer = (
 
 						return {
 							...m,
-							[key]: !fs.length
+							[key]: !collection.selection.length
 								? collection
 								: {
 									featureCollection: {
