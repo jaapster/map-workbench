@@ -4,7 +4,10 @@ import { DOM } from '../utils/util-dom';
 import { coToLl } from '../utils/util-geo';
 import { EventEmitter } from '../../event-emitter';
 import { getNearestVertex } from '../../reducers/fn/get-nearest-vertex';
-import { currentFeatureCollection } from '../../reducers/selectors/index.selectors';
+import {
+	currentCollectionId,
+	currentFeatureCollection
+} from '../../reducers/selectors/index.selectors';
 import { getNearestPointOnGeometry } from '../../reducers/fn/get-nearest-point-on-geometry';
 import {
 	dispatch,
@@ -105,34 +108,29 @@ export class InteractionMode extends EventEmitter {
 	}
 
 	onPointerUp(e: Ev) {
-		// this.trigger('finish');
+		dispatch(ActionSetMapControlMode.create({ mode: NAVIGATION_MODE }));
 	}
+
 	onPointerDown(e: Ev) {
 		const { lngLat, point, originalEvent } = e;
-		const add = originalEvent.shiftKey;
+		const multi = originalEvent.shiftKey;
+		const state = getState();
 
-		const featureCollection = currentFeatureCollection(getState());
+		const collectionId = currentCollectionId(state);
+		const featureCollection = currentFeatureCollection(state);
+		const vector = this._hit(lngLat, point, featureCollection);
 
-		const trailHit = this._hit(lngLat, point, featureCollection);
-
-		if (trailHit != null) {
-			dispatch(ActionSetCollection.create({
-				collectionId: 'trails'
-			}));
-
-			dispatch(ActionSelect.create({
-				collectionId: 'trails',
-				vector: trailHit,
-				multi: add
-			}));
-
+		if (vector != null) {
+			dispatch(ActionSetCollection.create({ collectionId }));
+			dispatch(ActionSelect.create({ vector, multi }));
 			dispatch(ActionSetMapControlMode.create({ mode: UPDATE_MODE }));
 		}  else {
-			if (!add) {
+			if (!multi) {
 				dispatch(ActionSetMapControlMode.create({ mode: NAVIGATION_MODE }));
 			}
 		}
 	}
+
 	onPointerMove(e: Ev) {}
 	onPointerClick(e: Ev) {}
 	onPointerDragEnd(e: Ev) {}
@@ -153,10 +151,10 @@ export class InteractionMode extends EventEmitter {
 	}
 
 	onDeleteKey() {
-		dispatch(ActionDeleteSelection.create({ collectionId: 'trails' }));
+		dispatch(ActionDeleteSelection.create({}));
 	}
 
 	cleanUp() {
-		dispatch(ActionClearSelection.create({ collectionId: 'trails' }));
+		dispatch(ActionClearSelection.create({}));
 	}
 }

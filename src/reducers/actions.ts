@@ -40,14 +40,11 @@ export const ActionMoveGeometry = getActionCreator<{
 }>('ActionMoveGeometry');
 
 export const ActionSelect = getActionCreator<{
-	collectionId: string,
 	vector: SelectionVector,
 	multi: boolean
 }>('ActionSelect');
 
-export const ActionClearSelection = getActionCreator<{
-	collectionId: string
-}>('ActionClearSelection');
+export const ActionClearSelection = getActionCreator<{}>('ActionClearSelection');
 
 export const ActionClearCollection = getActionCreator<{
 	collectionId: string
@@ -69,9 +66,7 @@ export const ActionAddVertex = getActionCreator<{
 	vector: SelectionVector
 }>('ActionAddVertex');
 
-export const ActionDeleteSelection = getActionCreator<{
-	collectionId: string
-}>('ActionDeleteSelection');
+export const ActionDeleteSelection = getActionCreator<{}>('ActionDeleteSelection');
 
 export const ActionSetCollection = getActionCreator<{
 	collectionId: string

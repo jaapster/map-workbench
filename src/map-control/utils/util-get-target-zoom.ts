@@ -57,7 +57,7 @@ export const getTargetZoom = (features: FeatureData<any>[], box: Box) => {
 
 	const zoom = Math.log2(
 		156543.03392 * Math.cos(b[1] * Math.PI / 180) * pixelsPerMeter
-	) - 1;
+	);
 
 	return Math.floor(zoom);
 };

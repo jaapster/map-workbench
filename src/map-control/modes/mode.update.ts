@@ -1,8 +1,10 @@
 import bind from 'autobind-decorator';
-import { dispatch, getState } from '../../reducers/store';
 import { InteractionMode } from './mode.interaction';
 import { analyseRectangle } from '../../reducers/fn/analyse-rectangle';
 import { getNearestPointOnGeometry } from '../../reducers/fn/get-nearest-point-on-geometry';
+import {
+	dispatch,
+	getState } from '../../reducers/store';
 import {
 	pointAtLength,
 	nearestPointOnLine } from '../utils/util-math';
@@ -67,11 +69,7 @@ export class ModeUpdate extends InteractionMode {
 						const d = dis(point, p);
 
 						if (d < THRESHOLD) {
-							dispatch(ActionSelect.create({
-								multi: false,
-								vector,
-								collectionId
-							}));
+							dispatch(ActionSelect.create({ multi: false, vector }));
 
 							dispatch(ActionAddVertex.create({
 								vector,

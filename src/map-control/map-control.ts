@@ -45,7 +45,7 @@ import {
 
 const FIT_PADDING = 64;
 const FIT_MIN_ZOOM = 14;
-const FIT_MAX_ZOOM = 16;
+const FIT_MAX_ZOOM = 18;
 const GLOBAL_MAX_ZOOM = 24;
 
 mapboxGL.accessToken = token;
@@ -284,7 +284,7 @@ export class MapControl {
 							width: width - FIT_PADDING * 2,
 							height: height - FIT_PADDING * 2
 						}
-					) - 1,
+					),
 					FIT_MIN_ZOOM,
 					FIT_MAX_ZOOM
 				),

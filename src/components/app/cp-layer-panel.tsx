@@ -88,7 +88,7 @@ const mapDispatchToProps = (dispatch: Dispatch) => (
 		},
 
 		del(collectionId: string, vector: SelectionVector) {
-			dispatch(ActionSelect.create({ collectionId, vector, multi: false }));
+			dispatch(ActionSelect.create({ vector, multi: false }));
 			dispatch(ActionDeleteSelection.create({ collectionId }));
 		}
 	}
