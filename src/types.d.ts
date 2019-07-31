@@ -117,7 +117,7 @@ interface MapData {
 
 interface WorldData {
 	id: string;
-	maps: Dict<MapData>;
+	// maps: Dict<MapData>;
 	collections: Dict<CollectionData>;
 	currentMapId: string;
 	universeIndex: number;
@@ -148,4 +148,5 @@ export interface MapControlData {
 export interface State {
 	multiverse: MultiverseData;
 	mapControl: MapControlData;
+	appPhase: string;
 }

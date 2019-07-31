@@ -2,11 +2,13 @@ import * as mapboxgl from 'mapbox-gl';
 import { dis } from '../utils/util-point';
 import { DOM } from '../utils/util-dom';
 import { coToLl } from '../utils/util-geo';
-import { dispatch } from '../../reducers/store';
 import { EventEmitter } from '../../event-emitter';
 import { getNearestVertex } from '../../reducers/fn/get-nearest-vertex';
-import { getFeatureCollection } from '../../reducers/selectors/index.selectors';
+import { currentFeatureCollection } from '../../reducers/selectors/index.selectors';
 import { getNearestPointOnGeometry } from '../../reducers/fn/get-nearest-point-on-geometry';
+import {
+	dispatch,
+	getState } from '../../reducers/store';
 import {
 	Ev,
 	Dict,
@@ -109,9 +111,9 @@ export class InteractionMode extends EventEmitter {
 		const { lngLat, point, originalEvent } = e;
 		const add = originalEvent.shiftKey;
 
-		const featureCollections = getFeatureCollection('trails');
+		const featureCollection = currentFeatureCollection(getState());
 
-		const trailHit = this._hit(lngLat, point, featureCollections);
+		const trailHit = this._hit(lngLat, point, featureCollection);
 
 		if (trailHit != null) {
 			dispatch(ActionSetCollection.create({

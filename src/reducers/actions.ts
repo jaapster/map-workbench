@@ -92,3 +92,7 @@ export const ActionSetMapControlZoom = getActionCreator<{
 export const ActionSetMapControlCenter = getActionCreator<{
 	center: Co
 }>('ActionSetMapControlCenter');
+
+export const ActionSetAppPhase = getActionCreator<{
+	phase: string
+}>('ActionSetAppPhase');

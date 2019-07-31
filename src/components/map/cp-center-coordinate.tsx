@@ -5,6 +5,7 @@ import {
 	Co,
 	EPSG,
 	State } from '../../types';
+import { center, crs } from '../../reducers/selectors/index.selectors';
 
 interface Props {
 	CRS: EPSG;
@@ -29,8 +30,8 @@ export const _CenterCoordinate = React.memo(({ center, CRS }: Props) => {
 
 const mapStateToProps = (state: State) => (
 	{
-		CRS: state.mapControl.CRS,
-		center: state.mapControl.center
+		CRS: crs(state),
+		center: center(state)
 	}
 );
 

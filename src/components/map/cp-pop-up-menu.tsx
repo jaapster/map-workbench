@@ -10,6 +10,7 @@ import {
 	State,
 	MapControlMode } from '../../types';
 import { Dispatch } from 'redux';
+import { mode } from '../../reducers/selectors/index.selectors';
 
 interface Props {
 	mode: MapControlMode;
@@ -80,7 +81,7 @@ export const _PopUpMenu = React.memo(({ mode, close }: Props) => {
 
 const mapStateToProps = (state: State) => (
 	{
-		mode: state.mapControl.mode
+		mode: mode(state)
 	}
 );
 

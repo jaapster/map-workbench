@@ -1,41 +1,41 @@
-import bind from 'autobind-decorator';
 import React from 'react';
 import { Main } from './cp-main';
+import { State } from '../../types';
+import { connect } from 'react-redux';
+import { appPhase } from '../../reducers/selectors/index.selectors';
+import { Dispatch } from 'redux';
 import { BootService } from '../../services/service.boot';
+import { ActionSetAppPhase } from '../../reducers/actions';
 
-interface Props {}
-
-interface State {
-	booted: boolean;
+interface Props {
+	appPhase: string;
+	setAppPhaseToBooted: () => void;
 }
 
-@bind
-export class App extends React.Component<Props, State> {
-	state = {
-		booted: false
-	};
+export const _App = React.memo(({ appPhase, setAppPhaseToBooted }: Props) => {
+		if (appPhase !== 'booted') {
+			BootService
+				.boot()
+				.then(setAppPhaseToBooted);
 
-	constructor(props: Props) {
-		super(props);
+			return <div>BOOTING APP</div>;
+		}
 
-		BootService
-			.boot()
-			.then(this._onBooted);
+		return <Main />;
+});
+
+const mapStateToProps = (state: State) => (
+	{
+		appPhase: appPhase(state)
 	}
+);
 
-	componentDidMount() {
-
+const mapDispatchToProps = (dispatch: Dispatch) => (
+	{
+		setAppPhaseToBooted() {
+			dispatch(ActionSetAppPhase.create({ phase: 'booted' }));
+		}
 	}
+);
 
-	_onBooted() {
-		this.setState({ booted: true });
-	}
-
-	render() {
-		const { booted } = this.state;
-
-		return booted
-			? <Main />
-			: <div>BOOTING APP</div>;
-	}
-}
+export const App = connect(mapStateToProps, mapDispatchToProps)(_App);

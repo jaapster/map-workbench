@@ -1,5 +1,5 @@
 import bind from 'autobind-decorator';
-import { dispatch } from '../../reducers/store';
+import { dispatch, getState } from '../../reducers/store';
 import { InteractionMode } from './mode.interaction';
 import { analyseRectangle } from '../../reducers/fn/analyse-rectangle';
 import { getNearestPointOnGeometry } from '../../reducers/fn/get-nearest-point-on-geometry';
@@ -28,10 +28,9 @@ import {
 	ActionMoveGeometry,
 	ActionUpdateCoordinates } from '../../reducers/actions';
 import {
-	getSelection,
-	getFeatureAtIndex,
-	getFeatureCollection,
-	getCurrentCollectionId } from '../../reducers/selectors/index.selectors';
+	currentCollectionId,
+	currentSelectionVectors,
+	currentFeatureCollection } from '../../reducers/selectors/index.selectors';
 
 @bind
 export class ModeUpdate extends InteractionMode {
@@ -43,13 +42,14 @@ export class ModeUpdate extends InteractionMode {
 	private _ratio = 1;
 
 	onPointerDragStart({ lngLat, point, originalEvent }: Ev) {
-		const collectionId = getCurrentCollectionId();
+		const state = getState();
+		const collectionId = currentCollectionId(getState());
 
 		if (collectionId) {
-			const [_i, , _k] = getSelection(collectionId)[0];
+			const [_i, , _k] = currentSelectionVectors(state)[0];
 
 			if (_i != null) {
-				const featureCollection = getFeatureCollection(collectionId);
+				const featureCollection = currentFeatureCollection(state);
 
 				const {
 					geometry: { coordinates },
@@ -92,10 +92,11 @@ export class ModeUpdate extends InteractionMode {
 	}
 
 	onPointerDragMove({ merc, lngLat, movement, originalEvent }: Ev) {
-		const collectionId = getCurrentCollectionId();
+		const state = getState();
+		const collectionId = currentCollectionId(state);
 
 		if (collectionId) {
-			const [_i, _j, _k, _l] = getSelection(collectionId)[0];
+			const [_i, _j, _k, _l] = currentSelectionVectors(state)[0];
 
 			if (_i != null) {
 				if (_j != null) {
@@ -105,7 +106,7 @@ export class ModeUpdate extends InteractionMode {
 					const {
 						geometry: { coordinates },
 						properties: { type }
-					} = getFeatureAtIndex(collectionId, _i);
+					} = currentFeatureCollection(state).features[_i];
 
 					if (type === RECTANGLE) {
 						const { p0, p1, p2, p3, n1, n2 } = analyseRectangle(

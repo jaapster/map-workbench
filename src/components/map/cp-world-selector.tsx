@@ -1,5 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
+import { Dispatch } from 'redux';
 import { ActionGoToWorld } from '../../reducers/actions';
 import {
 	Button,
@@ -7,9 +8,10 @@ import {
 import {
 	Dict,
 	State,
-	WorldData
-} from '../../types';
-import { Dispatch } from 'redux';
+	WorldData } from '../../types';
+import {
+	worlds,
+	currentWorldId } from '../../reducers/selectors/index.selectors';
 
 interface Props {
 	worlds: Dict<WorldData>;
@@ -37,8 +39,8 @@ export const _WorldSelector = ({ worlds, currentWorldId, goToWorld }: Props) => 
 
 const mapStateToProps = (state: State) => (
 	{
-		currentWorldId: state.multiverse.currentWorldId,
-		worlds: state.multiverse.worlds
+		currentWorldId: currentWorldId(state),
+		worlds: worlds(state)
 	}
 );
 

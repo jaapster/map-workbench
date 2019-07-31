@@ -1,6 +1,6 @@
 import { Ev } from '../../types';
 import { dis } from '../utils/util-point';
-import { dispatch } from '../../reducers/store';
+import { dispatch, getState } from '../../reducers/store';
 import { dropLast } from '../utils/util-list';
 import { NAVIGATION_MODE, THRESHOLD } from '../../constants';
 import { InteractionMode } from './mode.interaction';
@@ -15,13 +15,12 @@ import {
 	ActionAddFeature,
 	ActionDeleteSelection,
 	ActionSetCollectionData,
-	ActionUpdateCoordinates, ActionSetMapControlMode
-} from '../../reducers/actions';
+	ActionUpdateCoordinates,
+	ActionSetMapControlMode } from '../../reducers/actions';
 import {
-	getSelection,
-	getFeatureAtIndex,
-	getFeatureCollection,
-	getCurrentCollectionId } from '../../reducers/selectors/index.selectors';
+	currentCollectionId,
+	currentSelectionVectors,
+	currentFeatureCollection } from '../../reducers/selectors/index.selectors';
 
 export class DrawMode extends InteractionMode {
 	static create(map: any) {
@@ -29,7 +28,8 @@ export class DrawMode extends InteractionMode {
 	}
 
 	onPointerDown(e: Ev) {
-		const collectionId = getCurrentCollectionId();
+		const state = getState();
+		const collectionId = currentCollectionId(state);
 
 		if (!collectionId) {
 			return;
@@ -37,8 +37,7 @@ export class DrawMode extends InteractionMode {
 
 		const co = llToCo(e.lngLat);
 
-		// todo: implement drawing of new points, rectangles and circles
-		const selection = getSelection(collectionId);
+		const selection = currentSelectionVectors(state);
 		const _i = selection[0]
 			? selection[0][0]
 			: undefined;
@@ -50,13 +49,14 @@ export class DrawMode extends InteractionMode {
 			}));
 
 		} else {
+			const featureCollection = currentFeatureCollection(state);
+
 			const {
 				geometry: { coordinates: cos }
-			} = getFeatureAtIndex(collectionId, _i);
+			} = featureCollection.features[_i];
 
 			if (cos.length > 2) {
 				const p0 = this._map.project(coToLl(cos[0]));
-				const featureCollection = getFeatureCollection(collectionId);
 
 				if (dis(p0, e.point) < THRESHOLD) {
 					dispatch(ActionSetCollectionData.create({
@@ -71,7 +71,6 @@ export class DrawMode extends InteractionMode {
 						}
 					}));
 
-					// this.trigger('finish');
 					dispatch(ActionSetMapControlMode.create({ mode: NAVIGATION_MODE }));
 
 					return;
@@ -87,14 +86,14 @@ export class DrawMode extends InteractionMode {
 	}
 
 	onPointerMove(e: Ev) {
-		const collectionId = getCurrentCollectionId();
+		const state = getState();
+		const collectionId = currentCollectionId(state);
 
 		if (!collectionId) {
 			return;
 		}
 
-		// todo: implement drawing of new points, rectangles and circles
-		const selection = getSelection(collectionId);
+		const selection = currentSelectionVectors(state);
 		const _i = selection[0]
 			? selection[0][0]
 			: undefined;
@@ -103,7 +102,7 @@ export class DrawMode extends InteractionMode {
 			return;
 		}
 
-		const { geometry: { coordinates } } = getFeatureAtIndex(collectionId, _i);
+		const { geometry: { coordinates } } = currentFeatureCollection(state).features[_i];
 
 		dispatch(ActionUpdateCoordinates.create({
 			collectionId,
@@ -116,14 +115,14 @@ export class DrawMode extends InteractionMode {
 	onPointerUp(e: Ev) {}
 
 	onPointerDblClick() {
-		const collectionId = getCurrentCollectionId();
+		const state = getState();
+		const collectionId = currentCollectionId(state);
 
 		if (!collectionId) {
 			return;
 		}
 
-		// todo: implement drawing of new points, rectangles and circles
-		const selection = getSelection(collectionId);
+		const selection = currentSelectionVectors(state);
 		const _i = selection[0]
 			? selection[0][0]
 			: undefined;
@@ -132,7 +131,7 @@ export class DrawMode extends InteractionMode {
 			return;
 		}
 
-		const featureCollection = getFeatureCollection(collectionId);
+		const featureCollection = currentFeatureCollection(state);
 
 		dispatch(ActionSetCollectionData.create({
 			collectionId,
@@ -157,7 +156,7 @@ export class DrawMode extends InteractionMode {
 	}
 
 	onEscapeKey() {
-		const collectionId = getCurrentCollectionId();
+		const collectionId = currentCollectionId(getState());
 
 		if (!collectionId) {
 			return;

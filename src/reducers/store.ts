@@ -4,9 +4,7 @@ import { rootReducer } from './root.reducer';
 
 export const store = createStore(
 	rootReducer,
-	{
-		multiverse: {}
-	}
+	{}
 );
 
 export const dispatch = (action: Action) => store.dispatch(action);

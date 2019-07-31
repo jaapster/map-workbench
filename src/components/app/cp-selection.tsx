@@ -1,10 +1,15 @@
 import React from 'react';
 import './scss/properties.scss';
-import { Properties } from './cp-properties';
-import { EPSG, FeatureData, State } from '../../types';
-import { FeatureProperties } from './cp-feature-properties';
-import { getSelectedFeatures } from '../../reducers/selectors/index.selectors';
 import { connect } from 'react-redux';
+import { Properties } from './cp-properties';
+import { FeatureProperties } from './cp-feature-properties';
+import {
+	crs,
+	currentSelectionFeatures } from '../../reducers/selectors/index.selectors';
+import {
+	EPSG,
+	State,
+	FeatureData } from '../../types';
 
 interface Props {
 	features: FeatureData<any>[];
@@ -20,8 +25,8 @@ export const _Selection = ({ features, CRS }: Props) => (
 
 const mapStateToProps = (state: State) => (
 	{
-		features: getSelectedFeatures('trails'),
-		CRS: state.mapControl.CRS
+		features: currentSelectionFeatures(state),
+		CRS: crs(state)
 	}
 );
 

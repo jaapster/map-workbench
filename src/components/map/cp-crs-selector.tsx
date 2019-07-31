@@ -1,9 +1,11 @@
 import React from 'react';
-import { EPSG } from '../../types';
+import { crs } from '../../reducers/selectors/index.selectors';
 import { connect } from 'react-redux';
 import { Dispatch } from 'redux';
-import { getCurrentCRS } from '../../reducers/selectors/index.selectors';
 import { ActionSetMapControlCRS } from '../../reducers/actions';
+import {
+	EPSG,
+	State } from '../../types';
 import {
 	Button,
 	ButtonGroup } from '../app/cp-button';
@@ -33,9 +35,9 @@ export const _CRSSelector = React.memo(({ CRS, setCRS }: Props) => (
 	</ButtonGroup>
 ));
 
-const mapStateToProps = () => (
+const mapStateToProps = (state: State) => (
 	{
-		CRS: getCurrentCRS()
+		CRS: crs(state)
 	}
 );
 

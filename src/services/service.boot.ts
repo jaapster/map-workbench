@@ -21,7 +21,7 @@ export const BootService = {
 
 				dispatch(ActionSetUniverses.create({ universeData: universes }));
 
-				worlds.forEach((worldData: WorldData) => (
+				worlds.slice().reverse().forEach((worldData: WorldData) => (
 					dispatch(ActionAddWorld.create({ worldData }))
 				));
 			});

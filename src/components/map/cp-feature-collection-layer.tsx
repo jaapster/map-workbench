@@ -23,6 +23,7 @@ import {
 	State,
 	SelectionVector,
 	FeatureCollectionData } from '../../types';
+import { center, zoom } from '../../reducers/selectors/index.selectors';
 
 interface Props {
 	featureCollection: FeatureCollectionData;
@@ -117,8 +118,8 @@ export const _FeatureCollectionLayer = React.memo(({ featureCollection, selectio
 
 const mapStateToProps = (state: State) => (
 	{
-		zoom: state.mapControl.zoom,
-		center: state.mapControl.center
+		zoom: zoom(state),
+		center: center(state)
 	}
 );
 

@@ -13,6 +13,7 @@ import {
 	MENU_MODE,
 	UPDATE_MODE,
 	NAVIGATION_MODE } from '../../constants';
+import { mode } from '../../reducers/selectors/index.selectors';
 
 interface Props {
 	mode: MapControlMode;
@@ -51,7 +52,7 @@ export const _ModeSelector = React.memo(({ mode, activateDrawMode, activateNavig
 
 const mapStateToProps = (state: State) => (
 	{
-		mode: state.mapControl.mode
+		mode: mode(state)
 	}
 );
 

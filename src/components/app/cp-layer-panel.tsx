@@ -1,19 +1,19 @@
 import React from 'react';
 import { connect } from 'react-redux';
+import { Dispatch } from 'redux';
 import { MapControl } from '../../map-control/map-control';
 import { Properties } from './cp-properties';
 import {
+	State,
 	SelectionVector,
 	FeatureCollectionData } from '../../types';
 import {
-	getSelection,
-	getFeatureAtIndex,
-	getFeatureCollection,
-	getCurrentCollectionId } from '../../reducers/selectors/index.selectors';
+	currentCollectionId,
+	currentSelectionVectors,
+	currentFeatureCollection } from '../../reducers/selectors/index.selectors';
 import {
 	ActionSelect,
 	ActionDeleteSelection } from '../../reducers/actions';
-import { Dispatch } from 'redux';
 
 interface Props {
 	del: (collectionId: string, vector: SelectionVector) => void;
@@ -51,7 +51,7 @@ export const _LayerPanel = React.memo((props: Props) => {
 								select({ collectionId, vector: [j], multi: e.shiftKey });
 							} }
 							onDoubleClick={ () => {
-								MapControl.fitFeatures([getFeatureAtIndex(collectionId, j)]);
+								MapControl.fitFeatures([featureCollection.features[j]]);
 							} }
 						>
 							{ feature.properties.type }
@@ -73,15 +73,13 @@ export const _LayerPanel = React.memo((props: Props) => {
 	);
 });
 
-const mapStateToProps = () => {
-	const collectionId = getCurrentCollectionId();
-
-	return {
-		selection: getSelection(collectionId),
-		collectionId,
-		featureCollection: getFeatureCollection(collectionId)
-	};
-};
+const mapStateToProps = (state: State) => (
+	{
+		selection: currentSelectionVectors(state),
+		collectionId: currentCollectionId(state),
+		featureCollection: currentFeatureCollection(state)
+	}
+);
 
 const mapDispatchToProps = (dispatch: Dispatch) => (
 	{

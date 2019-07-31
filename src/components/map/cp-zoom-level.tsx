@@ -1,6 +1,7 @@
 import React from 'react';
 import { State } from '../../types';
 import { connect } from 'react-redux';
+import { zoom } from '../../reducers/selectors/index.selectors';
 
 interface Props {
 	zoom: number;
@@ -14,7 +15,7 @@ export const _ZoomLevel = React.memo(({ zoom }: Props) => (
 
 const mapStateToProps = (state: State) => (
 	{
-		zoom: state.mapControl.zoom
+		zoom: zoom(state)
 	}
 );
 

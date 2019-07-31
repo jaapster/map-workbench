@@ -21,6 +21,10 @@ import {
 	CollectionData,
 	MapControlMode
 } from '../../types';
+import {
+	currentWorldCollections,
+	mode
+} from '../../reducers/selectors/index.selectors';
 
 interface Props {
 	collections: Dict<CollectionData>;
@@ -83,13 +87,11 @@ export class _Map extends React.PureComponent<Props> {
 	}
 }
 
-const mapStateToProps = (state: State) => {
-	const { multiverse: { worlds, currentWorldId } } = state;
-
-	return {
-		collections: worlds[currentWorldId].collections,
-		mode: state.mapControl.mode
-	};
-};
+const mapStateToProps = (state: State) => (
+	{
+		collections: currentWorldCollections(state),
+		mode: mode(state)
+	}
+);
 
 export const Map = connect(mapStateToProps)(_Map);

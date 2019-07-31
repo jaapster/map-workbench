@@ -6,6 +6,7 @@ import {
 	Co,
 	EPSG,
 	State } from '../../types';
+import { center, crs, zoom } from '../../reducers/selectors/index.selectors';
 
 interface Props {
 	CRS: EPSG;
@@ -77,9 +78,9 @@ export const _HashParams = React.memo(({ zoom, center, CRS }: Props) => {
 
 const mapStateToProps = (state: State) => (
 	{
-		zoom: state.mapControl.zoom,
-		center: state.mapControl.center,
-		CRS: state.mapControl.CRS
+		zoom: zoom(state),
+		center: center(state),
+		CRS: crs(state)
 	}
 );
 

@@ -1,46 +1,50 @@
-import { getState } from '../store';
+import { createSelector } from 'reselect';
+import { State } from '../../types';
 
-export const getCurrentCollectionId = (): string => {
-	const {
-		multiverse: {
-			worlds,
-			currentWorldId
-		}
-	} = getState();
+export const crs = (state: State) => state.mapControl.CRS;
 
-	return worlds[currentWorldId].currentCollectionId;
-};
+export const zoom = (state: State) => state.mapControl.zoom;
 
-export const getSelection = (collectionId: string): number[][] => {
-	const {
-		multiverse: {
-			worlds,
-			currentWorldId
-		}
-	} = getState();
+export const mode = (state: State) => state.mapControl.mode;
 
-	return worlds[currentWorldId].collections[collectionId].selection;
-};
+export const worlds = (state: State) => state.multiverse.worlds;
 
-export const getSelectedFeatures = (collectionId: string) => {
-	const selection = getSelection(collectionId).map(([i]) => i);
+export const center = (state: State) => state.mapControl.center;
 
-	return getFeatureCollection(collectionId).features.filter((f: any, i: number) => selection.includes(i));
-};
+export const appPhase = (state: State) => state.appPhase;
 
-export const getFeatureCollection = (collectionId: string) => {
-	const {
-		multiverse: {
-			worlds,
-			currentWorldId
-		}
-	} = getState();
+export const universes = (state: State) => state.multiverse.universes;
 
-	return worlds[currentWorldId].collections[collectionId].featureCollection;
-};
+export const currentWorldId = (state: State) => state.multiverse.currentWorldId;
 
-export const getFeatureAtIndex = (collectionId: string, i: number) => {
-	return getFeatureCollection(collectionId).features[i];
-};
+export const currentWorld = createSelector(
+	[worlds, currentWorldId, universes],
+	(worlds, worldId, universes) => {
+		const world = worlds[worldId];
+		const universe = universes[world.universeIndex];
 
-export const getCurrentCRS = () => getState().mapControl.CRS;
+		return {
+			...world,
+			crs: universe.crs,
+			maps: universe.maps
+		};
+	}
+);
+
+export const currentCollectionId = (state: State) => currentWorld(state).currentCollectionId;
+
+export const currentWorldCollections = (state: State) => currentWorld(state).collections;
+
+export const currentCollection = (state: State) => currentWorldCollections(state)[currentCollectionId(state)];
+
+export const currentSelectionVectors = (state: State) => currentCollection(state).selection;
+
+export const currentFeatureCollection = (state: State) => currentCollection(state).featureCollection;
+
+export const currentSelectionFeatures = createSelector(
+	[currentSelectionVectors, currentFeatureCollection],
+	(vectors, featureCollection) => {
+		const selection = vectors.map(([i]) => i);
+		return featureCollection.features.filter((f, i) => selection.includes(i));
+	}
+);
