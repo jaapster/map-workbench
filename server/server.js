@@ -1,5 +1,5 @@
 const express = require('express');
-const bodyParser = require('body-parser')
+const bodyParser = require('body-parser');
 const path = require('path');
 const app = express();
 app.use(express.static(path.join(__dirname, 'build')));
@@ -18,6 +18,10 @@ app.get('/universes', function (req, res) {
 
 app.get('/worlds', function (req, res) {
 	res.sendFile(path.join(__dirname, 'data', 'data.worlds.json'));
+});
+
+app.get('/referencelayers', function (req, res) {
+	res.sendFile(path.join(__dirname, 'data', 'data.styles.json'));
 });
 
 app.listen(process.env.PORT || 8080);

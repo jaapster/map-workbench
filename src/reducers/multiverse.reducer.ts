@@ -19,12 +19,16 @@ import {
 	ActionClearCollection,
 	ActionDeleteSelection,
 	ActionUpdateCoordinates,
-	ActionSetCollectionData } from './actions';
+	ActionSetCollectionData,
+	ActionSetReferenceLayers, ActionSetCurrentReferenceLayer
+} from './actions';
 
 const STATE: MultiverseData = {
 	worlds: {},
 	universes: [],
-	currentWorldId: 'default'
+	currentWorldId: 'default',
+	referenceLayers: [],
+	currentReferenceLayer: 'Empty'
 };
 
 const not = (fn: (...args: any[]) => any) => (...args: any[]) => !fn(...args);
@@ -59,13 +63,27 @@ const updateCollection = (state: MultiverseData, collectionId: string, data: any
 export const multiverseReducer = (
 	state: MultiverseData = STATE,
 	action: Action
-) => {
+): MultiverseData => {
 	const { worlds, currentWorldId } = state;
 
 	if (ActionSetUniverses.validate(action)) {
 		return {
 			...state,
 			universes: ActionSetUniverses.data(action).universeData
+		};
+	}
+
+	if (ActionSetReferenceLayers.validate(action)) {
+		return {
+			...state,
+			referenceLayers: ActionSetReferenceLayers.data(action).layers
+		};
+	}
+
+	if (ActionSetCurrentReferenceLayer.validate(action)) {
+		return {
+			...state,
+			currentReferenceLayer: ActionSetCurrentReferenceLayer.data(action).layer
 		};
 	}
 
@@ -81,21 +99,6 @@ export const multiverseReducer = (
 				...worlds,
 				[id]: {
 					...worldData,
-					maps: universe.maps.reduce((m, map) => (
-						{
-							...m,
-							[map.id]: {
-								...map,
-								layers: map.layers.map(layer => (
-									{
-										...layer,
-										visible: true,
-										opacity: 1
-									}
-								))
-							}
-						}
-					), {}),
 					collections: Object.keys(worldData.collections).reduce((m, key) => {
 						return {
 							...m,
@@ -224,7 +227,7 @@ export const multiverseReducer = (
 				...worlds,
 				[currentWorldId]: {
 					...worlds[currentWorldId],
-					currentCollection: collectionId
+					currentCollectionId: collectionId
 				}
 			}
 		};

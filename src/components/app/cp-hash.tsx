@@ -65,7 +65,13 @@ const round = (v: number, d: number) => {
 };
 
 export const _HashParams = React.memo(({ zoom, center, CRS }: Props) => {
-	const [x, y] = MapControl.projectToCRS(center, CRS);
+	const c = MapControl.projectToCRS(center, CRS);
+
+	if (c == null) {
+		return null;
+	}
+
+	const [x, y] = c;
 
 	setHashParams({
 		center: [round(x, 6), round(y, 6)],

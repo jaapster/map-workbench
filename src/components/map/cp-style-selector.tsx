@@ -1,52 +1,57 @@
-import bind from 'autobind-decorator';
 import React from 'react';
+import { connect } from 'react-redux';
 import { MapControl } from '../../map-control/map-control';
-import { Button, ButtonGroup } from '../app/cp-button';
-import { styles } from '../../map-control/utils/util-map';
+import {
+	currentReferenceLayer,
+	referenceLayers
+} from '../../reducers/selectors/index.selectors';
+import {
+	Button,
+	ButtonGroup } from '../app/cp-button';
+import {
+	State,
+	MapboxStyle } from '../../types';
+import { Dispatch } from 'redux';
+import { ActionSetCurrentReferenceLayer } from '../../reducers/actions';
 
-interface Props {}
-
-interface State {
-	style: string;
+interface Props {
+	currentReferenceLayer: string | MapboxStyle;
+	referenceLayers: [string, (string | MapboxStyle)][];
+	setStyle: (style: [string, string | MapboxStyle]) => void;
 }
 
-@bind
-export class StyleSelector extends React.PureComponent<Props, State> {
-	constructor(props: Props) {
-		super(props);
+export const _StyleSelector = ({ referenceLayers, setStyle, currentReferenceLayer }: Props) => {
+	return (
+		<ButtonGroup>
+			{
+				referenceLayers.map(([name, s]) => (
+					<Button
+						key={ name }
+						onClick={ () => setStyle([name, s]) }
+						depressed={  currentReferenceLayer === name }
+					>
+						{ name }
+					</Button>
+				))
+			}
+		</ButtonGroup>
+	);
+};
 
-		this.state = {
-			style: styles[0][1]
-		};
+const mapStateToProps = (state: State) => (
+	{
+		referenceLayers: referenceLayers(state),
+		currentReferenceLayer: currentReferenceLayer(state)
 	}
+);
 
-	private _setStyle(_style: string) {
-		const { style } = this.state;
-
-		if (style !== _style) {
-			MapControl.setStyle(_style);
-			this.setState({ style: _style });
+const mapDispatchToProps = (dispatch: Dispatch) => (
+	{
+		setStyle([name, s]: [string, string | MapboxStyle]) {
+			MapControl.setStyle(s);
+			dispatch(ActionSetCurrentReferenceLayer.create({ layer: name }));
 		}
 	}
+);
 
-	render() {
-		const { style } = this.state;
-
-		return (
-			<ButtonGroup>
-				{
-					styles.map(([name, s]) => (
-						<Button
-							key={ name }
-							onClick={ () => this._setStyle(s) }
-							disabled={ styles.length === 1 }
-							depressed={ style === s }
-						>
-							{ name }
-						</Button>
-					))
-				}
-			</ButtonGroup>
-		);
-	}
-}
+export const StyleSelector = connect(mapStateToProps, mapDispatchToProps)(_StyleSelector);

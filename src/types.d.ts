@@ -134,6 +134,8 @@ export interface MultiverseData {
 	worlds: Dict<WorldData>;
 	universes: UniverseData[];
 	currentWorldId: string;
+	referenceLayers: [string, (string | MapboxStyle)][];
+	currentReferenceLayer: string | MapboxStyle;
 }
 
 export type MapControlMode = 'navigate' | 'update' | 'draw' | 'menu';

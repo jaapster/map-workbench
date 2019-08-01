@@ -13,7 +13,13 @@ interface Props {
 }
 
 export const _CenterCoordinate = React.memo(({ center, CRS }: Props) => {
-	const [x, y] = MapControl.projectToCRS(center, CRS);
+	const c = MapControl.projectToCRS(center, CRS);
+
+	if (c == null) {
+		return null;
+	}
+
+	const [x, y] = c;
 
 	const hasDecimals = Math.round(x) !== x;
 

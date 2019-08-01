@@ -6,8 +6,8 @@ import { mergeClasses } from '../../app/utils/util-merge-classes';
 
 interface Props {
 	id: string;
-	coordinates: Co[][];
 	selected: boolean;
+	coordinates: Co[][];
 }
 
 export const Polygon = ({ id, coordinates, selected }: Props) => {
@@ -20,13 +20,6 @@ export const Polygon = ({ id, coordinates, selected }: Props) => {
 
 	return (
 		<g>
-			<path
-				fillRule="evenodd"
-				className={ className }
-				d={
-					coordinates.reduce((m, c) => c.reduce(addToPath, m), '')
-				}
-			/>
 			{
 				selected
 					? (
@@ -36,7 +29,15 @@ export const Polygon = ({ id, coordinates, selected }: Props) => {
 							selected={ selected }
 						/>
 					)
-					: null
+					: (
+						<path
+							fillRule="evenodd"
+							className={ className }
+							d={
+								coordinates.reduce((m, c) => c.reduce(addToPath, m), '')
+							}
+						/>
+					)
 			}
 		</g>
 	);

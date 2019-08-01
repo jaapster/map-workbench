@@ -9,6 +9,10 @@ export const mode = (state: State) => state.mapControl.mode;
 
 export const worlds = (state: State) => state.multiverse.worlds;
 
+export const referenceLayers = (state: State) => state.multiverse.referenceLayers;
+
+export const currentReferenceLayer = (state: State) => state.multiverse.currentReferenceLayer;
+
 export const center = (state: State) => state.mapControl.center;
 
 export const appPhase = (state: State) => state.appPhase;

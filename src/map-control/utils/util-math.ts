@@ -57,20 +57,3 @@ export const isClockwise = (xs: Co[]) => (
 		m + ((s[(i + 1) % s.length][0] - x) * (s[(i + 1) % s.length][1] + y))
 	), 0) > 0
 );
-
-/*
-
-signed_area(const std::vector<point>& polygon) {
-  double area = 0.0;
-
-  unsigned j = 1;
-  for (unsigned i = 0; i < polygon.size(); i++, j++) {
-    j = j % polygon.size();
-
-    area += (polygon[j].x - polygon[i].x)*(polygon[j].y + polygon[i].y);
-  }
-
-  return area / 2.0;
-}
-
- */

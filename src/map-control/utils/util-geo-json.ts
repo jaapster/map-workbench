@@ -1,31 +1,24 @@
 import uuid from 'uuid/v1';
-import { toPairs } from './util-list';
 import {
 	dis,
 	rot } from './util-point';
 import {
 	Co,
-	Bounds,
 	FeatureData,
 	MultiPointJSON } from '../../types';
 import {
-	POINT,
 	CIRCLE,
 	FEATURE,
 	POLYGON,
 	SEGMENT,
 	PRECISION,
-	LINE_STRING,
-	MULTI_POINT,
-	MULTI_LINE_STRING, RECTANGLE
-} from '../../constants';
+	LINE_STRING } from '../../constants';
 import {
 	llToCo,
 	coToLl,
 	geoDistance,
 	geoProject,
-	geoUnproject
-} from './util-geo';
+	geoUnproject } from './util-geo';
 
 export const newLineString = (coordinates: Co[] = []) => (
 	{
@@ -118,64 +111,12 @@ export const multiPointToCircle = (feature: FeatureData<MultiPointJSON>) => {
 	];
 };
 
-export const getBounds = (feature: FeatureData<any>): Bounds => {
-	const { geometry: { coordinates } } = getEnvelope(feature);
-
-	// envelope has a fixed order so we can do this
-	return [
-		coordinates[0],
-		coordinates[2]
-	] as any;
-};
-
-export const getEnvelope = (feature: FeatureData<any>) => {
-	const f = feature.properties.type === CIRCLE
-		? multiPointToCircle(feature)[0]
-		: feature;
-
-	const { geometry: { coordinates } } = f;
-
-	const cos: Co[] = toPairs(coordinates.flat(4));
-
-	const lng = cos.map(([lng]) => lng);
-	const lat = cos.map(([, lat]) => lat);
-
-	return {
-		type: FEATURE,
-		geometry: {
-			type: POLYGON, coordinates: [
-				[Math.min(...lng), Math.min(...lat)],
-				[Math.min(...lng), Math.max(...lat)],
-				[Math.max(...lng), Math.max(...lat)],
-				[Math.max(...lng), Math.min(...lat)],
-				[Math.min(...lng), Math.min(...lat)]
-			]
-		},
-		properties: {
-			type: POLYGON
+export const render = (features: FeatureData<any>[]) => {
+	return features.reduce((m, feature) => {
+		if (feature.properties.type === CIRCLE) {
+			return m.concat(multiPointToCircle(feature));
 		}
-	};
+
+		return m.concat(feature);
+	}, [] as FeatureData<any>[]);
 };
-
-export const apply = (feature: FeatureData<any>, fn: (co: Co) => any) => {
-	const { geometry: { coordinates }, properties: { type } } = feature;
-
-	return {
-		...feature,
-		geometry: {
-			coordinates: type === POINT
-				? fn(coordinates)
-				: type === LINE_STRING || type === MULTI_POINT || type === CIRCLE
-					? (coordinates as Co[]).map(fn)
-					: type === POLYGON || type === MULTI_LINE_STRING || type === RECTANGLE
-						? (coordinates as Co[][]).map(c => c.map(fn))
-						: (coordinates as Co[][][]).map(c => c.map(c => c.map(fn)))
-		}
-	};
-};
-
-export const project = (feature: FeatureData<any>) => (
-	apply(feature, (co: Co) => {
-		return geoProject(coToLl(co));
-	})
-);

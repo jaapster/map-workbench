@@ -5,7 +5,7 @@
 	right: 0;
 	bottom: 0;
 	overflow: hidden;
-	background: #222;
+	background: floralwhite;
 
 	&.mode-update,
 	&.mode-draw {
@@ -96,6 +96,7 @@ path {
 
 	&.selected {
 		stroke: $colorSelected;
+		stroke-dasharray: 2;
 	}
 
 	&.polygon,

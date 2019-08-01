@@ -20,7 +20,7 @@ export const getRadius = (feature: FeatureData<any>) => {
 		return getLineLength(coordinates);
 	}
 
-	return 0;
+	return null;
 };
 
 export const getLineLength = (cos: Co[]) => {
@@ -38,15 +38,19 @@ export const getFeatureLength = (feature: FeatureData<any>) => {
 		geometry: { coordinates }
 	} = feature;
 
+	const r =  getRadius(feature);
+
+	if (r) {
+		return 2 * Math.PI * r;
+	}
+
 	return type === LINE_STRING
 		? getLineLength(coordinates)
 		: [MULTI_LINE_STRING, POLYGON, RECTANGLE].includes(type)
 			? coordinates.reduce(addLength, 0)
 			: type === MULTI_POLYGON
 				? coordinates.flat().reduce(addLength, 0)
-				: type === CIRCLE
-					? 2 * Math.PI * getRadius(feature)
-					: 0;
+				: 0;
 };
 
 export const getRingArea = (cos: Co[]) => {
@@ -106,6 +110,12 @@ export const getFeatureArea = (feature: FeatureData<any>) => {
 	let total = 0;
 	let i;
 
+	const r = getRadius(feature);
+
+	if (r) {
+		return (r ** 2) * Math.PI;
+	}
+
 	switch (type) {
 		case POLYGON:
 		case RECTANGLE:
@@ -115,8 +125,6 @@ export const getFeatureArea = (feature: FeatureData<any>) => {
 				total += getPolygonArea(coordinates[i]);
 			}
 			return total;
-		case CIRCLE:
-			return (getRadius(feature) ** 2) * Math.PI;
 		default:
 			return null;
 	}

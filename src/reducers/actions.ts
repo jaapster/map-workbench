@@ -7,7 +7,7 @@ import {
 	FeatureData,
 	UniverseData,
 	SelectionVector,
-	FeatureCollectionData, EPSG, MapControlMode
+	FeatureCollectionData, EPSG, MapControlMode, MapboxStyle
 } from '../types';
 
 export interface Action {
@@ -19,6 +19,14 @@ export interface Action {
 export const ActionSetUniverses = getActionCreator<{
 	universeData: UniverseData[]
 }>('ActionSetUniverses');
+
+export const ActionSetReferenceLayers = getActionCreator<{
+	layers: [string, (string | MapboxStyle)][]
+}>('ActionSetReferenceLayers');
+
+export const ActionSetCurrentReferenceLayer = getActionCreator<{
+	layer: string | MapboxStyle
+}>('ActionSetCurrentReferenceLayer');
 
 export const ActionAddWorld = getActionCreator<{
 	worldData: WorldData

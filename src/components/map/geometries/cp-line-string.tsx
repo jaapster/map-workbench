@@ -20,10 +20,6 @@ export const LineString = ({ coordinates, selected, id }: Props) => {
 
 	return (
 		<g>
-			<path
-				className={ className }
-				d={ coordinates.reduce(addToPath, '') }
-			/>
 			{
 				selected
 					? (
@@ -33,7 +29,12 @@ export const LineString = ({ coordinates, selected, id }: Props) => {
 							selected={ selected }
 						/>
 					)
-					: null
+					: (
+						<path
+							className={ className }
+							d={ coordinates.reduce(addToPath, '') }
+						/>
+					)
 			}
 		</g>
 	);

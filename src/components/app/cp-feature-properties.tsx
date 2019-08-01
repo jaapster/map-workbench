@@ -1,28 +1,20 @@
 import React from 'react';
 import './scss/feature-card.scss';
-import { EPSG, FeatureData } from '../../types';
+import { Value } from './cp-value';
+import { MapControl } from '../../map-control/map-control';
+import {
+	EPSG,
+	FeatureData } from '../../types';
 import {
 	getRadius,
 	getCoordinate,
 	getFeatureArea,
 	getFeatureLength } from './utils/geojson-properties';
-import { MapControl } from '../../map-control/map-control';
 
 interface Props {
 	features: FeatureData<any>[];
 	CRS: EPSG;
 }
-
-const Value = ({ value: v, unit, precision = 0 }: any) => (
-	<span>
-		{
-			v == null
-				? '-'
-				: `${ !isNaN(v) ? v.toFixed(precision) : v }
-					${ unit  ? ` ${ unit }`  : '' }`
-		}
-	</span>
-);
 
 export const FeatureProperties = React.memo((props: Props) => {
 	const { features, CRS } = props;
@@ -51,19 +43,22 @@ export const FeatureProperties = React.memo((props: Props) => {
 						length
 					</div>
 					<div className="cell">
-						<Value value={
-							features.reduce((m, f, i) => {
-								const v = getFeatureLength(f);
+						<Value
+							value={
+								features.reduce((m, f, i) => {
+									const v = getFeatureLength(f);
 
-								return v == null
-									? null
-									: m === null
-										? i > 0
-											? null
-											: v
-										: m + v;
-							}, null)
-						} unit="m" />
+									return v == null
+										? null
+										: m === null
+											? i > 0
+												? null
+												: v
+											: m + v;
+								}, null)
+							}
+						   unit="m"
+						/>
 					</div>
 				</div>
 				<div className="row">
@@ -71,20 +66,23 @@ export const FeatureProperties = React.memo((props: Props) => {
 						area
 					</div>
 					<div className="cell">
-						<Value value={
-							features.reduce((m, f, i) => {
-								const v = getFeatureArea(f);
+						<Value
+							value={
+								features.reduce((m, f, i) => {
+									const v = getFeatureArea(f);
 
-								return v == null
-									? null
-									: m === null
-										? i > 0
-											? null
-											: v
-										// @ts-ignore
-										: m + v;
-							}, null)
-						} unit="m" />
+									return v == null
+										? null
+										: m === null
+											? i > 0
+												? null
+												: v
+											// @ts-ignore
+											: m + v;
+								}, null)
+							}
+							unit="m2"
+						/>
 					</div>
 				</div>
 				<div className="row">

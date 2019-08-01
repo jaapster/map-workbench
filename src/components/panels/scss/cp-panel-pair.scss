@@ -127,8 +127,8 @@ $panel-border: 0px solid transparent;
 
 	.toggles {
 		position: absolute;
-		top: 0;
-		right: 0;
+		top: 2px;
+		right: 2px;
 		width: 28px;
 		bottom: 0;
 
@@ -139,10 +139,10 @@ $panel-border: 0px solid transparent;
 			cursor: default;
 			height: 20px;
 			margin-bottom: 1px;
-			background: rgba(255, 255, 0, 0.3);
+			background: rgba(255, 255, 255, 0.5);
 
 			&.active {
-				background: rgba(255, 255, 0, 0.6);
+				background: rgba(255, 255, 255, 0.7);
 			}
 		}
 	}

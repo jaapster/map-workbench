@@ -1,63 +1,22 @@
-import { Co, FeatureData } from '../../types';
-import {
-	POINT,
-	POLYGON,
-	RECTANGLE,
-	LINE_STRING,
-	MULTI_POINT,
-	MULTI_POLYGON,
-	MULTI_LINE_STRING
-} from '../../constants';
+import { FeatureData } from '../../types';
 import { geoDistance } from './util-geo';
+import { getEnvelope } from './util-get-envelope';
 
 interface Box {
 	width: number;
 	height: number;
 }
 
-export const getCoordinates = (features: FeatureData<any>[]) => {
-	return features.reduce((m, { geometry: { coordinates, type } }) => {
-		return type === POINT
-			? m.concat([coordinates])
-			: type === LINE_STRING || type === MULTI_POINT
-				? m.concat(coordinates)
-				: type === POLYGON || type === MULTI_LINE_STRING || type === RECTANGLE
-					? m.concat(coordinates.flat(1))
-					: type === MULTI_POLYGON
-						? m.concat(coordinates.flat(2))
-						: m;
-	}, [] as Co[]);
-};
-
-export const getEnvelope = (features: FeatureData<any>[]) => {
-	const cos = getCoordinates(features);
-
-	return [
-		[
-			cos.reduce((m, [v]: Co) => v < m ? v : m, Infinity),
-			cos.reduce((m, [, v]: Co) => v < m ? v : m, Infinity)
-		],
-		[
-			cos.reduce((m, [v]: Co) => v > m ? v : m, -Infinity),
-			cos.reduce((m, [, v]: Co) => v > m ? v : m, -Infinity)
-		]
-	];
-};
-
 export const getTargetZoom = (features: FeatureData<any>[], box: Box) => {
 	const [a, b]: any = getEnvelope(features);
 
 	const width = geoDistance(a, [b[0], a[1]]);
 	const height = geoDistance(a, [a[0], b[1]]);
-	const maxDim = Math.max(width, height);
 
-	const pixelsPerMeter = maxDim === width
-		? box.width / maxDim
-		: box.height / maxDim;
+	const ppmW = box.width / width;
+	const ppmH = box.height / height;
 
-	const zoom = Math.log2(
-		156543.03392 * Math.cos(b[1] * Math.PI / 180) * pixelsPerMeter
-	);
+	const ppm = Math.min(ppmW, ppmH);
 
-	return Math.floor(zoom);
+	return Math.log2(156543.03392 * Math.cos(b[1] * Math.PI / 180) * ppm);
 };

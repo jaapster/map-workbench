@@ -4,8 +4,9 @@ import { WorldData } from '../types';
 import { LOCATIONS } from '../constants';
 import { MapControl } from '../map-control/map-control';
 import {
-	ActionAddWorld,
-	ActionSetUniverses } from '../reducers/actions';
+	ActionAddWorld, ActionSetReferenceLayers,
+	ActionSetUniverses
+} from '../reducers/actions';
 
 export const BootService = {
 	boot() {
@@ -14,16 +15,19 @@ export const BootService = {
 		return Promise
 			.all([
 				axios.get('/universes'),
-				axios.get('/worlds')
+				axios.get('/worlds'),
+				axios.get('/referencelayers')
 			])
 			.then((responses) => {
-				const [universes, worlds] = responses.map(r => r.data);
+				const [universes, worlds, layers] = responses.map(r => r.data);
 
 				dispatch(ActionSetUniverses.create({ universeData: universes }));
 
 				worlds.slice().reverse().forEach((worldData: WorldData) => (
 					dispatch(ActionAddWorld.create({ worldData }))
 				));
+
+				dispatch(ActionSetReferenceLayers.create({ layers }));
 			});
 	}
 };

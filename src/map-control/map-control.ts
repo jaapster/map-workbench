@@ -6,8 +6,9 @@ import { clamp } from '../utils/util-clamp';
 import { DrawMode } from './modes/mode.draw';
 import { MenuMode } from './modes/mode.menu';
 import { getCenter } from './utils/util-get-center';
-import { getBounds } from './utils/util-geo-json';
 import { ModeUpdate } from './modes/mode.update';
+import { getEnvelope } from './utils/util-get-envelope';
+import { getTargetZoom } from './utils/util-get-target-zoom';
 import { PointerDevice } from './devices/device.pointer';
 import { KeyboardDevice } from './devices/device.keyboard';
 import { ModeNavigation } from './modes/mode.navigation';
@@ -23,7 +24,7 @@ import {
 	DRAW_MODE,
 	PROJECTED,
 	GEOGRAPHIC,
-	// EMPTY_STYLE,
+	EMPTY_STYLE,
 	LINE_STRING,
 	UPDATE_MODE,
 	NAVIGATION_MODE,
@@ -33,10 +34,8 @@ import {
 	Ev,
 	EPSG,
 	Location,
-	FeatureData } from '../types';
-import {
-	getEnvelope,
-	getTargetZoom } from './utils/util-get-target-zoom';
+	FeatureData, MapboxStyle
+} from '../types';
 import {
 	llToCo,
 	coToLl,
@@ -45,8 +44,8 @@ import {
 
 const FIT_PADDING = 64;
 const FIT_MIN_ZOOM = 14;
-const FIT_MAX_ZOOM = 18;
-const GLOBAL_MAX_ZOOM = 24;
+const FIT_MAX_ZOOM = 19;
+const GLOBAL_MAX_ZOOM = 20;
 
 mapboxGL.accessToken = token;
 
@@ -56,7 +55,7 @@ interface Props {
 }
 
 const DEFAULT_PROPS: Props = {
-	style: 'mapbox://styles/mapbox/light-v10', // EMPTY_STYLE,
+	style: EMPTY_STYLE,
 	location: DEFAULT_LOCATION
 };
 
@@ -96,13 +95,17 @@ export class MapControl {
 		MapControl.instance.setStyle(style);
 	}
 
+	static getStyle() {
+		return MapControl.instance.getStyle();
+	}
+
 	static project(co: Co) {
 		return MapControl.instance.project(co);
 	}
 
 	static projectToCRS(co: Co, CRS: EPSG) {
 		if (co == null) {
-			return [0, 0];
+			return null; // [0, 0];
 		}
 
 		if (CRS === GEOGRAPHIC) {
@@ -118,11 +121,18 @@ export class MapControl {
 	}
 
 	static onMapMove() {
-		dispatch(ActionSetMapControlCenter.create({ center: MapControl.instance.getCenter() }));
+		dispatch(ActionSetMapControlCenter.create({
+			center: MapControl.instance.getCenter()
+		}));
 	}
 
 	static onMapZoom() {
-		dispatch(ActionSetMapControlZoom.create({ zoom: MapControl.instance.getZoom() }));
+		dispatch(ActionSetMapControlZoom.create({
+			zoom: MapControl.instance.getZoom()
+		}));
+		dispatch(ActionSetMapControlCenter.create({
+			center: MapControl.instance.getCenter()
+		}));
 	}
 
 	private readonly _map: any;
@@ -132,6 +142,8 @@ export class MapControl {
 	private readonly _pointerDevice: PointerDevice;
 	private readonly _keyboardDevice: KeyboardDevice;
 	private readonly _navigationMode: ModeNavigation;
+
+	private _style: string | MapboxStyle;
 
 	constructor(props: Props = DEFAULT_PROPS) {
 		// add missing universeData
@@ -143,11 +155,13 @@ export class MapControl {
 		const { center, zoom } = location;
 		const container = DOM.create('div', 'map-container', document.body);
 
+		this._style = style;
+
 		this._map = new mapboxGL.Map({
 			zoom: zoom - 1,
 			style,
 			center,
-			maxZoom: GLOBAL_MAX_ZOOM,
+			maxZoom: GLOBAL_MAX_ZOOM - 1,
 			// temporarily attach container element to body to keep
 			// mapbox from complaining about missing CSS file
 			container,
@@ -277,7 +291,6 @@ export class MapControl {
 
 			this.setLocation({
 				zoom: clamp(
-					// subtract 1 from zoom for mapbox
 					getTargetZoom(
 						features,
 						{
@@ -295,7 +308,7 @@ export class MapControl {
 	}
 
 	isInView(features: FeatureData<any>[]) {
-		const featureBounds = getBounds({
+		const featureBounds = getEnvelope([{
 			type: FEATURE,
 			geometry: {
 				type: LINE_STRING,
@@ -305,7 +318,7 @@ export class MapControl {
 				type: LINE_STRING,
 				id: ''
 			}
-		});
+		}]);
 		const currentZoom = this.getZoom();
 
 		// get current extent in pixels
@@ -333,7 +346,12 @@ export class MapControl {
 	}
 
 	setStyle(style: any) {
+		this._style = style;
 		this._map.setStyle(style);
+	}
+
+	getStyle() {
+		return this._style;
 	}
 
 	setLocation(location: Location) {

@@ -1,11 +1,13 @@
 .properties {
-	padding: 8px;
+	padding: 2px;
 	color: lightgrey;
 	font-size: 12px;
 
 	h2 {
-		//font-size: 15px;
-		margin-left: 4px;
-		margin-bottom: 4px;
+		font-size: 16px;
+		margin: 0 1px 0 0;
+		padding: 4px;
+		height: 20px;
+		background: rgba(255, 255, 255, 0.05);
 	}
 }
