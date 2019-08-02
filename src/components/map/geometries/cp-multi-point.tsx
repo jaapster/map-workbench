@@ -4,19 +4,19 @@ import { Point } from './cp-point';
 
 interface Props {
 	id: string;
-	coordinates: Co[];
 	selected: boolean;
+	coordinates: Co[];
 }
 
 export const MultiPoint = ({ coordinates, selected, id }: Props) => {
 	return (
 		<g>
 			{
-				coordinates.map((co, i) => (
+				coordinates.map((c, i) => (
 					<Point
 						key={ i }
 						id={ `${ id }-${ i }` }
-						coordinates={ co }
+						coordinates={ c }
 						selected={ selected }
 					/>
 				))

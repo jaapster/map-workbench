@@ -37,8 +37,8 @@ $panel-border: 0px solid transparent;
 		left: 0;
 		right: 0;
 		bottom: 0;
-		background: rgba(255, 255, 0, 0.002);
-		z-index: 1;
+		background: rgba(255, 255, 0, 1.002);
+		z-index: 1000;
 	}
 
 	&.panel-pair-horizontal {

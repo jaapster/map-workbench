@@ -1,14 +1,13 @@
 import {
-	Action, ActionSetMapControlCenter,
 	ActionSetMapControlCRS,
 	ActionSetMapControlMode,
-	ActionSetMapControlZoom
-} from './actions';
+	ActionSetMapControlZoom,
+	Action, ActionSetMapControlCenter } from './actions';
 import { MapControlData } from '../types';
-import { NAVIGATION_MODE } from '../constants';
+import { GEOGRAPHIC, NAVIGATION_MODE } from '../constants';
 
 const STATE: MapControlData = {
-	CRS: 4326,
+	CRS: GEOGRAPHIC,
 	mode: NAVIGATION_MODE,
 	zoom: 1,
 	center: [0, 0]

@@ -4,8 +4,8 @@ import { Polygon } from './cp-polygon';
 
 interface Props {
 	id: string;
-	coordinates: Co[][][];
 	selected: boolean;
+	coordinates: Co[][][];
 }
 
 export const MultiPolygon = ({ id, coordinates, selected }: Props) => {

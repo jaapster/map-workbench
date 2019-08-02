@@ -3,8 +3,12 @@ import bind from 'autobind-decorator';
 import './scss/cp-panel-pair.scss';
 import { clamp } from '../../utils/util-clamp';
 import { mergeClasses } from '../app/utils/util-merge-classes';
+import { connect } from 'react-redux';
+import { ActionSetPanelCollapsed } from '../../reducers/actions';
+import { Dispatch } from 'redux';
 
 interface Props {
+	panelGroupId: string;
 	min?: number;
 	max?: number;
 	fixed?: boolean;
@@ -13,21 +17,23 @@ interface Props {
 	onResize?: () => void;
 	collapsed?: boolean;
 	horizontal?: boolean;
+
+	panels: any;
+	setCollapsed?: any;
 }
 
 interface State {
 	position: number;
 	dragging: boolean;
-	collapsed: boolean;
 }
 
 const DEFAULT_POSITION = 200;
 const DEFAULT_MIN_POSITION = 150;
 const DEFAULT_MAX_POSITION = 300;
-const DEFAULT_COLLAPSED_POSITION = 10;
+const DEFAULT_COLLAPSED_POSITION = 32;
 
 @bind
-export class PanelPair extends React.Component<Props, State> {
+export class _PanelPair extends React.Component<Props, State> {
 	protected collapsedPosition = DEFAULT_COLLAPSED_POSITION;
 
 	protected ref?: HTMLDivElement;
@@ -39,14 +45,12 @@ export class PanelPair extends React.Component<Props, State> {
 		super(props);
 
 		const {
-			initial = DEFAULT_POSITION,
-			collapsed = false
+			initial = DEFAULT_POSITION
 		} = props;
 
 		this.state = {
 			position: initial,
-			dragging: false,
-			collapsed
+			dragging: false
 		};
 	}
 
@@ -72,9 +76,7 @@ export class PanelPair extends React.Component<Props, State> {
 	}
 
 	protected onPointerMove(e: PointerEvent) {
-		const { collapsed } = this.state;
-
-		if (!collapsed) {
+		if (!this.getCollapsed()) {
 			const {
 				children,
 				horizontal,
@@ -110,33 +112,34 @@ export class PanelPair extends React.Component<Props, State> {
 	}
 
 	protected toggle() {
-		const { collapsed } = this.state;
+		const { panelGroupId, setCollapsed } = this.props;
 
-		this.setState(
-			{ collapsed: !collapsed },
-			this.onResize
-		);
+		setCollapsed(panelGroupId, !this.getCollapsed());
+
+		this.onResize();
 	}
 
 	protected open() {
-		this.setState(
-			{ collapsed: false },
-			this.onResize
-		);
+		const { panelGroupId, setCollapsed } = this.props;
+
+		setCollapsed(panelGroupId, false);
+
+		this.onResize();
 	}
 
 	protected close() {
-		this.setState(
-			{ collapsed: true },
-			this.onResize
-		);
+		const { panelGroupId, setCollapsed } = this.props;
+
+		setCollapsed(panelGroupId, true);
+
+		this.onResize();
 	}
 
 	protected onResize() {
 		const { onResize } = this.props;
 
 		if (onResize) {
-			onResize();
+			setTimeout(() => onResize, 0);
 		}
 	}
 
@@ -149,9 +152,17 @@ export class PanelPair extends React.Component<Props, State> {
 		this.ref = e;
 	}
 
+	protected getCollapsed() {
+		const { panels, panelGroupId } = this.props;
+		const { collapsed } = panels[panelGroupId] || { collapsed: false };
+
+		return collapsed;
+	}
+
 	render() {
+		const collapsed = this.getCollapsed();
 		const { children, fixed, horizontal, vertical } = this.props;
-		const { position, dragging, collapsed } = this.state;
+		const { position, dragging } = this.state;
 
 		if (
 			(!horizontal && !vertical) ||
@@ -205,3 +216,19 @@ export class PanelPair extends React.Component<Props, State> {
 		);
 	}
 }
+
+const mapStateToProps = (state: any) => (
+	{
+		panels: state.ui.panels
+	}
+);
+
+const mapDispatchToProps = (dispatch: Dispatch) => (
+	{
+		setCollapsed(panelGroupId: string, collapsed: boolean) {
+			dispatch(ActionSetPanelCollapsed.create({ panelGroupId, collapsed }));
+		}
+	}
+);
+
+export const PanelPair = connect(mapStateToProps, mapDispatchToProps)(_PanelPair);

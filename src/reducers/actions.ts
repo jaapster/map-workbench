@@ -99,3 +99,18 @@ export const ActionSetMapControlCenter = getActionCreator<{
 export const ActionSetAppPhase = getActionCreator<{
 	phase: string
 }>('ActionSetAppPhase');
+
+export const ActionSetActiveTab = getActionCreator<{
+	tabGroupId: string;
+	activeTab: number
+}>('ActionSetActiveTab');
+
+export const ActionSetPanelCollapsed = getActionCreator<{
+	panelGroupId: string;
+	collapsed: boolean;
+}>('ActionSetPanelCollapsed');
+
+export const ActionSetPanelPosition = getActionCreator<{
+	panelGroupId: string;
+	position: number;
+}>('ActionSetPanelCollapsed');

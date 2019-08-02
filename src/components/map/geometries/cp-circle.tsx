@@ -19,28 +19,29 @@ export const Circle = ({ coordinates, selected, id }: Props) => {
 		}
 	);
 
-	const cos = multiPointToLines(coordinates);
+	const [outline, radius] = multiPointToLines(coordinates);
 
 	return (
 		<g>
 			<path
 				className={ className }
-				d={ cos[0].reduce(addToPath, '') }
-			/>
-			<path
-				className={ className }
-				d={ cos[1].reduce(addToPath, '') }
+				d={ outline.reduce(addToPath, '') }
 			/>
 			{
 				selected
 					? (
 						<Segment
-							id={id}
-							selected={selected}
-							coordinates={cos[1]}
+							id={ id }
+							selected={ selected }
+							coordinates={ radius }
 						/>
 					)
-					: null
+					: (
+						<path
+							className={ className }
+							d={ radius.reduce(addToPath, '') }
+						/>
+					)
 			}
 		</g>
 	);

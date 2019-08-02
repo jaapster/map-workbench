@@ -4,12 +4,16 @@ import { Polygon } from './cp-polygon';
 
 interface Props {
 	id: string;
-	coordinates: Co[][];
 	selected: boolean;
+	coordinates: Co[][];
 }
 
 export const Rectangle = ({ id, coordinates, selected }: Props) => {
 	return (
-		<Polygon id={ id } coordinates={ coordinates } selected={ selected } />
+		<Polygon
+			id={ id }
+			coordinates={ coordinates }
+			selected={ selected }
+		/>
 	);
 };

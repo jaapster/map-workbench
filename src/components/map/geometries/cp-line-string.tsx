@@ -6,8 +6,8 @@ import { mergeClasses } from '../../app/utils/util-merge-classes';
 
 interface Props {
 	id: string;
-	coordinates: Co[];
 	selected: boolean;
+	coordinates: Co[];
 }
 
 export const LineString = ({ coordinates, selected, id }: Props) => {

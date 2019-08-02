@@ -147,8 +147,23 @@ export interface MapControlData {
 	center: Co;
 }
 
+export interface UIData {
+	tabs: {
+		[tabGroupId: string]: {
+			activeTab: number;
+		}
+	};
+	panels: {
+		[panelGroupId: string]: {
+			position: number;
+			collapsed: boolean;
+		}
+	};
+}
+
 export interface State {
 	multiverse: MultiverseData;
 	mapControl: MapControlData;
 	appPhase: string;
+	ui: UIData;
 }

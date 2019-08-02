@@ -55,7 +55,6 @@ const setHashParams = debounce((par: any) => {
 			? JSON.stringify(f)
 			: f;
 
-
 		return `${ m }${ SEPARATOR }${ key }${ ASSIGN }${ v }`;
 	}, '#');
 }, 100);

@@ -10,32 +10,34 @@ import { Locations } from './cp-locations';
 import { MapControl } from '../../map-control/map-control';
 import { LayerPanels } from '../map/cp-layer-panels';
 import { PanelTabbed } from '../panels/cp-panel-tabbed';
-import { PanelPairTabbed } from '../panels/cp-panel-pair-tabbed';
 
 export const Main = React.memo(() => {
 	return (
 		<div className="app">
-			<PanelPairTabbed // panel right
+			<PanelPair
+				panelGroupId="SidePanelsRight"
 				horizontal
-				max={500}
-				min={300}
-				initial={300}
-				onResize={MapControl.resize}
+				max={ 500 }
+				min={ 300 }
+				initial={ 300 }
+				onResize={ MapControl.resize }
 			>
 				<Panel>
-					<PanelPair // panel left
+					<PanelPair
+						panelGroupId="SidePanelsLeft"
 						fixed
 						horizontal
-						initial={0}
-						onResize={MapControl.resize}
+						initial={ 0 }
+						onResize={ MapControl.resize }
 					>
 						<Panel primary />
 						<Panel>
-							<PanelPair // header
+							<PanelPair
+								panelGroupId="Header"
 								fixed
 								vertical
-								initial={0}
-								onResize={MapControl.resize}
+								initial={ 0 }
+								onResize={ MapControl.resize }
 							>
 								<Panel primary />
 								<Panel>
@@ -47,16 +49,17 @@ export const Main = React.memo(() => {
 				</Panel>
 				<PanelTabbed
 					primary
+					tabGroupId="mainTabs"
 					tabs={
 						[
 							<Selection />,
 							<LayerPanels />,
-							<Locations locations={LOCATIONS} />
+							<Locations locations={ LOCATIONS } />
 						]
 					}
 				>
 				</PanelTabbed>
-			</PanelPairTabbed>
+			</PanelPair>
 		</div>
 	);
 });
