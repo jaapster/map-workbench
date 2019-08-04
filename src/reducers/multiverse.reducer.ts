@@ -4,7 +4,6 @@ import { moveGeometry } from './fn/move-geometry';
 import { deleteAtIndex } from './fn/delete-at-index';
 import { MultiverseData } from '../types';
 import { updateCoordinates } from './fn/update-coordinate';
-import { EMPTY_FEATURE_COLLECTION } from '../constants';
 import {
 	Action,
 	ActionSelect,
@@ -16,12 +15,11 @@ import {
 	ActionSetUniverses,
 	ActionSetCollection,
 	ActionClearSelection,
-	ActionClearCollection,
 	ActionDeleteSelection,
 	ActionUpdateCoordinates,
 	ActionSetCollectionData,
-	ActionSetReferenceLayers, ActionSetCurrentReferenceLayer
-} from './actions';
+	ActionSetReferenceLayers,
+	ActionSetCurrentReferenceLayer } from './actions';
 
 const STATE: MultiverseData = {
 	worlds: {},
@@ -186,15 +184,6 @@ export const multiverseReducer = (
 		};
 	}
 
-	if (ActionClearCollection.validate(action)) {
-		const { collectionId } = ActionClearCollection.data(action);
-
-		return updateCollection(state, collectionId, {
-			featureCollection: EMPTY_FEATURE_COLLECTION,
-			selection: []
-		});
-	}
-
 	if (ActionAddFeature.validate(action)) {
 		const world = worlds[state.currentWorldId];
 		const { collectionId, feature } = ActionAddFeature.data(action);
@@ -250,6 +239,8 @@ export const multiverseReducer = (
 							.filter(v => v.length === 1)
 							.map(([i]) => i);
 
+						// todo: fix bug caused by wrong indices due to
+						//  previously deleted siblings
 						return {
 							...m,
 							[key]: !collection.selection.length
@@ -279,8 +270,8 @@ export const multiverseReducer = (
 		const { collectionId, featureCollection } = ActionSetCollectionData.data(action);
 
 		return updateCollection(state, collectionId, {
-			featureCollection,
-			selection: []
+			featureCollection // ,
+			// selection: []
 		});
 	}
 

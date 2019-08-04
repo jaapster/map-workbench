@@ -29,7 +29,7 @@ export const _CenterCoordinate = React.memo(({ center, CRS }: Props) => {
 				hasDecimals ? x.toFixed(6) : x
 			}, {
 				hasDecimals ? y.toFixed(6) : y
-			}
+			} (EPSG:{ CRS })
 		</div>
 	);
 });

@@ -139,7 +139,7 @@ export class _PanelPair extends React.Component<Props, State> {
 		const { onResize } = this.props;
 
 		if (onResize) {
-			setTimeout(() => onResize, 0);
+			setTimeout(onResize);
 		}
 	}
 

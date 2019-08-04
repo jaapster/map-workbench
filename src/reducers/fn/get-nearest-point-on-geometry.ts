@@ -1,7 +1,7 @@
 import {
 	Co,
 	Point,
-	FeatureCollectionData, LngLat } from '../../types';
+	FeatureCollection, LngLat } from '../../types';
 import {
 	getDistanceToSegment,
 	nearestPointOnSegment } from '../../map-control/utils/util-math';
@@ -49,7 +49,7 @@ const roll = (p0: Point, index: number[]) =>
 
 export const getNearestPointOnGeometry = (
 	lngLat: LngLat,
-	data: FeatureCollectionData,
+	data: FeatureCollection,
 	project: any = geoProject,
 	unproject: any = geoUnproject
 ) => {

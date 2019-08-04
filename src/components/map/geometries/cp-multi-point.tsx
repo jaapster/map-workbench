@@ -8,7 +8,7 @@ interface Props {
 	coordinates: Co[];
 }
 
-export const MultiPoint = ({ coordinates, selected, id }: Props) => {
+export const MultiPoint = React.memo(({ coordinates, selected, id }: Props) => {
 	return (
 		<g>
 			{
@@ -23,4 +23,4 @@ export const MultiPoint = ({ coordinates, selected, id }: Props) => {
 			}
 		</g>
 	);
-};
+});

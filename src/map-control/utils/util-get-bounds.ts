@@ -1,8 +1,11 @@
-import { Co, FeatureData } from '../../types';
 import { render } from './util-geo-json';
 import { getCoordinates } from './util-get-coordinates';
+import {
+	Co,
+	Bounds,
+	Feature } from '../../types';
 
-export const getEnvelope = (features: FeatureData<any>[]): [Co, Co] => {
+export const getBounds = (features: Feature<any>[]): Bounds => {
 	const cos = getCoordinates(render(features));
 
 	return [

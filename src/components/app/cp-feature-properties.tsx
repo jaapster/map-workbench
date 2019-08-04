@@ -4,7 +4,7 @@ import { Value } from './cp-value';
 import { MapControl } from '../../map-control/map-control';
 import {
 	EPSG,
-	FeatureData } from '../../types';
+	Feature } from '../../types';
 import {
 	getRadius,
 	getCoordinate,
@@ -12,7 +12,7 @@ import {
 	getFeatureLength } from './utils/geojson-properties';
 
 interface Props {
-	features: FeatureData<any>[];
+	features: Feature<any>[];
 	CRS: EPSG;
 }
 

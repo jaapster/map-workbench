@@ -4,21 +4,36 @@ import {
 	rot } from './util-point';
 import {
 	Co,
-	FeatureData,
-	MultiPointJSON } from '../../types';
+	Feature,
+	MultiPoint } from '../../types';
 import {
 	CIRCLE,
 	FEATURE,
 	POLYGON,
 	SEGMENT,
 	PRECISION,
-	LINE_STRING } from '../../constants';
+	LINE_STRING, POINT, MULTI_POINT, RECTANGLE
+} from '../../constants';
 import {
 	llToCo,
 	coToLl,
 	geoDistance,
 	geoProject,
 	geoUnproject } from './util-geo';
+
+export const newPoint = (coordinates: Co) => (
+	{
+		type: FEATURE,
+		geometry: {
+			type: POINT,
+			coordinates
+		},
+		properties: {
+			type: POINT,
+			id: uuid()
+		}
+	}
+);
 
 export const newLineString = (coordinates: Co[] = []) => (
 	{
@@ -29,6 +44,34 @@ export const newLineString = (coordinates: Co[] = []) => (
 		},
 		properties: {
 			type: LINE_STRING,
+			id: uuid()
+		}
+	}
+);
+
+export const newCircle = (coordinates: Co[] = []) => (
+	{
+		type: FEATURE,
+		geometry: {
+			type: MULTI_POINT,
+			coordinates
+		},
+		properties: {
+			type: CIRCLE,
+			id: uuid()
+		}
+	}
+);
+
+export const newRectangle = (coordinates: Co[][] = [[]]) => (
+	{
+		type: FEATURE,
+		geometry: {
+			type: POLYGON,
+			coordinates
+		},
+		properties: {
+			type: RECTANGLE,
 			id: uuid()
 		}
 	}
@@ -64,7 +107,7 @@ export const multiPointToLines = ([co1, co2]: Co[]) => {
 	return [coordinates, [co1, co2]];
 };
 
-export const multiPointToCircle = (feature: FeatureData<MultiPointJSON>) => {
+export const multiPointToCircle = (feature: Feature<MultiPoint>) => {
 	const { geometry: { coordinates: [co1, co2] }, properties: { id } } = feature;
 
 	const [coordinates] = multiPointToLines([co1, co2]);
@@ -111,12 +154,12 @@ export const multiPointToCircle = (feature: FeatureData<MultiPointJSON>) => {
 	];
 };
 
-export const render = (features: FeatureData<any>[]) => {
+export const render = (features: Feature<any>[]) => {
 	return features.reduce((m, feature) => {
 		if (feature.properties.type === CIRCLE) {
 			return m.concat(multiPointToCircle(feature));
 		}
 
 		return m.concat(feature);
-	}, [] as FeatureData<any>[]);
+	}, [] as Feature<any>[]);
 };

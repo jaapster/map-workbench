@@ -1,13 +1,17 @@
 import { createSelector } from 'reselect';
 import { State } from '../../types';
 
-export const crs = (state: State) => state.mapControl.CRS;
+// export const crs = (state: State) => state.mapControl.CRS;
 
 export const zoom = (state: State) => state.mapControl.zoom;
 
 export const mode = (state: State) => state.mapControl.mode;
 
 export const worlds = (state: State) => state.multiverse.worlds;
+
+export const worldIdsString = (state: State) => Object.keys(worlds(state)).join(',');
+
+export const worldIds = createSelector([worldIdsString], str => str.split(','));
 
 export const referenceLayers = (state: State) => state.multiverse.referenceLayers;
 
@@ -34,6 +38,8 @@ export const currentWorld = createSelector(
 		};
 	}
 );
+
+export const crs = (state: State) => currentWorld(state).crs;
 
 export const currentCollectionId = (state: State) => currentWorld(state).currentCollectionId;
 

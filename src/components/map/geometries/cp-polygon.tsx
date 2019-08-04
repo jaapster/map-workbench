@@ -1,16 +1,19 @@
 import React from 'react';
-import { Co } from '../../../types';
+import { Co, State } from '../../../types';
 import { Segments } from '../cp-segments';
 import { addToPath } from '../utils/util-add-to-path';
 import { mergeClasses } from '../../app/utils/util-merge-classes';
+import { center } from '../../../reducers/selectors/index.selectors';
+import { connect } from 'react-redux';
 
 interface Props {
 	id: string;
+	center: Co;
 	selected: boolean;
 	coordinates: Co[][];
 }
 
-export const Polygon = ({ id, coordinates, selected }: Props) => {
+export const _Polygon = React.memo(({ id, coordinates, selected, center }: Props) => {
 	const className = mergeClasses(
 		'polygon',
 		{
@@ -20,6 +23,13 @@ export const Polygon = ({ id, coordinates, selected }: Props) => {
 
 	return (
 		<g>
+			<path
+				fillRule="evenodd"
+				className={ className }
+				d={
+					coordinates.reduce((m, c) => c.reduce(addToPath, m), '')
+				}
+			/>
 			{
 				selected
 					? (
@@ -29,16 +39,16 @@ export const Polygon = ({ id, coordinates, selected }: Props) => {
 							selected={ selected }
 						/>
 					)
-					: (
-						<path
-							fillRule="evenodd"
-							className={ className }
-							d={
-								coordinates.reduce((m, c) => c.reduce(addToPath, m), '')
-							}
-						/>
-					)
+					: null
 			}
 		</g>
 	);
+});
+
+const mapStateToProps = (state: State) => {
+	return {
+		center: center(state)
+	};
 };
+
+export const Polygon = connect(mapStateToProps)(_Polygon);

@@ -1,7 +1,6 @@
 import React from 'react';
 import { Point } from './geometries/cp-point';
 import { Circle } from './geometries/cp-circle';
-import { connect } from 'react-redux';
 import { Polygon } from './geometries/cp-polygon';
 import { Rectangle } from './geometries/cp-rectangle';
 import { MultiPoint } from './geometries/cp-multi-point';
@@ -20,16 +19,12 @@ import {
 	MULTI_LINE_STRING } from '../../constants';
 import {
 	Co,
-	State,
 	SelectionVector,
-	FeatureCollectionData } from '../../types';
-import { center, zoom } from '../../reducers/selectors/index.selectors';
+	FeatureCollection } from '../../types';
 
 interface Props {
-	featureCollection: FeatureCollectionData;
+	featureCollection: FeatureCollection;
 	selection: SelectionVector[];
-	center: Co;
-	zoom: number;
 }
 
 const getSelectedVertices = ({ features }: any, selection: any): Co[] => {
@@ -62,7 +57,7 @@ const getSelectedVertices = ({ features }: any, selection: any): Co[] => {
 	}, [] as Co[]);
 };
 
-export const _FeatureCollectionLayer = React.memo(({ featureCollection, selection, zoom, center }: Props) => {
+export const FeatureCollectionLayer = React.memo(({ featureCollection, selection }: Props) => {
 	const selectedFeatureIndices = selection.map(([i]) => i);
 
 	return (
@@ -115,12 +110,3 @@ export const _FeatureCollectionLayer = React.memo(({ featureCollection, selectio
 		</g>
 	);
 });
-
-const mapStateToProps = (state: State) => (
-	{
-		zoom: zoom(state),
-		center: center(state)
-	}
-);
-
-export const FeatureCollectionLayer = connect(mapStateToProps)(_FeatureCollectionLayer);

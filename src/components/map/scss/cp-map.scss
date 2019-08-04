@@ -15,7 +15,6 @@
 
 .box-zoom {
 	box-sizing: border-box;
-	position: absolute;
 	pointer-events: none;
 	border: 1px solid grey;
 	background: rgba(130, 130, 130, 0.1);
@@ -28,34 +27,42 @@
 	border: 1px dotted grey;
 }
 
-.center-coordinate {
-	font-size: 13px;
+.bottom-bar {
 	position: absolute;
-	left: 50%;
+	left: 0;
+	right: 0;
 	bottom: 0;
+	padding: 4px;
 	z-index: 10;
-	padding: 8px;
-	text-align: center;
-	width: 150px;
+	font-size: 10px;
+}
+
+.center-coordinate,
+.zoom,
+.scale {
+	display: inline-block;
 	background: rgba(0, 0, 0, 0.4);
-	margin-left: -75px;
-	margin-bottom: 4px;
 	color: rgba(255, 255, 255, 0.7);
+	text-align: center;
+	padding: 8px;
+	margin-right: 1px;
+	width: auto;
+}
+
+.center-coordinate {
+	width: 200px;
 }
 
 .zoom {
-	font-size: 13px;
-	position: absolute;
-	left: 0;
-	bottom: 0;
-	z-index: 10;
-	padding: 8px;
-	text-align: center;
 	width: 40px;
-	background: rgba(0, 0, 0, 0.4);
-	margin-left: 4px;
-	margin-bottom: 4px;
-	color: rgba(255, 255, 255, 0.7);
+}
+
+.scale {
+	padding: 8px 0;
+	background: mediumseagreen;
+	transition: width 100ms;
+	text-align: left;
+	opacity: 1;
 }
 
 // hide mapbox control elements
@@ -106,6 +113,12 @@ path {
 
 		&.selected {
 			fill: $colorSelected;
+		}
+	}
+
+	&.polygon {
+		&.selected {
+			stroke-width: 0;
 		}
 	}
 

@@ -1,8 +1,8 @@
-import { Co, FeatureData } from '../../types';
-import { getEnvelope } from './util-get-envelope';
+import { Co, Feature } from '../../types';
+import { getBounds } from './util-get-bounds';
 
-export const getCenter = (features: FeatureData<any>[]) => {
-	const [a, b] = getEnvelope(features);
+export const getCenter = (features: Feature<any>[]) => {
+	const [a, b] = getBounds(features);
 
 	return [(a[0] + b[0]) / 2, (a[1] + b[1]) / 2] as Co;
 } ;

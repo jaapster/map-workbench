@@ -4,7 +4,7 @@ import {
 	MULTI_LINE_STRING, MULTI_POLYGON, POINT,
 	POLYGON, RECTANGLE
 } from '../../../constants';
-import { Co, FeatureData } from '../../../types';
+import { Co, Feature } from '../../../types';
 import { geoDistance } from '../../../map-control/utils/util-geo';
 
 const RADIUS = 6378137;
@@ -13,7 +13,7 @@ function rad(num: number) {
 	return num * Math.PI / 180;
 }
 
-export const getRadius = (feature: FeatureData<any>) => {
+export const getRadius = (feature: Feature<any>) => {
 	if (feature.properties.type === CIRCLE) {
 		const { geometry: { coordinates } } = feature;
 
@@ -32,7 +32,7 @@ const addLength = (m: number, co: Co[]) => m + getLineLength(co);
 
 const round = (d: number) => (v: number) => Math.round(v * (10 ** d)) / (10 ** d);
 
-export const getFeatureLength = (feature: FeatureData<any>) => {
+export const getFeatureLength = (feature: Feature<any>) => {
 	const {
 		properties: { type },
 		geometry: { coordinates }
@@ -104,7 +104,7 @@ export const getPolygonArea = (cos: Co[][]) => {
 	return total;
 };
 
-export const getFeatureArea = (feature: FeatureData<any>) => {
+export const getFeatureArea = (feature: Feature<any>) => {
 	const { geometry: { coordinates }, properties: { type } } = feature;
 
 	let total = 0;
@@ -130,7 +130,7 @@ export const getFeatureArea = (feature: FeatureData<any>) => {
 	}
 };
 
-export const getCoordinate = (feature: FeatureData<any>) => {
+export const getCoordinate = (feature: Feature<any>) => {
 	const {
 		properties: { type },
 		geometry: { coordinates }

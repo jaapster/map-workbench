@@ -3,11 +3,11 @@ import mapboxGL from 'mapbox-gl';
 import { DOM } from './utils/util-dom';
 import { token } from '../token';
 import { clamp } from '../utils/util-clamp';
-import { DrawMode } from './modes/mode.draw';
+import { DrawSegmentedMode } from './modes/mode.draw-segmented';
 import { MenuMode } from './modes/mode.menu';
 import { getCenter } from './utils/util-get-center';
 import { ModeUpdate } from './modes/mode.update';
-import { getEnvelope } from './utils/util-get-envelope';
+import { getBounds } from './utils/util-get-bounds';
 import { getTargetZoom } from './utils/util-get-target-zoom';
 import { PointerDevice } from './devices/device.pointer';
 import { KeyboardDevice } from './devices/device.keyboard';
@@ -21,26 +21,31 @@ import {
 	getState } from '../reducers/store';
 import {
 	FEATURE,
-	DRAW_MODE,
+	DRAW_SEGMENTED_MODE,
 	PROJECTED,
 	GEOGRAPHIC,
 	EMPTY_STYLE,
 	LINE_STRING,
 	UPDATE_MODE,
 	NAVIGATION_MODE,
-	DEFAULT_LOCATION } from '../constants';
+	DEFAULT_LOCATION, DRAW_POINT_MODE, DRAW_CIRCLE_MODE, DRAW_RECTANGLE_MODE
+} from '../constants';
 import {
 	Co,
 	Ev,
 	EPSG,
+	Point,
+	Feature,
 	Location,
-	FeatureData, MapboxStyle
-} from '../types';
+	MapboxStyle } from '../types';
 import {
 	llToCo,
 	coToLl,
 	geoProject,
 	geoUnproject } from './utils/util-geo';
+import { DrawPointMode } from './modes/mode.draw-point';
+import { DrawCircleMode } from './modes/mode.draw-circle';
+import { DrawRectangleMode } from './modes/mode.draw-rectangle';
 
 const FIT_PADDING = 64;
 const FIT_MIN_ZOOM = 14;
@@ -75,7 +80,7 @@ export class MapControl {
 		MapControl.instance.resize();
 	}
 
-	static fitFeatures(features: FeatureData<any>[]) {
+	static fitFeatures(features: Feature<any>[]) {
 		MapControl.instance.bringInView(features);
 	}
 
@@ -95,12 +100,16 @@ export class MapControl {
 		MapControl.instance.setStyle(style);
 	}
 
-	static getStyle() {
-		return MapControl.instance.getStyle();
-	}
+	// static getStyle() {
+	// 	return MapControl.instance.getStyle();
+	// }
 
 	static project(co: Co) {
 		return MapControl.instance.project(co);
+	}
+
+	static unproject(p: Point) {
+		return MapControl.instance.unproject(p);
 	}
 
 	static projectToCRS(co: Co, CRS: EPSG) {
@@ -137,7 +146,10 @@ export class MapControl {
 
 	private readonly _map: any;
 	private readonly _menuMode: MenuMode;
-	private readonly _drawMode: DrawMode;
+	private readonly _drawPointMode: DrawPointMode;
+	private readonly _drawCircleMode: DrawCircleMode;
+	private readonly _drawRectangleMode: DrawRectangleMode;
+	private readonly _drawSegmentedMode: DrawSegmentedMode;
 	private readonly _updateMode: ModeUpdate;
 	private readonly _pointerDevice: PointerDevice;
 	private readonly _keyboardDevice: KeyboardDevice;
@@ -171,7 +183,10 @@ export class MapControl {
 		dispatch(ActionSetMapControlCenter.create({ center }));
 		dispatch(ActionSetMapControlZoom.create({ zoom: this.getZoom() }));
 
-		this._drawMode = DrawMode.create(this._map);
+		this._drawPointMode = DrawPointMode.create(this._map);
+		this._drawCircleMode = DrawCircleMode.create(this._map);
+		this._drawRectangleMode = DrawRectangleMode.create(this._map);
+		this._drawSegmentedMode = DrawSegmentedMode.create(this._map);
 		this._menuMode = MenuMode.create(this._map);
 		this._updateMode = ModeUpdate.create(this._map);
 		this._navigationMode = ModeNavigation.create(this._map);
@@ -218,11 +233,17 @@ export class MapControl {
 
 		return mode === NAVIGATION_MODE
 			? this._navigationMode
-			: mode === DRAW_MODE
-				? this._drawMode
-				: mode === UPDATE_MODE
-					? this._updateMode
-					: this._menuMode;
+			: mode === DRAW_SEGMENTED_MODE
+				? this._drawSegmentedMode
+				: mode === DRAW_POINT_MODE
+					? this._drawPointMode
+					: mode === DRAW_CIRCLE_MODE
+						? this._drawCircleMode
+						: mode === DRAW_RECTANGLE_MODE
+							? this._drawRectangleMode
+							: mode === UPDATE_MODE
+								? this._updateMode
+								: this._menuMode;
 	}
 
 	private _onPointerDown(e: Ev) {
@@ -285,7 +306,7 @@ export class MapControl {
 		this._map.resize();
 	}
 
-	bringInView(features: FeatureData<any>[]) {
+	bringInView(features: Feature<any>[]) {
 		if (!this.isInView(features)) {
 			const { width, height } = this.getBoundingClientRect();
 
@@ -307,12 +328,12 @@ export class MapControl {
 		}
 	}
 
-	isInView(features: FeatureData<any>[]) {
-		const featureBounds = getEnvelope([{
+	isInView(features: Feature<any>[]) {
+		const featureBounds = getBounds([{
 			type: FEATURE,
 			geometry: {
 				type: LINE_STRING,
-				coordinates: getEnvelope(features)
+				coordinates: getBounds(features)
 			},
 			properties: {
 				type: LINE_STRING,
@@ -350,9 +371,9 @@ export class MapControl {
 		this._map.setStyle(style);
 	}
 
-	getStyle() {
-		return this._style;
-	}
+	// getStyle() {
+	// 	return this._style;
+	// }
 
 	setLocation(location: Location) {
 		const { center: [x, y], zoom, epsg } = location;
@@ -393,5 +414,9 @@ export class MapControl {
 	// project to screen coordinates
 	project(co: Co) {
 		return this._map.project(coToLl(co));
+	}
+
+	unproject(p: Point) {
+		return this._map.unproject(p);
 	}
 }

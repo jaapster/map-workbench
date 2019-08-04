@@ -1,12 +1,12 @@
 import bind from 'autobind-decorator';
 import React from 'react';
 import './scss/cp-map.scss';
+import { Scale } from './cp-scale';
 import { connect } from 'react-redux';
 import { ZoomLevel } from './cp-zoom-level';
 import { HashParams } from '../app/cp-hash';
 import { PopUpMenu } from './cp-pop-up-menu';
 import { MapControl } from '../../map-control/map-control';
-import { CRSSelector } from './cp-crs-selector';
 import { ModeSelector } from './cp-mode-selector';
 import { mergeClasses } from '../app/utils/util-merge-classes';
 import { MarkerVertex } from './cp-marker-vertex';
@@ -19,16 +19,14 @@ import {
 	Dict,
 	State,
 	CollectionData,
-	MapControlMode
-} from '../../types';
+	MapControlMode } from '../../types';
 import {
-	currentWorldCollections,
-	mode
-} from '../../reducers/selectors/index.selectors';
+	mode,
+	currentWorldCollections } from '../../reducers/selectors/index.selectors';
 
 interface Props {
-	collections: Dict<CollectionData>;
 	mode: MapControlMode;
+	collections: Dict<CollectionData>;
 }
 
 @bind
@@ -59,25 +57,23 @@ export class _Map extends React.PureComponent<Props> {
 					<MarkerVertex />
 					<MarkerArrowHead />
 					{
-						Object.keys(collections).map((key) => {
-							const { featureCollection, selection } = collections[key];
-
-							return (
-								<FeatureCollectionLayer
-									key={ key }
-									featureCollection={ featureCollection }
-									selection={ selection }
-								/>
-							);
-						})
+						Object.entries(collections).map(([key, { featureCollection, selection }]) => (
+							<FeatureCollectionLayer
+								key={ key }
+								featureCollection={ featureCollection }
+								selection={ selection }
+							/>
+						))
 					}
 				</svg>
-				<CenterCoordinate />
-				<ZoomLevel />
+				<div className="bottom-bar">
+					<ZoomLevel />
+					<CenterCoordinate />
+					<Scale />
+				</div>
 				<div className="main-tool-bar">
 					<ModeSelector />
 					<StyleSelector />
-					<CRSSelector />
 					<WorldSelector />
 				</div>
 				<PopUpMenu />
@@ -89,8 +85,8 @@ export class _Map extends React.PureComponent<Props> {
 
 const mapStateToProps = (state: State) => (
 	{
-		collections: currentWorldCollections(state),
-		mode: mode(state)
+		mode: mode(state),
+		collections: currentWorldCollections(state)
 	}
 );
 

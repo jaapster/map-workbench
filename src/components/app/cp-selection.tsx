@@ -9,10 +9,10 @@ import {
 import {
 	EPSG,
 	State,
-	FeatureData } from '../../types';
+	Feature } from '../../types';
 
 interface Props {
-	features: FeatureData<any>[];
+	features: Feature<any>[];
 	CRS: EPSG;
 }
 

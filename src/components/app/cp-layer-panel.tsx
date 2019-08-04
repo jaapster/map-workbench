@@ -6,7 +6,7 @@ import { Properties } from './cp-properties';
 import {
 	State,
 	SelectionVector,
-	FeatureCollectionData } from '../../types';
+	FeatureCollection } from '../../types';
 import {
 	currentCollectionId,
 	currentSelectionVectors,
@@ -20,7 +20,7 @@ interface Props {
 	select: (props: { collectionId: string, vector: SelectionVector, multi: boolean }) => void;
 	selection: SelectionVector[];
 	collectionId: string;
-	featureCollection: FeatureCollectionData;
+	featureCollection: FeatureCollection;
 }
 
 export const _LayerPanel = React.memo((props: Props) => {

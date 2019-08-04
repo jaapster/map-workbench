@@ -17,7 +17,7 @@ import {
 	Dict,
 	Point,
 	LngLat,
-	FeatureCollectionData } from '../../types';
+	FeatureCollection } from '../../types';
 import {
 	MENU_MODE,
 	THRESHOLD,
@@ -49,7 +49,7 @@ export class InteractionMode extends EventEmitter {
 
 	protected _onStyleLoaded() {}
 
-	_hit(lngLat: LngLat, point: Point, featureCollection: FeatureCollectionData) {
+	_hit(lngLat: LngLat, point: Point, featureCollection: FeatureCollection) {
 		const {
 			index: i1,
 			coordinate: co1
@@ -124,6 +124,8 @@ export class InteractionMode extends EventEmitter {
 			dispatch(ActionSetCollection.create({ collectionId }));
 			dispatch(ActionSelect.create({ vector, multi }));
 			dispatch(ActionSetMapControlMode.create({ mode: UPDATE_MODE }));
+			// dispatch(ActionShowPropertiesPanel.create({}));
+			// MapControl.resize();
 		}  else {
 			if (!multi) {
 				dispatch(ActionSetMapControlMode.create({ mode: NAVIGATION_MODE }));

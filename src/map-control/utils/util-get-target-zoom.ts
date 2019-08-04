@@ -1,14 +1,11 @@
-import { FeatureData } from '../../types';
+import { getBounds } from './util-get-bounds';
 import { geoDistance } from './util-geo';
-import { getEnvelope } from './util-get-envelope';
+import {
+	Box,
+	Feature } from '../../types';
 
-interface Box {
-	width: number;
-	height: number;
-}
-
-export const getTargetZoom = (features: FeatureData<any>[], box: Box) => {
-	const [a, b]: any = getEnvelope(features);
+export const getTargetZoom = (features: Feature<any>[], box: Box) => {
+	const [a, b] = getBounds(features);
 
 	const width = geoDistance(a, [b[0], a[1]]);
 	const height = geoDistance(a, [a[0], b[1]]);

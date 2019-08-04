@@ -31,37 +31,37 @@ export type Co = [number, number];
 
 export type Cos = Co | Co[] | Co[][] | Co[][][];
 
-export interface GeometryData {
+export interface Geometry {
 	type: string;
 	coordinates: Cos;
 }
 
-export interface GeometryCollectionJSON {
+export interface GeometryCollection {
 	type: 'GeometryCollection';
-	geometries: GeometryData[];
+	geometries: Geometry[];
 }
 
-export interface LineStringJSON extends GeometryData {
+export interface LineString extends Geometry {
 	type: 'LineString';
 	coordinates: Co[];
 }
 
-export interface MultiPointJSON extends GeometryData {
+export interface MultiPoint extends Geometry {
 	type: 'MultiPoint';
 	coordinates: Co[];
 }
 
-export interface PolygonJSON extends GeometryData {
+export interface Polygon extends Geometry {
 	type: 'Polygon';
 	coordinates: Co[][];
 }
 
-export interface MultiPolygonJSON extends GeometryData {
+export interface MultiPolygon extends Geometry {
 	type: 'MultiPolygon';
 	coordinates: Co[][][];
 }
 
-export interface FeatureData<GeometryJSON> {
+export interface Feature<GeometryJSON> {
 	type: string;
 	geometry: GeometryJSON;
 	properties: {
@@ -71,9 +71,9 @@ export interface FeatureData<GeometryJSON> {
 	};
 }
 
-export interface FeatureCollectionData {
+export interface FeatureCollection {
 	type: string;
-	features: FeatureData[];
+	features: Feature[];
 }
 
 export type Bounds = [Co, Co];
@@ -98,7 +98,7 @@ type SelectionVector = number[];
 
 interface CollectionData {
 	selection: SelectionVector[];
-	featureCollection: FeatureCollectionData;
+	featureCollection: FeatureCollection;
 }
 
 interface LayerData {
@@ -117,7 +117,6 @@ interface MapData {
 
 interface WorldData {
 	id: string;
-	// maps: Dict<MapData>;
 	collections: Dict<CollectionData>;
 	currentMapId: string;
 	universeIndex: number;
@@ -138,13 +137,16 @@ export interface MultiverseData {
 	currentReferenceLayer: string | MapboxStyle;
 }
 
-export type MapControlMode = 'navigate' | 'update' | 'draw' | 'menu';
+export type MapControlMode = 'navigate' | 'update' | 'drawPoint' | 'drawCircle' | 'drawRectangle' | 'drawSegmented' | 'menu';
 
 export interface MapControlData {
-	CRS: EPSG;
 	mode: MapControlMode;
 	zoom: number;
 	center: Co;
+}
+
+export interface PanelGroup {
+	collapsed: boolean;
 }
 
 export interface UIData {
@@ -154,11 +156,20 @@ export interface UIData {
 		}
 	};
 	panels: {
-		[panelGroupId: string]: {
-			position: number;
-			collapsed: boolean;
-		}
+		[panelGroupId: string]: PanelGroup
 	};
+}
+
+export interface Box {
+	width: number;
+	height: number;
+}
+
+export interface GeoLocationData {
+	position: Co;
+	accuracy: number;
+	follow: boolean;
+	trace: boolean;
 }
 
 export interface State {
@@ -166,4 +177,5 @@ export interface State {
 	mapControl: MapControlData;
 	appPhase: string;
 	ui: UIData;
+	geoLocation: GeoLocationData;
 }

@@ -1,13 +1,16 @@
 import React from 'react';
-import { Co } from '../../types';
+import { Co, State } from '../../types';
 import { MapControl } from '../../map-control/map-control';
+import { center } from '../../reducers/selectors/index.selectors';
+import { connect } from 'react-redux';
 
 interface Props {
 	animate: boolean;
+	center: Co;
 	coordinates: Co;
 }
 
-export const SelectedVertex = ({ coordinates, animate }: Props) => {
+export const _SelectedVertex = React.memo(({ coordinates, animate }: Props) => {
 	const { x, y } = MapControl.project(coordinates);
 
 	return (
@@ -35,4 +38,12 @@ export const SelectedVertex = ({ coordinates, animate }: Props) => {
 			</circle>
 		</g>
 	);
+});
+
+const mapStateToProps = (state: State) => {
+	return {
+		center: center(state)
+	};
 };
+
+export const SelectedVertex = connect(mapStateToProps)(_SelectedVertex);

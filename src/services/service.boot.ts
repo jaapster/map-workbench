@@ -3,10 +3,11 @@ import { dispatch } from '../reducers/store';
 import { WorldData } from '../types';
 import { LOCATIONS } from '../constants';
 import { MapControl } from '../map-control/map-control';
+import './service.geo-location';
 import {
-	ActionAddWorld, ActionSetReferenceLayers,
-	ActionSetUniverses
-} from '../reducers/actions';
+	ActionAddWorld,
+	ActionSetUniverses,
+	ActionSetReferenceLayers } from '../reducers/actions';
 
 export const BootService = {
 	boot() {

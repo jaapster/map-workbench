@@ -2,8 +2,8 @@ import { UIData } from '../types';
 import {
 	Action,
 	ActionSetActiveTab,
-	ActionSetPanelPosition,
-	ActionSetPanelCollapsed } from './actions';
+	ActionSetPanelCollapsed, ActionShowPropertiesPanel
+} from './actions';
 
 const STATE: UIData = {
 	tabs: {},
@@ -41,16 +41,21 @@ export const uiReducer = (state: UIData = STATE, action: Action): UIData => {
 		};
 	}
 
-	if (ActionSetPanelPosition.validate(action)) {
-		const { panelGroupId, position } = ActionSetPanelPosition.data(action);
-
+	if (ActionShowPropertiesPanel.validate(action)) {
 		return {
 			...state,
+			tabs: {
+				...state.tabs,
+				mainTabs: {
+					...state.tabs.mainTabs,
+					activeTab: 0
+				}
+			},
 			panels: {
 				...state.panels,
-				[panelGroupId]: {
-					...state.panels[panelGroupId],
-					position
+				sidePanelsRight: {
+					...state.tabs.sidePanelsRight,
+					collapsed: false
 				}
 			}
 		};

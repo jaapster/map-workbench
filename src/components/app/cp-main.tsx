@@ -15,7 +15,7 @@ export const Main = React.memo(() => {
 	return (
 		<div className="app">
 			<PanelPair
-				panelGroupId="SidePanelsRight"
+				panelGroupId="sidePanelsRight"
 				horizontal
 				max={ 500 }
 				min={ 300 }
@@ -24,7 +24,7 @@ export const Main = React.memo(() => {
 			>
 				<Panel>
 					<PanelPair
-						panelGroupId="SidePanelsLeft"
+						panelGroupId="sidePanelsLeft"
 						fixed
 						horizontal
 						initial={ 0 }
@@ -33,7 +33,7 @@ export const Main = React.memo(() => {
 						<Panel primary />
 						<Panel>
 							<PanelPair
-								panelGroupId="Header"
+								panelGroupId="header"
 								fixed
 								vertical
 								initial={ 0 }

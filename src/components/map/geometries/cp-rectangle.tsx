@@ -8,7 +8,7 @@ interface Props {
 	coordinates: Co[][];
 }
 
-export const Rectangle = ({ id, coordinates, selected }: Props) => {
+export const Rectangle = React.memo(({ id, coordinates, selected }: Props) => {
 	return (
 		<Polygon
 			id={ id }
@@ -16,4 +16,4 @@ export const Rectangle = ({ id, coordinates, selected }: Props) => {
 			selected={ selected }
 		/>
 	);
-};
+});

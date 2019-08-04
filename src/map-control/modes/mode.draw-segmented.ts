@@ -22,9 +22,9 @@ import {
 	currentSelectionVectors,
 	currentFeatureCollection } from '../../reducers/selectors/index.selectors';
 
-export class DrawMode extends InteractionMode {
+export class DrawSegmentedMode extends InteractionMode {
 	static create(map: any) {
-		return new DrawMode(map);
+		return new DrawSegmentedMode(map);
 	}
 
 	onPointerDown(e: Ev) {
@@ -151,7 +151,6 @@ export class DrawMode extends InteractionMode {
 			}
 		}));
 
-		// this.trigger('finish');
 		dispatch(ActionSetMapControlMode.create({ mode: NAVIGATION_MODE }));
 	}
 
@@ -163,8 +162,6 @@ export class DrawMode extends InteractionMode {
 		}
 
 		dispatch(ActionDeleteSelection.create({ collectionId }));
-
-		// this.trigger('finish');
 		dispatch(ActionSetMapControlMode.create({ mode: NAVIGATION_MODE }));
 	}
 }

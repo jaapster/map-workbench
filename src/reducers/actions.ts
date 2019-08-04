@@ -4,10 +4,10 @@ import {
 	Dict,
 	Point,
 	WorldData,
-	FeatureData,
+	Feature,
 	UniverseData,
 	SelectionVector,
-	FeatureCollectionData, EPSG, MapControlMode, MapboxStyle
+	FeatureCollection, EPSG, MapControlMode, MapboxStyle
 } from '../types';
 
 export interface Action {
@@ -54,18 +54,14 @@ export const ActionSelect = getActionCreator<{
 
 export const ActionClearSelection = getActionCreator<{}>('ActionClearSelection');
 
-export const ActionClearCollection = getActionCreator<{
-	collectionId: string
-}>('ActionClearCollection');
-
 export const ActionSetCollectionData = getActionCreator<{
 	collectionId: string,
-	featureCollection: FeatureCollectionData
-}>('ActionClearCollection');
+	featureCollection: FeatureCollection
+}>('ActionSetCollectionData');
 
 export const ActionAddFeature = getActionCreator<{
 	collectionId: string,
-	feature: FeatureData<any>
+	feature: Feature<any>
 }>('ActionAddFeature');
 
 export const ActionAddVertex = getActionCreator<{
@@ -110,7 +106,9 @@ export const ActionSetPanelCollapsed = getActionCreator<{
 	collapsed: boolean;
 }>('ActionSetPanelCollapsed');
 
-export const ActionSetPanelPosition = getActionCreator<{
-	panelGroupId: string;
-	position: number;
-}>('ActionSetPanelCollapsed');
+export const ActionShowPropertiesPanel = getActionCreator<{}>('ActionSetPanelCollapsed');
+
+export const ActionSetGeoLocationPosition = getActionCreator<{
+	position: Co;
+	accuracy: number;
+}>('ActionSetGeoLocationPosition');

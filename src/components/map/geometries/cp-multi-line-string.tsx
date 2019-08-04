@@ -8,7 +8,7 @@ interface Props {
 	coordinates: Co[][];
 }
 
-export const MultiLineString = ({ id, coordinates, selected }: Props) => {
+export const MultiLineString = React.memo(({ id, coordinates, selected }: Props) => {
 	return (
 		<g>
 			{
@@ -23,4 +23,4 @@ export const MultiLineString = ({ id, coordinates, selected }: Props) => {
 			}
 		</g>
 	);
-};
+});

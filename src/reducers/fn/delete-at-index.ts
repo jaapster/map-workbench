@@ -1,7 +1,7 @@
 import {
 	Co,
 	Cos,
-	FeatureCollectionData } from '../../types';
+	FeatureCollection } from '../../types';
 import {
 	POLYGON,
 	LINE_STRING,
@@ -52,7 +52,7 @@ const processPoly = ([_i, _j]: number[], m: Co[][][], co: Co[][], l: number) => 
 				), [] as Co[][])])
 );
 
-export const deleteAtIndex = (data: FeatureCollectionData, [_i, _j, _k, _l]: number[]) => (
+export const deleteAtIndex = (data: FeatureCollection, [_i, _j, _k, _l]: number[]) => (
 	_j != null
 		? {
 			...data,

@@ -8,7 +8,7 @@ interface Props {
 	coordinates: Co[][][];
 }
 
-export const MultiPolygon = ({ id, coordinates, selected }: Props) => {
+export const MultiPolygon = React.memo(({ id, coordinates, selected }: Props) => {
 	return (
 		<g>
 			{
@@ -23,4 +23,4 @@ export const MultiPolygon = ({ id, coordinates, selected }: Props) => {
 			}
 		</g>
 	);
-};
+});

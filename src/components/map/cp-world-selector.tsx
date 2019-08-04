@@ -1,4 +1,5 @@
 import React from 'react';
+import { State } from '../../types';
 import { connect } from 'react-redux';
 import { Dispatch } from 'redux';
 import { ActionGoToWorld } from '../../reducers/actions';
@@ -6,41 +7,38 @@ import {
 	Button,
 	ButtonGroup } from '../app/cp-button';
 import {
-	Dict,
-	State,
-	WorldData } from '../../types';
-import {
-	worlds,
-	currentWorldId } from '../../reducers/selectors/index.selectors';
+	worldIds,
+	currentWorldId
+} from '../../reducers/selectors/index.selectors';
 
 interface Props {
-	worlds: Dict<WorldData>;
-	currentWorldId: string;
+	worldIds: string[];
 	goToWorld: (worldId: string) => void;
+	currentWorldId: string;
 }
 
-export const _WorldSelector = ({ worlds, currentWorldId, goToWorld }: Props) => (
+export const _WorldSelector = React.memo(({ worldIds, currentWorldId, goToWorld }: Props) => (
 	<ButtonGroup>
 		{
-			Object.keys(worlds).map((key) => {
+			worldIds.map((id) => {
 				return (
 					<Button
-						key={ key }
-						onClick={ () => goToWorld(key) }
-						depressed={ currentWorldId === key }
+						key={ id }
+						onClick={ () => goToWorld(id) }
+						depressed={ currentWorldId === id }
 					>
-						{ key }
+						{ id }
 					</Button>
 				);
 			})
 		}
 	</ButtonGroup>
-);
+));
 
 const mapStateToProps = (state: State) => (
 	{
-		currentWorldId: currentWorldId(state),
-		worlds: worlds(state)
+		worldIds: worldIds(state),
+		currentWorldId: currentWorldId(state)
 	}
 );
 

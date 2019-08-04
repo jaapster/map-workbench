@@ -1,4 +1,4 @@
-import { Co, FeatureData } from '../../types';
+import { Co, Feature } from '../../types';
 import {
 	LINE_STRING,
 	MULTI_LINE_STRING,
@@ -7,7 +7,7 @@ import {
 	POLYGON, RECTANGLE
 } from '../../constants';
 
-export const getCoordinates = (features: FeatureData<any>[]) => {
+export const getCoordinates = (features: Feature<any>[]) => {
 	return features.reduce((m, { geometry: { coordinates, type } }) => {
 		return type === POINT
 			? m.concat([coordinates])

@@ -1,8 +1,8 @@
 import {
 	Co,
 	LngLat,
-	FeatureData,
-	FeatureCollectionData } from '../../types';
+	Feature,
+	FeatureCollection } from '../../types';
 import {
 	POINT,
 	POLYGON,
@@ -34,10 +34,10 @@ export const nearest = (lngLat: LngLat, coordinates: Co[], index: number[]) => (
 	}, { coordinate: null, distance: Infinity, index })
 );
 
-export const getNearestVertex = (lngLat: LngLat, data: FeatureCollectionData) => (
+export const getNearestVertex = (lngLat: LngLat, data: FeatureCollection) => (
 	data.features.reduce((
 		m1: Result,
-		{ geometry: { type, coordinates: co1 }, properties }: FeatureData<any>,
+		{ geometry: { type, coordinates: co1 }, properties }: Feature<any>,
 		i: number
 	) => {
 		if (type === POINT) {

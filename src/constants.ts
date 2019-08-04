@@ -55,9 +55,12 @@ export const DEFAULT_LOCATION: Location = {
 };
 
 export const MENU_MODE = 'menu';
-export const DRAW_MODE = 'draw';
 export const UPDATE_MODE = 'update';
 export const NAVIGATION_MODE = 'navigate';
+export const DRAW_POINT_MODE = 'drawPoint';
+export const DRAW_CIRCLE_MODE = 'drawCircle';
+export const DRAW_RECTANGLE_MODE = 'drawRectangle';
+export const DRAW_SEGMENTED_MODE = 'drawSegmented';
 
 export const EMPTY_STYLE = { version: 8, sources: {}, layers: [] };
 
