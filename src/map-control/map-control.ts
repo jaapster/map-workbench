@@ -42,10 +42,12 @@ import {
 	llToCo,
 	coToLl,
 	geoProject,
-	geoUnproject } from './utils/util-geo';
+	geoUnproject, geoDistance
+} from './utils/util-geo';
 import { DrawPointMode } from './modes/mode.draw-point';
 import { DrawCircleMode } from './modes/mode.draw-circle';
 import { DrawRectangleMode } from './modes/mode.draw-rectangle';
+import { add } from './utils/util-point';
 
 const FIT_PADDING = 64;
 const FIT_MIN_ZOOM = 14;
@@ -96,13 +98,17 @@ export class MapControl {
 		MapControl.instance.setZoom(zoom);
 	}
 
+	static zoomIn() {
+		MapControl.instance.zoomIn();
+	}
+
+	static zoomOut() {
+		MapControl.instance.zoomOut();
+	}
+
 	static setStyle(style: any) {
 		MapControl.instance.setStyle(style);
 	}
-
-	// static getStyle() {
-	// 	return MapControl.instance.getStyle();
-	// }
 
 	static project(co: Co) {
 		return MapControl.instance.project(co);
@@ -110,6 +116,10 @@ export class MapControl {
 
 	static unproject(p: Point) {
 		return MapControl.instance.unproject(p);
+	}
+
+	static getMetersPerPixel(co?: Co) {
+		return MapControl.instance.getMetersPerPixel(co);
 	}
 
 	static projectToCRS(co: Co, CRS: EPSG) {
@@ -371,10 +381,6 @@ export class MapControl {
 		this._map.setStyle(style);
 	}
 
-	// getStyle() {
-	// 	return this._style;
-	// }
-
 	setLocation(location: Location) {
 		const { center: [x, y], zoom, epsg } = location;
 
@@ -407,16 +413,34 @@ export class MapControl {
 		this._map.setZoom(zoom - 1);
 	}
 
+	zoomIn() {
+		this.setZoom(Math.round(this.getZoom() + 1));
+	}
+
+	zoomOut() {
+		this.setZoom(Math.round(this.getZoom() - 1));
+	}
+
 	getBoundingClientRect() {
 		return this.getContainer().getBoundingClientRect();
 	}
 
 	// project to screen coordinates
+	// @param
 	project(co: Co) {
 		return this._map.project(coToLl(co));
 	}
 
 	unproject(p: Point) {
-		return this._map.unproject(p);
+		return llToCo(this._map.unproject(p));
+	}
+
+	getMetersPerPixel(co?: Co) {
+		const center = co || this.getCenter();
+
+		return geoDistance(
+			center,
+			MapControl.unproject(add(MapControl.project(center), { x: 1, y: 0 }))
+		);
 	}
 }

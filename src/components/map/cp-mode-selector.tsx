@@ -1,10 +1,10 @@
 import React from 'react';
+import { mode } from '../../reducers/selectors/index.selectors';
 import { connect } from 'react-redux';
 import { Dispatch } from 'redux';
 import {
 	ActionClearSelection,
-	ActionSetMapControlMode
-} from '../../reducers/actions';
+	ActionSetMapControlMode } from '../../reducers/actions';
 import {
 	Button,
 	ButtonGroup } from '../app/cp-button';
@@ -12,33 +12,35 @@ import {
 	State,
 	MapControlMode } from '../../types';
 import {
+	// MENU_MODE,
+	// UPDATE_MODE,
+	NAVIGATION_MODE,
+	DRAW_POINT_MODE,
+	DRAW_CIRCLE_MODE,
 	DRAW_SEGMENTED_MODE,
-	MENU_MODE,
-	UPDATE_MODE,
-	NAVIGATION_MODE, DRAW_POINT_MODE, DRAW_CIRCLE_MODE, DRAW_RECTANGLE_MODE
-} from '../../constants';
-import { mode } from '../../reducers/selectors/index.selectors';
+	DRAW_RECTANGLE_MODE } from '../../constants';
 
 interface Props {
 	mode: MapControlMode;
 	activateDrawPointMode: () => void;
+	activateNavigationMode: () => void;
 	activateDrawCircleMode: () => void;
 	activateDrawRectangleMode: () => void;
 	activateDrawSegmentedMode: () => void;
-	activateNavigationMode: () => void;
 }
 
 export const _ModeSelector = React.memo((
 	{
 		mode,
 		activateDrawPointMode,
+		activateNavigationMode,
 		activateDrawCircleMode,
 		activateDrawRectangleMode,
-		activateDrawSegmentedMode,
-		activateNavigationMode
+		activateDrawSegmentedMode
 	}: Props
 ) => (
 	<ButtonGroup>
+		{/*
 		<Button
 			onClick={ activateNavigationMode }
 			depressed={ mode === NAVIGATION_MODE }
@@ -57,27 +59,32 @@ export const _ModeSelector = React.memo((
 		>
 			Menu
 		</Button>
+		*/}
 		<Button
 			onClick={ activateDrawSegmentedMode }
 			depressed={ mode === DRAW_SEGMENTED_MODE }
+			disabled={ mode !== NAVIGATION_MODE }
 		>
 			S
 		</Button>
 		<Button
 			onClick={ activateDrawPointMode }
 			depressed={ mode === DRAW_POINT_MODE }
+			disabled={ mode !== NAVIGATION_MODE }
 		>
 			P
 		</Button>
 		<Button
 			onClick={ activateDrawCircleMode }
 			depressed={ mode === DRAW_CIRCLE_MODE }
+			disabled={ mode !== NAVIGATION_MODE }
 		>
 			C
 		</Button>
 		<Button
 			onClick={ activateDrawRectangleMode }
 			depressed={ mode === DRAW_RECTANGLE_MODE }
+			disabled={ mode !== NAVIGATION_MODE }
 		>
 			R
 		</Button>

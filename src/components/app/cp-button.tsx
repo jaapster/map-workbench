@@ -24,6 +24,7 @@ export const Button = (props: Props) => {
 		<button
 			className={ className }
 			onClick={ onClick }
+			disabled={ disabled }
 		>
 			{ children }
 		</button>

@@ -37,8 +37,29 @@
 	font-size: 10px;
 }
 
+.zoom-controls {
+	display: inline-block;
+
+	> * {
+		display: inline-block;
+		background: rgba(0, 0, 0, 0.4);
+		color: rgba(255, 255, 255, 0.7);
+		text-align: center;
+		padding: 8px;
+		margin-right: 1px;
+		width: 35px;
+
+		&.zoom-btn {
+			width: 16px;
+
+			&:hover {
+				background: rgba(0, 0, 0, 0.7);
+			}
+		}
+	}
+}
+
 .center-coordinate,
-.zoom,
 .scale {
 	display: inline-block;
 	background: rgba(0, 0, 0, 0.4);
@@ -49,20 +70,23 @@
 	width: auto;
 }
 
+.scale {
+	span {
+		padding-left: 8px;
+	}
+}
+
 .center-coordinate {
 	width: 200px;
 }
 
-.zoom {
-	width: 40px;
-}
-
 .scale {
 	padding: 8px 0;
-	background: mediumseagreen;
+	background: deeppink; // mediumseagreen;
 	transition: width 100ms;
 	text-align: left;
 	opacity: 1;
+	color: white;
 }
 
 // hide mapbox control elements

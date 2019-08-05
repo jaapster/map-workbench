@@ -1,9 +1,11 @@
 import React from 'react';
-import { Co, State } from '../../../types';
-import { MapControl } from '../../../map-control/map-control';
-import { mergeClasses } from '../../app/utils/util-merge-classes';
 import { center } from '../../../reducers/selectors/index.selectors';
 import { connect } from 'react-redux';
+import { MapControl } from '../../../map-control/map-control';
+import { mergeClasses } from '../../app/utils/util-merge-classes';
+import {
+	Co,
+	State } from '../../../types';
 
 interface Props {
 	id: string;

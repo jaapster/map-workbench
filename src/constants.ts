@@ -68,3 +68,5 @@ export const EMPTY_FEATURE_COLLECTION = {
 	type: FEATURE_COLLECTION,
 	features: []
 };
+
+export const SCALE_BASE_WIDTH = 200;
