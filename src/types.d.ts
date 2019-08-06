@@ -36,11 +36,6 @@ export interface Geometry {
 	coordinates: Cos;
 }
 
-export interface GeometryCollection {
-	type: 'GeometryCollection';
-	geometries: Geometry[];
-}
-
 export interface LineString extends Geometry {
 	type: 'LineString';
 	coordinates: Co[];
@@ -94,6 +89,8 @@ export interface MapboxStyle {
 	sources: Dict<MapboxSource>;
 }
 
+export type ReferenceStyle = string | MapboxStyle;
+
 type SelectionVector = number[];
 
 interface CollectionData {
@@ -143,6 +140,8 @@ export interface MapControlData {
 	mode: MapControlMode;
 	zoom: number;
 	center: Co;
+	overviewVisible: boolean;
+	extent: Feature<Polygon>;
 }
 
 export interface PanelGroup {
@@ -172,10 +171,18 @@ export interface GeoLocationData {
 	trace: boolean;
 }
 
+export type UnitSystem = 'metric' | 'imperial';
+
+export interface SettingsData {
+	unitSystem: UnitSystem;
+}
+
 export interface State {
 	multiverse: MultiverseData;
 	mapControl: MapControlData;
 	appPhase: string;
 	ui: UIData;
 	geoLocation: GeoLocationData;
+	bookmarks: Location[];
+	settings: SettingsData;
 }

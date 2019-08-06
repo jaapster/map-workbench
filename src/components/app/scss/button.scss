@@ -1,0 +1,51 @@
+$radius: none;
+
+body * {
+	box-sizing: border-box;
+}
+
+.button {
+	background: white;
+	color: black;
+	min-width: 48px;
+
+	&:hover {
+		background: yellow;
+	}
+
+	&.button-depressed {
+		background: lime;
+		color: black;
+	}
+
+	&.button-disabled {
+		opacity: 0.4;
+		pointer-events: none;
+	}
+
+	&.delete {
+		background: red;
+		color: white;
+
+		&:hover {
+			background: tomato;
+		}
+	}
+}
+
+.label {
+	background: black;
+	color: white;
+}
+
+.button-group {
+	display: inline-block;
+	border-radius: $radius;
+
+	> * {
+		text-align: center;
+		pointer-events: all;
+		display: inline-block;
+		padding: 8px;
+	}
+}

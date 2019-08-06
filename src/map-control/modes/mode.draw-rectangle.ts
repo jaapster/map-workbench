@@ -100,6 +100,10 @@ export class DrawRectangleMode extends DrawSegmentedMode {
 		dispatch(ActionUpdateCoordinates.create({ collectionId, entries }));
 	}
 
+	onPointerDragEnd(e: Ev) {
+		dispatch(ActionSetMapControlMode.create({ mode: NAVIGATION_MODE }));
+	}
+
 	onPointerUp(e: Ev) {}
 
 	onPointerDblClick() {}

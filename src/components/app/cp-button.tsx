@@ -1,18 +1,20 @@
 import React from 'react';
-import './scss/cp-button.scss';
+import './scss/button.scss';
 import { mergeClasses } from './utils/util-merge-classes';
 
 interface Props {
 	onClick?: () => void;
-	depressed?: boolean;
-	disabled?: boolean;
 	children: any;
+	disabled?: boolean;
+	depressed?: boolean;
+	className?: string;
 }
 
 export const Button = (props: Props) => {
-	const { onClick = () => 0, depressed, disabled, children } = props;
+	const { onClick = () => 0, depressed, disabled, children, className } = props;
 
-	const className = mergeClasses(
+	const _className = mergeClasses(
+		className,
 		'button',
 		{
 			'button-depressed': depressed,
@@ -21,13 +23,12 @@ export const Button = (props: Props) => {
 	);
 
 	return (
-		<button
-			className={ className }
+		<div
 			onClick={ onClick }
-			disabled={ disabled }
+			className={ _className }
 		>
 			{ children }
-		</button>
+		</div>
 	);
 };
 

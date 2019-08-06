@@ -10,14 +10,18 @@
 }
 
 body {
-  background: white;
+	background: white;
+	font-family: 'Roboto', serif;
 
-  font-family: 'Roboto', serif;
+	h1, h2, h3, h4, h5, div, span {
+		outline: none;
+		user-select: none;
+		font-size: 16px;
+	}
 
-  * {
-    outline: none;
-	  user-select: none;
-  }
+	text {
+		font-size: 12px;
+	}
 }
 
 button,

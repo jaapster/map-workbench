@@ -1,6 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { Dispatch } from 'redux';
+import { capitalize } from '../../map-control/utils/util-string';
 import { MapControl } from '../../map-control/map-control';
 import { Properties } from './cp-properties';
 import {
@@ -30,11 +31,12 @@ export const _LayerPanel = React.memo((props: Props) => {
 		selection,
 		collectionId,
 		featureCollection } = props;
+
 	const indices = selection.map(([i]: any) => i);
 
 	return (
 		<Properties>
-			<h2>{ collectionId }</h2>
+			<h2>{ capitalize(collectionId) }</h2>
 			<div className="list">
 				{
 					featureCollection.features.map((feature: any, j: number) => (

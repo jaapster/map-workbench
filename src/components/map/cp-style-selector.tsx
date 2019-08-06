@@ -1,55 +1,52 @@
 import React from 'react';
 import { connect } from 'react-redux';
+import { Dispatch } from 'redux';
 import { MapControl } from '../../map-control/map-control';
+import { ActionSetCurrentReferenceLayer } from '../../reducers/actions';
 import {
-	currentReferenceLayer,
-	referenceLayers
-} from '../../reducers/selectors/index.selectors';
+	referenceStyles,
+	currentReferenceStyleId } from '../../reducers/selectors/index.selectors';
 import {
 	Button,
 	ButtonGroup } from '../app/cp-button';
 import {
 	State,
-	MapboxStyle } from '../../types';
-import { Dispatch } from 'redux';
-import { ActionSetCurrentReferenceLayer } from '../../reducers/actions';
+	ReferenceStyle } from '../../types';
 
 interface Props {
-	currentReferenceLayer: string | MapboxStyle;
-	referenceLayers: [string, (string | MapboxStyle)][];
-	setStyle: (style: [string, string | MapboxStyle]) => void;
+	setStyle: (style: [string, ReferenceStyle]) => void;
+	referenceStyles: [string, ReferenceStyle][];
+	currentReferenceStyleId: ReferenceStyle;
 }
 
-export const _StyleSelector = ({ referenceLayers, setStyle, currentReferenceLayer }: Props) => {
-	return (
-		<ButtonGroup>
-			{
-				referenceLayers.map(([name, s]) => (
-					<Button
-						key={ name }
-						onClick={ () => setStyle([name, s]) }
-						depressed={  currentReferenceLayer === name }
-					>
-						{ name }
-					</Button>
-				))
-			}
-		</ButtonGroup>
-	);
-};
+export const _StyleSelector = ({ referenceStyles, setStyle, currentReferenceStyleId }: Props) => (
+	<ButtonGroup>
+		{
+			referenceStyles.map(([id, s]) => (
+				<Button
+					key={ id }
+					onClick={ () => setStyle([id, s]) }
+					depressed={  currentReferenceStyleId === id }
+				>
+					{ id }
+				</Button>
+			))
+		}
+	</ButtonGroup>
+);
 
 const mapStateToProps = (state: State) => (
 	{
-		referenceLayers: referenceLayers(state),
-		currentReferenceLayer: currentReferenceLayer(state)
+		referenceStyles: referenceStyles(state),
+		currentReferenceStyleId: currentReferenceStyleId(state)
 	}
 );
 
 const mapDispatchToProps = (dispatch: Dispatch) => (
 	{
-		setStyle([name, s]: [string, string | MapboxStyle]) {
-			MapControl.setStyle(s);
-			dispatch(ActionSetCurrentReferenceLayer.create({ layer: name }));
+		setStyle([layer, style]: [string, ReferenceStyle]) {
+			MapControl.setStyle(style);
+			dispatch(ActionSetCurrentReferenceLayer.create({ layer }));
 		}
 	}
 );

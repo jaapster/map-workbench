@@ -1,17 +1,27 @@
 import React from 'react';
-import { Co } from '../../types';
-import { PRECISION } from '../../constants';
+import { METRIC } from '../../constants';
+import { connect } from 'react-redux';
 import { addToPath } from './utils/util-add-to-path';
+import { unitSystem } from '../../reducers/selectors/index.selectors';
 import { geoDistance } from '../../map-control/utils/util-geo';
 import { mergeClasses } from '../app/utils/util-merge-classes';
+import {
+	Co,
+	State,
+	UnitSystem } from '../../types';
+import {
+	mToFt,
+	mToDisplay,
+	ftToDisplay } from '../../utils/util-conversion';
 
 interface Props {
-	coordinates: Co[];
-	selected: boolean;
 	id: string;
+	selected: boolean;
+	unitSystem: UnitSystem;
+	coordinates: Co[];
 }
 
-export const Segment = ({ coordinates, selected, id }: Props) => {
+export const _Segment = React.memo(({ coordinates, selected, id, unitSystem }: Props) => {
 	const className = mergeClasses(
 		{
 			'selected': selected
@@ -32,13 +42,15 @@ export const Segment = ({ coordinates, selected, id }: Props) => {
 			{
 				selected
 					? (
-						<text dy="13">
+						<text dy="18" >
 							<textPath
 								href={ `#${ id }-p` }
 								startOffset="50%"
 							>
 								{
-									geoDistance(a, b).toFixed(PRECISION)
+									unitSystem === METRIC
+										? mToDisplay(geoDistance(a, b))
+										: ftToDisplay(mToFt(geoDistance(a, b)))
 								}
 							</textPath>
 						</text>
@@ -47,4 +59,12 @@ export const Segment = ({ coordinates, selected, id }: Props) => {
 			}
 		</g>
 	);
-};
+});
+
+const mapStateToProps = (state: State) => (
+	{
+		unitSystem: unitSystem(state)
+	}
+);
+
+export const Segment = connect(mapStateToProps)(_Segment);

@@ -121,29 +121,17 @@ $panel-border: 0px solid transparent;
 		position: absolute;
 		top: 0;
 		left: 0;
-		right: 28px;
+		right: 48px;
 		bottom: 0;
+		background: dimgrey;
+		color: white;
 	}
 
 	.toggles {
 		position: absolute;
-		top: 2px;
-		right: 2px;
-		width: 28px;
+		top: 0;
+		right: 0;
+		width: 48px;
 		bottom: 0;
-
-		.toggle {
-			text-align: center;
-			padding: 4px;
-			color: black;
-			cursor: default;
-			height: 20px;
-			margin-bottom: 1px;
-			background: rgba(255, 255, 255, 0.5);
-
-			&.active {
-				background: rgba(255, 255, 255, 0.7);
-			}
-		}
 	}
 }

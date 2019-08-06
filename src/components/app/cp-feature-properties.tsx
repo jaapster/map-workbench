@@ -10,6 +10,7 @@ import {
 	getCoordinate,
 	getFeatureArea,
 	getFeatureLength } from './utils/geojson-properties';
+import { M, M2 } from '../../constants';
 
 interface Props {
 	features: Feature<any>[];
@@ -57,7 +58,7 @@ export const FeatureProperties = React.memo((props: Props) => {
 											: m + v;
 								}, null)
 							}
-						   unit="m"
+							unit={ M }
 						/>
 					</div>
 				</div>
@@ -81,7 +82,7 @@ export const FeatureProperties = React.memo((props: Props) => {
 											: m + v;
 								}, null)
 							}
-							unit="m2"
+							unit={ M2 }
 						/>
 					</div>
 				</div>
@@ -110,6 +111,7 @@ export const FeatureProperties = React.memo((props: Props) => {
 									? getRadius(features[0])
 									: null
 							}
+							unit={ M }
 						/>
 					</div>
 				</div>

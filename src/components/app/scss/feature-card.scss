@@ -1,35 +1,13 @@
 .feature-card {
-	> * {
-		margin: 0;
-		padding: 0;
-	}
-
-	padding: 8px;
-
-	.feature-property {
-		margin-top: 8px;
-		font-size: 11px;
-	}
-
 	.table {
-		margin-top: 8px;
-
 		.row {
 			.cell {
-				border-right: 1px solid grey;
-				border-top: 1px solid grey;
 				width: 130px;
-				&:first-child {
-					width: 70px;
-					border-left: 1px solid grey;
-				}
-				padding: 4px;
+				padding: 8px;
 				display: inline-block;
-			}
 
-			&:last-child {
-				.cell {
-					border-bottom: 1px solid grey;
+				&:first-child {
+					width: 80px;
 				}
 			}
 		}

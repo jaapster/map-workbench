@@ -1,25 +1,28 @@
 import React from 'react';
-import { Location } from '../../types';
+import { connect } from 'react-redux';
 import { MapControl } from '../../map-control/map-control';
 import { Properties } from './cp-properties';
+import {
+	State,
+	Location } from '../../types';
 
 interface Props {
-	locations: Location[];
+	bookmarks: Location[];
 }
 
-export const Locations = React.memo(({ locations }: Props) => {
+export const _Bookmarks = React.memo(({ bookmarks }: Props) => {
 	return (
 		<Properties>
 			<h2>Locations</h2>
 			<div className="list">
 				{
-					locations.map(location => (
+					bookmarks.map(location => (
 						<div
-							key={location.title}
+							key={ location.title }
 							className="list-item"
 							onClick={() => MapControl.setLocation(location)}
 						>
-							{location.title}
+							{ location.title }
 						</div>
 					))
 				}
@@ -27,3 +30,11 @@ export const Locations = React.memo(({ locations }: Props) => {
 		</Properties>
 	);
 });
+
+const mapStateToProps = (state: State) => (
+	{
+		bookmarks: state.bookmarks
+	}
+);
+
+export const Bookmarks = connect(mapStateToProps)(_Bookmarks);

@@ -2,12 +2,15 @@ import { getActionCreator } from './util-get-action-creator';
 import {
 	Co,
 	Dict,
+	EPSG,
 	Point,
-	WorldData,
 	Feature,
+	WorldData,
+	MapboxStyle,
 	UniverseData,
+	MapControlMode,
 	SelectionVector,
-	FeatureCollection, EPSG, MapControlMode, MapboxStyle
+	FeatureCollection, Location, UnitSystem, Polygon
 } from '../types';
 
 export interface Action {
@@ -25,7 +28,7 @@ export const ActionSetReferenceLayers = getActionCreator<{
 }>('ActionSetReferenceLayers');
 
 export const ActionSetCurrentReferenceLayer = getActionCreator<{
-	layer: string | MapboxStyle
+	layer: string
 }>('ActionSetCurrentReferenceLayer');
 
 export const ActionAddWorld = getActionCreator<{
@@ -52,7 +55,8 @@ export const ActionSelect = getActionCreator<{
 	multi: boolean
 }>('ActionSelect');
 
-export const ActionClearSelection = getActionCreator<{}>('ActionClearSelection');
+export const ActionClearSelection = getActionCreator<{
+}>('ActionClearSelection');
 
 export const ActionSetCollectionData = getActionCreator<{
 	collectionId: string,
@@ -70,7 +74,8 @@ export const ActionAddVertex = getActionCreator<{
 	vector: SelectionVector
 }>('ActionAddVertex');
 
-export const ActionDeleteSelection = getActionCreator<{}>('ActionDeleteSelection');
+export const ActionDeleteSelection = getActionCreator<{
+}>('ActionDeleteSelection');
 
 export const ActionSetCollection = getActionCreator<{
 	collectionId: string
@@ -106,9 +111,30 @@ export const ActionSetPanelCollapsed = getActionCreator<{
 	collapsed: boolean;
 }>('ActionSetPanelCollapsed');
 
-export const ActionShowPropertiesPanel = getActionCreator<{}>('ActionSetPanelCollapsed');
+export const ActionShowPropertiesPanel = getActionCreator<{
+}>('ActionSetPanelCollapsed');
 
 export const ActionSetGeoLocationPosition = getActionCreator<{
 	position: Co;
 	accuracy: number;
 }>('ActionSetGeoLocationPosition');
+
+export const ActionSetBookmarks = getActionCreator<{
+	bookmarks: Location[];
+}>('ActionSetBookmarks');
+
+export const ActionSetUnitSystem = getActionCreator<{
+	unitSystem: UnitSystem;
+}>('ActionSetUnitSystem');
+
+export const ActionToggleUnitSystem = getActionCreator<{
+}>('ActionToggleUnitSystem');
+
+export const ActionToggleOverview = getActionCreator<{
+}>('ActionToggleOverview');
+
+export const ActionSetMapControlMetrics = getActionCreator<{
+	center: Co;
+	zoom: number;
+	extent: Feature<Polygon>
+}>('ActionSetMapControlMetrics');

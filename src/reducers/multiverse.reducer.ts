@@ -35,7 +35,7 @@ const sameAs = (v1: number[]) => (v2: number[]) => {
 	return JSON.stringify(v1) === JSON.stringify(v2);
 };
 
-const updateCollection = (state: MultiverseData, collectionId: string, data: any) => {
+const updateCollection = (state: MultiverseData, collectionId: string, data: any): MultiverseData => {
 	const { worlds, currentWorldId } = state;
 	const world = worlds[currentWorldId];
 	const collection = world.collections[collectionId];

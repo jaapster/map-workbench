@@ -4,6 +4,7 @@ import { connect } from 'react-redux';
 import { Dispatch } from 'redux';
 import { ActionSetActiveTab } from '../../reducers/actions';
 import { State } from '../../types';
+import { Button } from '../app/cp-button';
 
 interface AttributeProps {
 	open?: () => any;
@@ -101,20 +102,14 @@ export const _PanelTabbed = (props: Props) => {
 			<div className="toggles">
 				{
 					tabs.map((tab: any, i: number) => {
-						const className = mergeClasses(
-							'toggle',
-							{
-								'active': activeTab === i
-							}
-						);
-
 						return (
-							<div
-								key={ i }
-								className={ className }
-								onClick={ () => onTabClick(i) }
-							>
-								{ i }
+							<div key={ i } className="button-group">
+								<Button
+									onClick={ () => onTabClick(i) }
+									depressed={ activeTab === i }
+								>
+									{ i }
+								</Button>
 							</div>
 						);
 					})

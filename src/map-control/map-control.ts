@@ -1,40 +1,46 @@
 import bind from 'autobind-decorator';
 import mapboxGL from 'mapbox-gl';
 import { DOM } from './utils/util-dom';
+import { add } from './utils/util-point';
 import { token } from '../token';
 import { clamp } from '../utils/util-clamp';
-import { DrawSegmentedMode } from './modes/mode.draw-segmented';
 import { MenuMode } from './modes/mode.menu';
 import { getCenter } from './utils/util-get-center';
 import { ModeUpdate } from './modes/mode.update';
 import { getBounds } from './utils/util-get-bounds';
 import { getTargetZoom } from './utils/util-get-target-zoom';
 import { PointerDevice } from './devices/device.pointer';
+import { DrawPointMode } from './modes/mode.draw-point';
 import { KeyboardDevice } from './devices/device.keyboard';
 import { ModeNavigation } from './modes/mode.navigation';
+import { DrawCircleMode } from './modes/mode.draw-circle';
+import { DrawSegmentedMode } from './modes/mode.draw-segmented';
+import { DrawRectangleMode } from './modes/mode.draw-rectangle';
 import { disableInteractions } from './utils/util-map';
-import {
-	ActionSetMapControlZoom,
-	ActionSetMapControlCenter } from '../reducers/actions';
+import { ActionSetMapControlMetrics } from '../reducers/actions';
 import {
 	dispatch,
 	getState } from '../reducers/store';
 import {
+	POLYGON,
 	FEATURE,
-	DRAW_SEGMENTED_MODE,
 	PROJECTED,
 	GEOGRAPHIC,
 	EMPTY_STYLE,
 	LINE_STRING,
 	UPDATE_MODE,
 	NAVIGATION_MODE,
-	DEFAULT_LOCATION, DRAW_POINT_MODE, DRAW_CIRCLE_MODE, DRAW_RECTANGLE_MODE
-} from '../constants';
+	DEFAULT_LOCATION,
+	DRAW_POINT_MODE,
+	DRAW_CIRCLE_MODE,
+	DRAW_SEGMENTED_MODE,
+	DRAW_RECTANGLE_MODE } from '../constants';
 import {
 	Co,
 	Ev,
 	EPSG,
 	Point,
+	Polygon,
 	Feature,
 	Location,
 	MapboxStyle } from '../types';
@@ -42,12 +48,8 @@ import {
 	llToCo,
 	coToLl,
 	geoProject,
-	geoUnproject, geoDistance
-} from './utils/util-geo';
-import { DrawPointMode } from './modes/mode.draw-point';
-import { DrawCircleMode } from './modes/mode.draw-circle';
-import { DrawRectangleMode } from './modes/mode.draw-rectangle';
-import { add } from './utils/util-point';
+	geoDistance,
+	geoUnproject } from './utils/util-geo';
 
 const FIT_PADDING = 64;
 const FIT_MIN_ZOOM = 14;
@@ -140,30 +142,31 @@ export class MapControl {
 	}
 
 	static onMapMove() {
-		dispatch(ActionSetMapControlCenter.create({
-			center: MapControl.instance.getCenter()
+		dispatch(ActionSetMapControlMetrics.create({
+			zoom: MapControl.instance.getZoom(),
+			center: MapControl.instance.getCenter(),
+			extent: MapControl.instance.getExtent()
 		}));
 	}
 
 	static onMapZoom() {
-		dispatch(ActionSetMapControlZoom.create({
-			zoom: MapControl.instance.getZoom()
-		}));
-		dispatch(ActionSetMapControlCenter.create({
-			center: MapControl.instance.getCenter()
+		dispatch(ActionSetMapControlMetrics.create({
+			zoom: MapControl.instance.getZoom(),
+			center: MapControl.instance.getCenter(),
+			extent: MapControl.instance.getExtent()
 		}));
 	}
 
 	private readonly _map: any;
 	private readonly _menuMode: MenuMode;
-	private readonly _drawPointMode: DrawPointMode;
-	private readonly _drawCircleMode: DrawCircleMode;
-	private readonly _drawRectangleMode: DrawRectangleMode;
-	private readonly _drawSegmentedMode: DrawSegmentedMode;
 	private readonly _updateMode: ModeUpdate;
 	private readonly _pointerDevice: PointerDevice;
+	private readonly _drawPointMode: DrawPointMode;
+	private readonly _drawCircleMode: DrawCircleMode;
 	private readonly _keyboardDevice: KeyboardDevice;
 	private readonly _navigationMode: ModeNavigation;
+	private readonly _drawRectangleMode: DrawRectangleMode;
+	private readonly _drawSegmentedMode: DrawSegmentedMode;
 
 	private _style: string | MapboxStyle;
 
@@ -190,8 +193,11 @@ export class MapControl {
 			fadeDuration: 0
 		});
 
-		dispatch(ActionSetMapControlCenter.create({ center }));
-		dispatch(ActionSetMapControlZoom.create({ zoom: this.getZoom() }));
+		dispatch(ActionSetMapControlMetrics.create({
+			zoom: this.getZoom(),
+			center,
+			extent: this.getExtent()
+		}));
 
 		this._drawPointMode = DrawPointMode.create(this._map);
 		this._drawCircleMode = DrawCircleMode.create(this._map);
@@ -419,6 +425,29 @@ export class MapControl {
 
 	zoomOut() {
 		this.setZoom(Math.round(this.getZoom() - 1));
+	}
+
+	getExtent(): Feature<Polygon> {
+		const { width, height } = this.getBoundingClientRect();
+
+		const c1 = this.unproject({ x: 0, y: 0 });
+		const c2 = this.unproject({ x: width, y: 0 });
+		const c3 = this.unproject({ x: width, y: height });
+		const c4 = this.unproject({ x: 0, y: height });
+
+		return {
+			type: FEATURE,
+			geometry: {
+				type: POLYGON,
+				coordinates: [
+					[c1, c2, c3, c4, c1]
+				]
+			},
+			properties: {
+				id: 'extent',
+				type: POLYGON
+			}
+		};
 	}
 
 	getBoundingClientRect() {

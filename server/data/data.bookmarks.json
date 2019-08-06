@@ -1,0 +1,20 @@
+[
+	{
+		"title": "Astoria",
+		"center": [-123.8380, 46.1937],
+		"zoom": 15,
+		"epsg": 4326
+	},
+	{
+		"title": "Crater Lake",
+		"center": [-122.114, 42.937],
+		"zoom": 13,
+		"epsg": 4326
+	},
+	{
+		"title": "Lake Quinault",
+		"center": [-123.848, 47.468],
+		"zoom": 16,
+		"epsg": 4326
+	}
+]

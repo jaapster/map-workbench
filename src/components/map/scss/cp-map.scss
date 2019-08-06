@@ -27,66 +27,52 @@
 	border: 1px dotted grey;
 }
 
-.bottom-bar {
+.top-bar,
+.bottom-bar,
+.top-bar-right {
 	position: absolute;
 	left: 0;
 	right: 0;
-	bottom: 0;
-	padding: 4px;
-	z-index: 10;
-	font-size: 10px;
-}
-
-.zoom-controls {
-	display: inline-block;
+	z-index: 100;
+	pointer-events: none;
 
 	> * {
-		display: inline-block;
-		background: rgba(0, 0, 0, 0.4);
-		color: rgba(255, 255, 255, 0.7);
-		text-align: center;
-		padding: 8px;
 		margin-right: 1px;
-		width: 35px;
 
-		&.zoom-btn {
-			width: 16px;
-
-			&:hover {
-				background: rgba(0, 0, 0, 0.7);
-			}
+		&:last-child {
+			margin-right: 0;
 		}
 	}
 }
 
-.center-coordinate,
+.top-bar {
+	top: 0;
+}
+
+.bottom-bar {
+	bottom: 0;
+}
+
+.top-bar-right {
+	text-align: right;
+}
+
 .scale {
+	pointer-events: all;
 	display: inline-block;
-	background: rgba(0, 0, 0, 0.4);
-	color: rgba(255, 255, 255, 0.7);
-	text-align: center;
-	padding: 8px;
+	color: white;
 	margin-right: 1px;
 	width: auto;
-}
-
-.scale {
-	span {
-		padding-left: 8px;
-	}
-}
-
-.center-coordinate {
-	width: 200px;
-}
-
-.scale {
 	padding: 8px 0;
 	background: deeppink; // mediumseagreen;
 	transition: width 100ms;
 	text-align: left;
 	opacity: 1;
-	color: white;
+
+	span {
+		padding: 0 0 0 8px;
+		background: transparent;
+	}
 }
 
 // hide mapbox control elements
@@ -114,7 +100,7 @@ svg {
 	left: 0;
 	right: 0;
 	bottom: 0;
-	z-index: 1000;
+	z-index: 10;
 	pointer-events: none;
 	width: 100%;
 	height: 100%;
@@ -153,13 +139,18 @@ path {
 			fill: $colorSelected;
 		}
 	}
+
+	&.extent {
+		fill: $colorRegular;
+		stroke: $colorRegular;
+		stroke-width: 2;
+		opacity: 0.5;
+	}
 }
 
 text {
 	font-size: 11px;
 	fill: $colorSelected;
-	// stroke: white;
-	// stroke-width: 0.3px;
 	text-anchor: middle;
 	paint-order: stroke;
 }
@@ -185,4 +176,20 @@ circle {
 	padding: 8px;
 	background: darkslategrey;
 	box-shadow: 0 3px 10px rgba(0, 0, 0, 0.5);
+}
+
+.overview {
+	box-sizing: content-box;
+	position: absolute;
+	top: 0;
+	right: 0;
+	padding: 0;
+	width: 0;
+	height: 0;
+	//border: 1px solid rgba(30, 144, 255, 0.5);
+
+	&.visible {
+		width: 200px;
+		height: 200px;
+	}
 }

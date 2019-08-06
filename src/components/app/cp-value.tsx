@@ -1,40 +1,52 @@
 import React from 'react';
+import { connect } from 'react-redux';
+import { unitSystem } from '../../reducers/selectors/index.selectors';
+import {
+	mToFt,
+	m2ToFt2,
+	mToDisplay,
+	ftToDisplay,
+	m2ToDisplay,
+	ft2ToDisplay } from '../../utils/util-conversion';
+import {
+	M,
+	M2,
+	METRIC } from '../../constants';
+import {
+	State,
+	UnitSystem } from '../../types';
 
 interface Props {
+	unit?: string;
 	value: any;
-	unit: string;
-	precision: number;
+	unitSystem?: UnitSystem;
 }
 
-export const Value = ({ value, unit, precision = 2 }: any) => {
-	let v = value;
-	let u = unit;
+export const _Value = ({ value, unit, unitSystem }: Props) => (
+	<span>
+		{
+			value == null
+				? '-'
+				: isNaN(value)
+					? `${ value }`
+					: unit === M
+						? unitSystem === METRIC
+							? mToDisplay(value)
+							: ftToDisplay(mToFt(value))
+						: unit === M2
+							? unitSystem === METRIC
+								? m2ToDisplay(value)
+								: ft2ToDisplay(m2ToFt2(value))
+							: `${ value }`
 
-	if (value != null && !isNaN(value)) {
-		if (u === 'm') {
-			if (value.toFixed(0).length > 3) {
-				v = value / 1000;
-				u = 'km';
-			} else if (value.toFixed(0).length > 2) {
-				v = value / 100;
-				u = 'hm';
-			}
-		} else if (u === 'm2') {
-			if (value.toFixed(0).length > 5) {
-				v = value / 1000000;
-				u = `k${unit}`;
-			}
 		}
-	}
+	</span>
+);
 
-	return (
-		<span>
-			{
-				v == null
-					? '-'
-					: `${ !isNaN(v) ? v.toFixed(precision) : v }
-						${ u  ? ` ${ u }`  : '' }`
-			}
-		</span>
-	);
-};
+const mapStateToProps = (state: State) => (
+	{
+		unitSystem: unitSystem(state)
+	}
+);
+
+export const Value = connect(mapStateToProps)(_Value);

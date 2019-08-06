@@ -12,8 +12,8 @@ import {
 	State,
 	MapControlMode } from '../../types';
 import {
-	// MENU_MODE,
-	// UPDATE_MODE,
+	MENU_MODE,
+	UPDATE_MODE,
 	NAVIGATION_MODE,
 	DRAW_POINT_MODE,
 	DRAW_CIRCLE_MODE,
@@ -40,7 +40,7 @@ export const _ModeSelector = React.memo((
 	}: Props
 ) => (
 	<ButtonGroup>
-		{/*
+
 		<Button
 			onClick={ activateNavigationMode }
 			depressed={ mode === NAVIGATION_MODE }
@@ -59,7 +59,7 @@ export const _ModeSelector = React.memo((
 		>
 			Menu
 		</Button>
-		*/}
+
 		<Button
 			onClick={ activateDrawSegmentedMode }
 			depressed={ mode === DRAW_SEGMENTED_MODE }

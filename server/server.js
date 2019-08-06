@@ -24,6 +24,10 @@ app.get('/referencelayers', function (req, res) {
 	res.sendFile(path.join(__dirname, 'data', 'data.styles.json'));
 });
 
+app.get('/bookmarks', function (req, res) {
+	res.sendFile(path.join(__dirname, 'data', 'data.bookmarks.json'));
+});
+
 app.listen(process.env.PORT || 8080);
 
 console.log('server running on', 8080); // remove me

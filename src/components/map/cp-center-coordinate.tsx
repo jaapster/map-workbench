@@ -24,12 +24,14 @@ export const _CenterCoordinate = React.memo(({ center, CRS }: Props) => {
 	const hasDecimals = Math.round(x) !== x;
 
 	return (
-		<div className="center-coordinate">
-			{
-				hasDecimals ? x.toFixed(6) : x
-			}, {
-				hasDecimals ? y.toFixed(6) : y
-			} (EPSG:{ CRS })
+		<div className="button-group">
+			<div className="label">
+				{
+					hasDecimals ? x.toFixed(6) : x
+				}, {
+					hasDecimals ? y.toFixed(6) : y
+				} (EPSG:{ CRS })
+			</div>
 		</div>
 	);
 });
