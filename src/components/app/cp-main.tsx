@@ -11,10 +11,17 @@ import { MapControl } from '../../map-control/map-control';
 import { LayerPanels } from '../map/cp-layer-panels';
 import { PanelTabbed } from '../panels/cp-panel-tabbed';
 import { MultiverseSettings } from './cp-multiverse';
+import { State } from '../../types';
+import { scale } from '../../reducers/selectors/index.selectors';
+import { connect } from 'react-redux';
 
-export const Main = React.memo(() => {
+interface Props {
+	scale: number;
+}
+
+export const _Main = React.memo(({ scale }: Props) => {
 	return (
-		<div className="app">
+		<div className="app" style={ { fontSize: `${ scale }em` } }>
 			<PanelPair
 				panelGroupId="sidePanelsRight"
 				horizontal
@@ -66,3 +73,11 @@ export const Main = React.memo(() => {
 		</div>
 	);
 });
+
+const mapStateToProps = (state: State) => (
+	{
+		scale: scale(state)
+	}
+);
+
+export const Main = connect(mapStateToProps)(_Main);

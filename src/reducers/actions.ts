@@ -130,6 +130,10 @@ export const ActionSetUnitSystem = getActionCreator<{
 export const ActionToggleUnitSystem = getActionCreator<{
 }>('ActionToggleUnitSystem');
 
+export const ActionSetUIScale = getActionCreator<{
+	UIScale: number;
+}>('ActionSetUIScale');
+
 export const ActionToggleOverview = getActionCreator<{
 }>('ActionToggleOverview');
 

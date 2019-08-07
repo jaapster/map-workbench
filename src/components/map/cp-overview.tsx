@@ -8,11 +8,12 @@ import { disableInteractions } from '../../map-control/utils/util-map';
 import {
 	Co,
 	State,
-	Feature,
-	Polygon,
+	// Feature,
+	// Polygon,
 	MapboxStyle } from '../../types';
 import {
 	zoom,
+	scale,
 	extent,
 	center,
 	overviewVisible,
@@ -29,18 +30,20 @@ const _map = new mapboxGL.Map({
 
 disableInteractions(_map);
 
-interface Props {
-	zoom: number;
-	center: Co;
-	extent: Feature<Polygon>;
-	overviewVisible: boolean;
-	referenceLayers: [string, string | MapboxStyle][];
-	currentReferenceLayer: string | MapboxStyle;
-}
+// interface Props {
+// 	zoom: number;
+// 	scale: number;
+// 	center: Co;
+// 	extent: Feature<Polygon>;
+// 	overviewVisible: boolean;
+// 	referenceLayers: [string, string | MapboxStyle][];
+// 	currentReferenceLayer: string | MapboxStyle;
+// }
 
 @bind
 class SlaveMap extends React.PureComponent<any> {
 	private _ref: any;
+	private _scale: number = 0;
 	private _currentReferenceLayer: string | MapboxStyle = '';
 
 	private _setRef(e: any) {
@@ -56,7 +59,13 @@ class SlaveMap extends React.PureComponent<any> {
 	}
 
 	render() {
-		const { center, extent, zoom, referenceLayers, currentReferenceLayer } = this.props;
+		const { scale, center, extent, zoom, referenceLayers, currentReferenceLayer } = this.props;
+
+		if (scale !== this._scale) {
+			this._scale = scale;
+
+			_map.resize();
+		}
 
 		_map.setZoom(zoom - 4);
 		_map.setCenter(center);
@@ -87,7 +96,7 @@ class SlaveMap extends React.PureComponent<any> {
 }
 
 export const _OverView = React.memo((props: any) => {
-	const { center, extent, zoom, referenceLayers, currentReferenceLayer, overviewVisible } = props;
+	const { scale, center, extent, zoom, referenceLayers, currentReferenceLayer, overviewVisible } = props;
 
 	const className = mergeClasses(
 		'overview',
@@ -103,6 +112,7 @@ export const _OverView = React.memo((props: any) => {
 					? (
 						<SlaveMap
 							zoom={ zoom }
+							scale={ scale }
 							center={ center }
 							extent={ extent }
 							referenceLayers={ referenceLayers }
@@ -118,6 +128,7 @@ export const _OverView = React.memo((props: any) => {
 const mapStateToProps = (state: State) => (
 	{
 		zoom: zoom(state),
+		scale: scale(state),
 		center: center(state),
 		extent: extent(state),
 		overviewVisible: overviewVisible(state),

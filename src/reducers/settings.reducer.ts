@@ -1,8 +1,16 @@
-import { Action, ActionSetUnitSystem, ActionToggleUnitSystem } from './actions';
-import { IMPERIAL, METRIC } from '../constants';
 import { SettingsData } from '../types';
+import {
+	Action,
+	ActionSetUIScale,
+	ActionSetUnitSystem,
+	ActionToggleUnitSystem } from './actions';
+import {
+	IMPERIAL,
+	METRIC } from '../constants';
 
 const STATE: SettingsData = {
+	UIScale: 1,
+	language: 'en',
 	unitSystem: METRIC
 };
 
@@ -18,6 +26,13 @@ export const settingsReducer = (state: SettingsData = STATE, action: Action): Se
 		return {
 			...state,
 			unitSystem: state.unitSystem === METRIC ? IMPERIAL : METRIC
+		};
+	}
+
+	if (ActionSetUIScale.validate(action)) {
+		return {
+			...state,
+			UIScale: ActionSetUIScale.data(action).UIScale
 		};
 	}
 

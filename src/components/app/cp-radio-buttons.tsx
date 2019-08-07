@@ -4,8 +4,8 @@ import { mergeClasses } from './utils/util-merge-classes';
 
 interface Props {
 	label: string;
-	value: string;
-	options: [string, string][];
+	value: any;
+	options: [string, any][];
 	onChange: (value: any) => void;
 }
 

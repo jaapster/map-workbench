@@ -7,7 +7,7 @@ import { Button, ButtonGroup } from '../app/cp-button';
 import { bearing, pitch } from '../../reducers/selectors/index.selectors';
 
 interface Props {
-	pitch: number,
+	pitch: number;
 	bearing: number;
 }
 

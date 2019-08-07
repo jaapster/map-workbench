@@ -37,7 +37,7 @@ export const _DrawingTools = React.memo((
 		mode,
 		isDrawing,
 		hasSelection,
-		clearSelection,
+		// clearSelection,
 		deleteSelection,
 		activateDrawPointMode,
 		activateDrawCircleMode,
@@ -55,11 +55,11 @@ export const _DrawingTools = React.memo((
 				<i className="icon-vector-polyline" />
 			</Button>
 			<Button
-				onClick={ activateDrawPointMode }
-				depressed={ mode === DRAW_POINT_MODE }
+				onClick={ activateDrawRectangleMode }
+				depressed={ mode === DRAW_RECTANGLE_MODE }
 				disabled={ isDrawing }
 			>
-				<i className="icon-map-marker-outline" />
+				<i className="icon-vector-rectangle" />
 			</Button>
 			<Button
 				onClick={ activateDrawCircleMode }
@@ -69,25 +69,25 @@ export const _DrawingTools = React.memo((
 				<i className="icon-vector-circle-variant" />
 			</Button>
 			<Button
-				onClick={ activateDrawRectangleMode }
-				depressed={ mode === DRAW_RECTANGLE_MODE }
+				onClick={ activateDrawPointMode }
+				depressed={ mode === DRAW_POINT_MODE }
 				disabled={ isDrawing }
 			>
-				<i className="icon-vector-rectangle" />
+				<i className="icon-map-marker-outline" />
 			</Button>
 		</ButtonGroup>
 		{
 			hasSelection && !isDrawing
 				? (
 					<>
-						<ButtonGroup>
-							<Button
-								onClick={ clearSelection }
-								className="clear"
-							>
-								<i className="icon-cancel" />
-							</Button>
-						</ButtonGroup>
+						{/*<ButtonGroup>*/}
+						{/*	<Button*/}
+						{/*		onClick={ clearSelection }*/}
+						{/*		className="clear"*/}
+						{/*	>*/}
+						{/*		<i className="icon-cancel" />*/}
+						{/*	</Button>*/}
+						{/*</ButtonGroup>*/}
 						<ButtonGroup>
 							<Button
 								onClick={ deleteSelection }

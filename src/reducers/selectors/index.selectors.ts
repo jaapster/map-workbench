@@ -33,6 +33,10 @@ export const currentWorldId = (state: State) => state.multiverse.currentWorldId;
 
 export const unitSystem = (state: State) => state.settings.unitSystem;
 
+export const language = (state: State) => state.settings.language;
+
+export const scale = (state: State) => state.settings.UIScale;
+
 export const currentWorld = createSelector(
 	[worlds, currentWorldId, universes],
 	(worlds, worldId, universes) => {

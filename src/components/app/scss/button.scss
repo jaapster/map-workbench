@@ -5,18 +5,17 @@ body * {
 }
 
 .button {
-	background: white;
+	background: rgb(230, 230, 230); //white;
 	color: black;
-	//min-width: 48px;
 	min-width: 4em;
 
 	&:hover {
-		background: yellow;
+		background: white; // yellow;
 	}
 
 	&.button-depressed {
-		background: lime;
-		color: black;
+		background: dodgerblue; // lime;
+		color: white;
 	}
 
 	&.button-disabled {
@@ -29,7 +28,8 @@ body * {
 		color: white;
 
 		&:hover {
-			background: tomato;
+			background: white;
+			color: black;
 		}
 	}
 

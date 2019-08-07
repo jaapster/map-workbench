@@ -177,6 +177,8 @@ export type UnitSystem = 'metric' | 'imperial';
 
 export interface SettingsData {
 	unitSystem: UnitSystem;
+	language: string;
+	UIScale: number;
 }
 
 export interface State {
