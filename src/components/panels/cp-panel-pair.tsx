@@ -33,7 +33,7 @@ const DEFAULT_MAX_POSITION = 300;
 const DEFAULT_COLLAPSED_POSITION = 64;
 
 @bind
-export class _PanelPair extends React.Component<Props, State> {
+export class _PanelPair extends React.PureComponent<Props, State> {
 	protected collapsedPosition = DEFAULT_COLLAPSED_POSITION;
 
 	protected ref?: HTMLDivElement;

@@ -74,7 +74,7 @@ class SlaveMap extends React.PureComponent<any> {
 		const d = extent.geometry.coordinates[0].slice().reverse().reduce((m: string, co: Co, i: number) => {
 			const { x, y } = _map.project(co);
 			return `${ m }${ i ? 'L' : 'M' }${ x } ${ y }`;
-		}, `M0 0L${ width } 0L${ width } ${ height }L0 ${ height }L0 0`);
+		}, `M0 -1L${ width + 1 } -1L${ width + 1 } ${ height }L0 ${ height }L0 -1`);
 
 		return (
 			<div ref={ this._setRef }>
@@ -86,36 +86,34 @@ class SlaveMap extends React.PureComponent<any> {
 	}
 }
 
-export class _OverView extends React.PureComponent<any> {
-	render() {
-		const { center, extent, zoom, referenceLayers, currentReferenceLayer, overviewVisible } = this.props;
+export const _OverView = React.memo((props: any) => {
+	const { center, extent, zoom, referenceLayers, currentReferenceLayer, overviewVisible } = props;
 
-		const className = mergeClasses(
-			'overview',
+	const className = mergeClasses(
+		'overview',
+		{
+			visible: overviewVisible
+		}
+	);
+
+	return (
+		<div className={ className }>
 			{
-				visible: overviewVisible
+				overviewVisible
+					? (
+						<SlaveMap
+							zoom={ zoom }
+							center={ center }
+							extent={ extent }
+							referenceLayers={ referenceLayers }
+							currentReferenceLayer={ currentReferenceLayer }
+						/>
+					)
+					: null
 			}
-		);
-
-		return (
-			<div className={ className }>
-				{
-					overviewVisible
-						? (
-							<SlaveMap
-								zoom={ zoom }
-								center={ center }
-								extent={ extent }
-								referenceLayers={ referenceLayers }
-								currentReferenceLayer={ currentReferenceLayer }
-							/>
-						)
-						: null
-				}
-			</div>
-		);
-	}
-}
+		</div>
+	);
+});
 
 const mapStateToProps = (state: State) => (
 	{

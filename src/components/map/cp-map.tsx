@@ -4,6 +4,7 @@ import './scss/cp-map.scss';
 import { Scale } from './cp-scale';
 import { connect } from 'react-redux';
 import { Bearing } from './cp-bearing';
+import { Dispatch } from 'redux';
 import { ZoomLevel } from './cp-zoom-level';
 import { OverView } from './cp-overview';
 import { HashParams } from '../app/cp-hash';
@@ -15,6 +16,7 @@ import { MarkerVertex } from './cp-marker-vertex';
 import { OverViewToggle } from './cp-overview-toggle';
 import { MarkerArrowHead } from './cp-marker-arrow-head';
 import { CenterCoordinate } from './cp-center-coordinate';
+import { ActionToggleOverview } from '../../reducers/actions';
 import { FeatureCollectionLayer } from './cp-feature-collection-layer';
 import {
 	Dict,
@@ -23,10 +25,8 @@ import {
 	MapControlMode } from '../../types';
 import {
 	mode,
-	currentWorldCollections, overviewVisible
-} from '../../reducers/selectors/index.selectors';
-import { Dispatch } from 'redux';
-import { ActionToggleOverview } from '../../reducers/actions';
+	overviewVisible,
+	currentWorldCollections } from '../../reducers/selectors/index.selectors';
 
 interface Props {
 	mode: MapControlMode;

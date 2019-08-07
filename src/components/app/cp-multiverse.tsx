@@ -2,15 +2,13 @@ import React from 'react';
 import { State } from '../../types';
 import { connect } from 'react-redux';
 import { Dispatch } from 'redux';
+import { Properties } from './cp-properties';
+import { StyleSelector } from './cp-style-selector';
 import { ActionGoToWorld } from '../../reducers/actions';
-import {
-	Button,
-	ButtonGroup } from '../app/cp-button';
+import { WorldSelector } from './cp-world-selector';
 import {
 	worldIds,
-	currentWorldId
-} from '../../reducers/selectors/index.selectors';
-import { StyleSelector } from './cp-style-selector';
+	currentWorldId } from '../../reducers/selectors/index.selectors';
 
 interface Props {
 	worldIds: string[];
@@ -18,23 +16,13 @@ interface Props {
 	currentWorldId: string;
 }
 
-export const _WorldSelector = React.memo(({ worldIds, currentWorldId, goToWorld }: Props) => (
-	<ButtonGroup>
-		{
-			worldIds.map((id) => {
-				return (
-					<Button
-						key={ id }
-						onClick={ () => goToWorld(id) }
-						depressed={ currentWorldId === id }
-					>
-						{ id }
-					</Button>
-				);
-			})
-		}
+export const _MultiverseSettings = React.memo(({ worldIds, currentWorldId, goToWorld }: Props) => (
+	<Properties>
+		<h2>Multiverse</h2>
+		<WorldSelector />
 		<StyleSelector />
-	</ButtonGroup>
+	</Properties>
+
 ));
 
 const mapStateToProps = (state: State) => (
@@ -52,5 +40,5 @@ const mapDispatchToProps = (dispatch: Dispatch) => (
 	}
 );
 
-export const WorldSelector = connect(mapStateToProps, mapDispatchToProps)(_WorldSelector);
+export const MultiverseSettings = connect(mapStateToProps, mapDispatchToProps)(_MultiverseSettings);
 

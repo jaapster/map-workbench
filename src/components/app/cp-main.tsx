@@ -10,7 +10,7 @@ import { Bookmarks } from './cp-locations';
 import { MapControl } from '../../map-control/map-control';
 import { LayerPanels } from '../map/cp-layer-panels';
 import { PanelTabbed } from '../panels/cp-panel-tabbed';
-import { WorldSelector } from '../map/cp-world-selector';
+import { MultiverseSettings } from './cp-multiverse';
 
 export const Main = React.memo(() => (
 	<div className="app">
@@ -55,7 +55,7 @@ export const Main = React.memo(() => (
 						[<i className="icon-th-list" />, <Selection />],
 						[<i className="icon-pencil" />, <LayerPanels />],
 						[<i className="icon-bookmark" />, <Bookmarks />],
-						[<i className="icon-globe" />, <WorldSelector />],
+						[<i className="icon-globe" />, <MultiverseSettings />],
 						[<i className="icon-cog" />, <Settings />]
 					]
 				}
