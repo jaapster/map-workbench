@@ -136,6 +136,12 @@ export class ModeUpdate extends InteractionMode {
 							// Simple resizing:
 							// get the new positions of the two neighbouring
 							// points and unproject to lngLat
+
+							// offset points just a little otherwise nearestPointOnLine will fail
+							// todo: fix nearestPointOnLine (is that even possible?)
+							p1.y += 0.0001;
+							p2.x += 0.0001;
+
 							A = nearestPointOnLine(merc, [p1, p0]);
 							B = nearestPointOnLine(merc, [p2, p0]);
 							C = merc;
