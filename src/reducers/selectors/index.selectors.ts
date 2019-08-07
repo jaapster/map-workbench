@@ -3,6 +3,10 @@ import { State } from '../../types';
 
 export const zoom = (state: State) => state.mapControl.zoom;
 
+export const bearing = (state: State) => state.mapControl.bearing;
+
+export const pitch = (state: State) => state.mapControl.pitch;
+
 export const mode = (state: State) => state.mapControl.mode;
 
 export const worlds = (state: State) => state.multiverse.worlds;

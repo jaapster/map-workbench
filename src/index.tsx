@@ -2,6 +2,7 @@ import 'array-flat-polyfill';
 import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.scss';
+import './fonts/icomoon/style.css';
 import { App } from './components/app/cp-app';
 import { Provider } from 'react-redux';
 import * as serviceWorker from './serviceWorker';

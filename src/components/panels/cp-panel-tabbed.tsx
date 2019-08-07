@@ -96,7 +96,9 @@ export const _PanelTabbed = (props: Props) => {
 		<div className={ className } style={ style }>
 			<div className="active-content">
 				{
-					tabs[ activeTab ]
+					tabs[activeTab]
+						? tabs[activeTab][1]
+						: null
 				}
 			</div>
 			<div className="toggles">
@@ -105,10 +107,14 @@ export const _PanelTabbed = (props: Props) => {
 						return (
 							<div key={ i } className="button-group">
 								<Button
-									onClick={ () => onTabClick(i) }
+									onClick={ (e: any) => {
+										e.stopPropagation();
+										e.preventDefault();
+										onTabClick(i);
+									} }
 									depressed={ activeTab === i }
 								>
-									{ i }
+									{ tab[0] }
 								</Button>
 							</div>
 						);

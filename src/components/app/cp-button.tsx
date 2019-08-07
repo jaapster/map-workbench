@@ -3,7 +3,7 @@ import './scss/button.scss';
 import { mergeClasses } from './utils/util-merge-classes';
 
 interface Props {
-	onClick?: () => void;
+	onClick?: (e: any) => void;
 	children: any;
 	disabled?: boolean;
 	depressed?: boolean;

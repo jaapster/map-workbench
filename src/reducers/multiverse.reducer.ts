@@ -257,7 +257,13 @@ export const multiverseReducer = (
 											.features
 											.filter((f, i) => !fs.includes(i))
 									},
-									selection: []
+									selection: collection.selection.reduce((m: any, v) => {
+										if (v.length === 1) {
+											return m;
+										}
+
+										return m.concat([[v[0]]]);
+									}, [])
 								}
 						};
 					}, {})

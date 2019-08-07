@@ -13,15 +13,17 @@ body {
 	background: white;
 	font-family: 'Roboto', serif;
 
-	h1, h2, h3, h4, h5, div, span {
-		outline: none;
-		user-select: none;
-		font-size: 16px;
-	}
+	font-size: 16px;
 
 	text {
 		font-size: 12px;
 	}
+}
+
+h1, h2, h3, h4, h5, div, span {
+	outline: none;
+	user-select: none;
+	font-size: 1em;
 }
 
 button,

@@ -3,6 +3,7 @@ import React from 'react';
 import './scss/cp-map.scss';
 import { Scale } from './cp-scale';
 import { connect } from 'react-redux';
+import { Bearing } from './cp-bearing';
 import { ZoomLevel } from './cp-zoom-level';
 import { OverView } from './cp-overview';
 import { HashParams } from '../app/cp-hash';
@@ -11,6 +12,7 @@ import { MapControl } from '../../map-control/map-control';
 import { DrawingTools } from './cp-drawing-tool';
 import { mergeClasses } from '../app/utils/util-merge-classes';
 import { MarkerVertex } from './cp-marker-vertex';
+import { OverViewToggle } from './cp-overview-toggle';
 import { MarkerArrowHead } from './cp-marker-arrow-head';
 import { CenterCoordinate } from './cp-center-coordinate';
 import { FeatureCollectionLayer } from './cp-feature-collection-layer';
@@ -23,15 +25,12 @@ import {
 	mode,
 	currentWorldCollections, overviewVisible
 } from '../../reducers/selectors/index.selectors';
-import { Button } from '../app/cp-button';
 import { Dispatch } from 'redux';
 import { ActionToggleOverview } from '../../reducers/actions';
 
 interface Props {
 	mode: MapControlMode;
-	toggle: () => void;
 	collections: Dict<CollectionData>;
-	overviewVisible: boolean;
 }
 
 @bind
@@ -48,7 +47,7 @@ export class _Map extends React.PureComponent<Props> {
 	}
 
 	render() {
-		const { collections, toggle, mode, overviewVisible } = this.props;
+		const { collections, mode } = this.props;
 
 		const className = mergeClasses(
 			'map-container',
@@ -75,11 +74,10 @@ export class _Map extends React.PureComponent<Props> {
 					<DrawingTools />
 				</div>
 				<div className="top-bar-right">
-					<div className="button-group">
-						<Button onClick={ toggle } depressed={ overviewVisible }>T</Button>
-					</div>
+					<OverViewToggle />
 				</div>
 				<div className="bottom-bar">
+					<Bearing />
 					<ZoomLevel />
 					<CenterCoordinate />
 					<Scale />

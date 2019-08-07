@@ -10,6 +10,7 @@ import {
 	worldIds,
 	currentWorldId
 } from '../../reducers/selectors/index.selectors';
+import { StyleSelector } from './cp-style-selector';
 
 interface Props {
 	worldIds: string[];
@@ -32,6 +33,7 @@ export const _WorldSelector = React.memo(({ worldIds, currentWorldId, goToWorld 
 				);
 			})
 		}
+		<StyleSelector />
 	</ButtonGroup>
 ));
 

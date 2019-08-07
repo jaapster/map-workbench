@@ -1,13 +1,21 @@
 .feature-card {
 	.table {
 		.row {
+			&:hover {
+				background: rgba(255, 255, 255, 0.1);
+			}
+
 			.cell {
 				width: 130px;
-				padding: 8px;
+				padding: 0.3em 0.5em;
 				display: inline-block;
 
 				&:first-child {
-					width: 80px;
+					width: 5em;
+				}
+
+				span {
+					//font-size: 0.8em;
 				}
 			}
 		}

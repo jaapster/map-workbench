@@ -30,7 +30,7 @@ interface State {
 const DEFAULT_POSITION = 200;
 const DEFAULT_MIN_POSITION = 150;
 const DEFAULT_MAX_POSITION = 300;
-const DEFAULT_COLLAPSED_POSITION = 48;
+const DEFAULT_COLLAPSED_POSITION = 64;
 
 @bind
 export class _PanelPair extends React.Component<Props, State> {

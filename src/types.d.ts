@@ -139,7 +139,9 @@ export type MapControlMode = 'navigate' | 'update' | 'drawPoint' | 'drawCircle' 
 export interface MapControlData {
 	mode: MapControlMode;
 	zoom: number;
+	pitch: number;
 	center: Co;
+	bearing: number;
 	overviewVisible: boolean;
 	extent: Feature<Polygon>;
 }

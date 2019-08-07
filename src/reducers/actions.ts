@@ -134,7 +134,9 @@ export const ActionToggleOverview = getActionCreator<{
 }>('ActionToggleOverview');
 
 export const ActionSetMapControlMetrics = getActionCreator<{
-	center: Co;
 	zoom: number;
-	extent: Feature<Polygon>
+	pitch: number;
+	center: Co;
+	extent: Feature<Polygon>;
+	bearing: number;
 }>('ActionSetMapControlMetrics');

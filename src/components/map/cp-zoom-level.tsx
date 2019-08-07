@@ -12,10 +12,10 @@ interface Props {
 export const _ZoomLevel = React.memo(({ zoom }: Props) => (
 	<ButtonGroup className="button-group">
 		<Button onClick={ MapControl.zoomIn }>
-			+
+			<i className="icon-plus1" />
 		</Button>
 		<Button onClick={ MapControl.zoomOut }>
-			-
+			<i className="icon-minus1" />
 		</Button>
 		<div className="label">
 			{ zoom.toFixed(2) }

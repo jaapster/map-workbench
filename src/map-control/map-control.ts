@@ -108,6 +108,14 @@ export class MapControl {
 		MapControl.instance.zoomOut();
 	}
 
+	static setBearing(bearing: number) {
+		MapControl.instance.setBearing(bearing);
+	}
+
+	static setPitch(pitch: number) {
+		MapControl.instance.setPitch(pitch);
+	}
+
 	static setStyle(style: any) {
 		MapControl.instance.setStyle(style);
 	}
@@ -142,19 +150,11 @@ export class MapControl {
 	}
 
 	static onMapMove() {
-		dispatch(ActionSetMapControlMetrics.create({
-			zoom: MapControl.instance.getZoom(),
-			center: MapControl.instance.getCenter(),
-			extent: MapControl.instance.getExtent()
-		}));
+		MapControl.instance.persistMetrics();
 	}
 
 	static onMapZoom() {
-		dispatch(ActionSetMapControlMetrics.create({
-			zoom: MapControl.instance.getZoom(),
-			center: MapControl.instance.getCenter(),
-			extent: MapControl.instance.getExtent()
-		}));
+		MapControl.instance.persistMetrics();
 	}
 
 	private readonly _map: any;
@@ -193,11 +193,7 @@ export class MapControl {
 			fadeDuration: 0
 		});
 
-		dispatch(ActionSetMapControlMetrics.create({
-			zoom: this.getZoom(),
-			center,
-			extent: this.getExtent()
-		}));
+		this.persistMetrics();
 
 		this._drawPointMode = DrawPointMode.create(this._map);
 		this._drawCircleMode = DrawCircleMode.create(this._map);
@@ -318,6 +314,16 @@ export class MapControl {
 		this._mode().onEscapeKey();
 	}
 
+	persistMetrics() {
+		dispatch(ActionSetMapControlMetrics.create({
+			zoom: this.getZoom(),
+			pitch: this.getPitch(),
+			center: this.getCenter(),
+			extent: this.getExtent(),
+			bearing: this.getBearing()
+		}));
+	}
+
 	resize() {
 		this._map.resize();
 	}
@@ -427,6 +433,22 @@ export class MapControl {
 		this.setZoom(Math.round(this.getZoom() - 1));
 	}
 
+	getBearing() {
+		return this._map.getBearing();
+	}
+
+	setBearing(bearing: number) {
+		this._map.setBearing(bearing);
+	}
+
+	getPitch() {
+		return this._map.getPitch();
+	}
+
+	setPitch(pitch: number) {
+		return this._map.setPitch(pitch);
+	}
+
 	getExtent(): Feature<Polygon> {
 		const { width, height } = this.getBoundingClientRect();
 
@@ -439,9 +461,7 @@ export class MapControl {
 			type: FEATURE,
 			geometry: {
 				type: POLYGON,
-				coordinates: [
-					[c1, c2, c3, c4, c1]
-				]
+				coordinates: [[c1, c2, c3, c4, c1]]
 			},
 			properties: {
 				id: 'extent',
@@ -455,7 +475,6 @@ export class MapControl {
 	}
 
 	// project to screen coordinates
-	// @param
 	project(co: Co) {
 		return this._map.project(coToLl(co));
 	}

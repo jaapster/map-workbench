@@ -14,7 +14,9 @@ import {
 const STATE: MapControlData = {
 	mode: NAVIGATION_MODE,
 	zoom: 1,
+	pitch: 0,
 	center: [0, 0],
+	bearing: 0,
 	overviewVisible: false,
 	extent: {
 		type: FEATURE,
@@ -40,13 +42,15 @@ export const mapControlReducer = (state: MapControlData = STATE, action: Action)
 	}
 
 	if (ActionSetMapControlMetrics.validate(action)) {
-		const { zoom, center, extent } = ActionSetMapControlMetrics.data(action);
+		const { zoom, pitch, center, extent, bearing } = ActionSetMapControlMetrics.data(action);
 
 		return {
 			...state,
 			zoom,
+			pitch,
 			center,
-			extent
+			extent,
+			bearing
 		};
 	}
 

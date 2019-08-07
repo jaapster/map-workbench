@@ -63,14 +63,14 @@
 	color: white;
 	margin-right: 1px;
 	width: auto;
-	padding: 8px 0;
+	padding: 0.5em 0;
 	background: deeppink; // mediumseagreen;
 	transition: width 100ms;
 	text-align: left;
 	opacity: 1;
 
 	span {
-		padding: 0 0 0 8px;
+		padding: 0 0 0 0.5em;
 		background: transparent;
 	}
 }
@@ -87,7 +87,7 @@
 
 .main-tool-bar {
 	position: absolute;
-	padding: 4px 0;
+	padding: 0.25em 0;
 	z-index: 10;
 }
 
@@ -100,7 +100,7 @@ svg {
 	left: 0;
 	right: 0;
 	bottom: 0;
-	z-index: 10;
+	z-index: 1;
 	pointer-events: none;
 	width: 100%;
 	height: 100%;
@@ -141,10 +141,10 @@ path {
 	}
 
 	&.extent {
-		fill: $colorRegular;
-		stroke: $colorRegular;
-		stroke-width: 2;
-		opacity: 0.5;
+		fill: grey;
+		stroke: grey;
+		stroke-width: 2px;
+		opacity: 0.6;
 	}
 }
 
@@ -172,8 +172,7 @@ circle {
 .context-menu {
 	position: absolute;
 	z-index: 1000;
-	width: 150px;
-	padding: 8px;
+	width: 10em;
 	background: darkslategrey;
 	box-shadow: 0 3px 10px rgba(0, 0, 0, 0.5);
 }
@@ -186,10 +185,10 @@ circle {
 	padding: 0;
 	width: 0;
 	height: 0;
-	//border: 1px solid rgba(30, 144, 255, 0.5);
+	z-index: 2;
 
 	&.visible {
-		width: 200px;
-		height: 200px;
+		width: 15em;
+		height: 15em;
 	}
 }

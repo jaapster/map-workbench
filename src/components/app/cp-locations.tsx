@@ -13,7 +13,7 @@ interface Props {
 export const _Bookmarks = React.memo(({ bookmarks }: Props) => {
 	return (
 		<Properties>
-			<h2>Locations</h2>
+			<h2>Bookmarks</h2>
 			<div className="list">
 				{
 					bookmarks.map(location => (

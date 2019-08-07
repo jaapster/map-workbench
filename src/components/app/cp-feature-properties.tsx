@@ -25,9 +25,10 @@ export const FeatureProperties = React.memo((props: Props) => {
 			<div className="table">
 				<div className="row">
 					<div className="cell">
-						type
+						<span>type</span>
 					</div>
 					<div className="cell">
+						<span>
 						{
 							features.reduce((m, f) => (
 								m.includes(f.properties.type)
@@ -37,11 +38,12 @@ export const FeatureProperties = React.memo((props: Props) => {
 								? features[0].properties.type
 								: '-'
 						}
+						</span>
 					</div>
 				</div>
 				<div className="row">
 					<div className="cell">
-						length
+						<span>length</span>
 					</div>
 					<div className="cell">
 						<Value
@@ -64,7 +66,7 @@ export const FeatureProperties = React.memo((props: Props) => {
 				</div>
 				<div className="row">
 					<div className="cell">
-						area
+						<span>area</span>
 					</div>
 					<div className="cell">
 						<Value
@@ -88,7 +90,7 @@ export const FeatureProperties = React.memo((props: Props) => {
 				</div>
 				<div className="row">
 					<div className="cell">
-						center
+						<span>center</span>
 					</div>
 					<div className="cell">
 						<Value
@@ -102,7 +104,7 @@ export const FeatureProperties = React.memo((props: Props) => {
 				</div>
 				<div className="row">
 					<div className="cell">
-						radius
+						<span>radius</span>
 					</div>
 					<div className="cell">
 						<Value

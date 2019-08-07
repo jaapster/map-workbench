@@ -10,7 +10,6 @@ import { Bookmarks } from './cp-locations';
 import { MapControl } from '../../map-control/map-control';
 import { LayerPanels } from '../map/cp-layer-panels';
 import { PanelTabbed } from '../panels/cp-panel-tabbed';
-import { StyleSelector } from '../map/cp-style-selector';
 import { WorldSelector } from '../map/cp-world-selector';
 
 export const Main = React.memo(() => (
@@ -53,12 +52,11 @@ export const Main = React.memo(() => (
 				tabGroupId="mainTabs"
 				tabs={
 					[
-						<Selection />,
-						<LayerPanels />,
-						<Bookmarks />,
-						<StyleSelector />,
-						<WorldSelector />,
-						<Settings />
+						[<i className="icon-th-list" />, <Selection />],
+						[<i className="icon-pencil" />, <LayerPanels />],
+						[<i className="icon-bookmark" />, <Bookmarks />],
+						[<i className="icon-globe" />, <WorldSelector />],
+						[<i className="icon-cog" />, <Settings />]
 					]
 				}
 			>

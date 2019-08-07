@@ -58,7 +58,7 @@ class SlaveMap extends React.PureComponent<any> {
 	render() {
 		const { center, extent, zoom, referenceLayers, currentReferenceLayer } = this.props;
 
-		_map.setZoom(zoom - 5);
+		_map.setZoom(zoom - 4);
 		_map.setCenter(center);
 
 		if (currentReferenceLayer !== this._currentReferenceLayer) {
