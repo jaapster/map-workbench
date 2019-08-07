@@ -140,10 +140,11 @@ export interface MapControlData {
 	mode: MapControlMode;
 	zoom: number;
 	pitch: number;
+	glare: boolean;
 	center: Co;
+	extent: Feature<Polygon>;
 	bearing: number;
 	overviewVisible: boolean;
-	extent: Feature<Polygon>;
 }
 
 export interface PanelGroup {
@@ -181,6 +182,15 @@ export interface SettingsData {
 	UIScale: number;
 }
 
+export type LanguagePack = Dict<string | LanguagePack>;
+
+export interface I18nData {
+	language: string;
+	languages: Dict<LanguagePack>;
+	languageIds: string[];
+	languageOptions: [string, string][];
+}
+
 export interface State {
 	multiverse: MultiverseData;
 	mapControl: MapControlData;
@@ -189,4 +199,5 @@ export interface State {
 	geoLocation: GeoLocationData;
 	bookmarks: Location[];
 	settings: SettingsData;
+	i18n: I18nData;
 }

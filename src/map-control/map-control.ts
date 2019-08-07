@@ -17,7 +17,10 @@ import { DrawCircleMode } from './modes/mode.draw-circle';
 import { DrawSegmentedMode } from './modes/mode.draw-segmented';
 import { DrawRectangleMode } from './modes/mode.draw-rectangle';
 import { disableInteractions } from './utils/util-map';
-import { ActionSetMapControlMetrics } from '../reducers/actions';
+import {
+	ActionSetGlare,
+	ActionSetMapControlMetrics
+} from '../reducers/actions';
 import {
 	dispatch,
 	getState } from '../reducers/store';
@@ -50,6 +53,7 @@ import {
 	geoProject,
 	geoDistance,
 	geoUnproject } from './utils/util-geo';
+import { EventEmitter } from '../event-emitter';
 
 const FIT_PADDING = 64;
 const FIT_MIN_ZOOM = 14;
@@ -69,7 +73,7 @@ const DEFAULT_PROPS: Props = {
 };
 
 @bind
-export class MapControl {
+export class MapControl extends EventEmitter {
 	static instance: MapControl;
 
 	static create(props: Props) {
@@ -171,6 +175,8 @@ export class MapControl {
 	private _style: string | MapboxStyle;
 
 	constructor(props: Props = DEFAULT_PROPS) {
+		super();
+
 		// add missing universeData
 		const {
 			style,
@@ -222,8 +228,10 @@ export class MapControl {
 		this._pointerDevice.on('blur', this._onBlur);
 		this._pointerDevice.on('wheel', this._onWheel);
 
-		this._keyboardDevice.on('deleteKey', this._onDeleteKey);
-		this._keyboardDevice.on('escapeKey', this._onEscapeKey);
+		this._keyboardDevice.on('deleteKeyDown', this._onDeleteKey);
+		this._keyboardDevice.on('escapeKeyDown', this._onEscapeKey);
+		this._keyboardDevice.on('glareKeyDown', MapControl.onGlareKeyDown);
+		this._keyboardDevice.on('glareKeyUp', MapControl.onGlareKeyUp);
 
 		this._map.on('move', MapControl.onMapMove);
 		this._map.on('zoom', MapControl.onMapZoom);
@@ -264,6 +272,7 @@ export class MapControl {
 
 	private _onPointerMove(e: Ev) {
 		this._mode().onPointerMove(e);
+		this.trigger('mouseMove', e);
 	}
 
 	private _onPointerUp(e: Ev) {
@@ -312,6 +321,14 @@ export class MapControl {
 
 	private _onEscapeKey() {
 		this._mode().onEscapeKey();
+	}
+
+	static onGlareKeyDown() {
+		dispatch(ActionSetGlare.create({ glare: true }));
+	}
+
+	static onGlareKeyUp() {
+		dispatch(ActionSetGlare.create({ glare: false }));
 	}
 
 	persistMetrics() {

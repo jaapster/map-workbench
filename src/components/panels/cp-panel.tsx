@@ -11,7 +11,7 @@ interface Props {
 	onPointerDown?: (e: React.PointerEvent<HTMLDivElement>) => void;
 }
 
-export const Panel = (props: Props) => {
+export const Panel = React.memo((props: Props) => {
 	const {
 		children, primary, horizontal, position, first, onPointerDown
 	} = props;
@@ -49,4 +49,4 @@ export const Panel = (props: Props) => {
 			}
 		</div>
 	);
-};
+});

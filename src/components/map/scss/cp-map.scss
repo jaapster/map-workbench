@@ -142,9 +142,15 @@ path {
 
 	&.extent {
 		fill: green;
+		stroke: none;
+		opacity: 0.3;
+	}
+}
+
+.cross {
+	> * {
+		fill: none;
 		stroke: green;
-		stroke-width: 2px;
-		opacity: 0.5;
 	}
 }
 
@@ -171,8 +177,9 @@ circle {
 
 .context-menu {
 	position: absolute;
-	z-index: 1000;
+	z-index: 10000;
 	width: 10em;
+	color: white;
 	background: darkslategrey;
 	box-shadow: 0 3px 10px rgba(0, 0, 0, 0.5);
 }
@@ -186,6 +193,8 @@ circle {
 	width: 0;
 	height: 0;
 	z-index: 2;
+	border-left: 1px solid green;
+	border-bottom: 1px solid green;
 
 	&.visible {
 		width: 15em;

@@ -10,7 +10,7 @@ interface Props {
 	className?: string;
 }
 
-export const Button = (props: Props) => {
+export const Button = React.memo((props: Props) => {
 	const { onClick = () => 0, depressed, disabled, children, className } = props;
 
 	const _className = mergeClasses(
@@ -30,9 +30,9 @@ export const Button = (props: Props) => {
 			{ children }
 		</div>
 	);
-};
+});
 
-export const ButtonGroup = (props: any) => {
+export const ButtonGroup = React.memo((props: any) => {
 	const { children } = props;
 
 	return (
@@ -40,4 +40,4 @@ export const ButtonGroup = (props: any) => {
 			{ children }
 		</div>
 	);
-};
+});

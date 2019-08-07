@@ -31,7 +31,7 @@ interface MappedDispatchProps {
 
 type Props = AttributeProps & MappedStateProps & MappedDispatchProps;
 
-export const _PanelTabbed = (props: Props) => {
+export const _PanelTabbed = React.memo((props: Props) => {
 	const {
 		primary,
 		horizontal,
@@ -133,7 +133,7 @@ export const _PanelTabbed = (props: Props) => {
 			}
 		</div>
 	);
-};
+});
 
 const mapStateToProps = (state: State): MappedStateProps => (
 	{

@@ -6,7 +6,10 @@ import './service.geo-location';
 import {
 	ActionAddWorld,
 	ActionSetUniverses,
-	ActionSetReferenceLayers, ActionSetCurrentReferenceLayer, ActionSetBookmarks
+	ActionSetReferenceLayers,
+	ActionSetCurrentReferenceLayer,
+	ActionSetBookmarks,
+	ActionSetLanguagePacks
 } from '../reducers/actions';
 
 export const BootService = {
@@ -16,13 +19,15 @@ export const BootService = {
 				axios.get('/universes'),
 				axios.get('/worlds'),
 				axios.get('/referencelayers'),
-				axios.get('/bookmarks')
+				axios.get('/bookmarks'),
+				axios.get('/i18n')
 			])
 			.then((responses) => {
-				const [universeData, worlds, layers, bookmarks] = responses.map(r => r.data);
+				const [universeData, worlds, layers, bookmarks, languagePacks] = responses.map(r => r.data);
 
 				dispatch(ActionSetUniverses.create({ universeData }));
 				dispatch(ActionSetBookmarks.create({ bookmarks }));
+				dispatch(ActionSetLanguagePacks.create({ languagePacks }));
 
 				worlds.slice().reverse().forEach((worldData: WorldData) => (
 					dispatch(ActionAddWorld.create({ worldData }))

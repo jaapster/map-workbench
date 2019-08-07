@@ -21,6 +21,8 @@ export const currentReferenceStyleId = (state: State) => state.multiverse.curren
 
 export const overviewVisible = (state: State) => state.mapControl.overviewVisible;
 
+export const glare = (state: State) => state.mapControl.glare;
+
 export const center = (state: State) => state.mapControl.center;
 
 export const extent = (state: State) => state.mapControl.extent;
@@ -33,7 +35,20 @@ export const currentWorldId = (state: State) => state.multiverse.currentWorldId;
 
 export const unitSystem = (state: State) => state.settings.unitSystem;
 
-export const language = (state: State) => state.settings.language;
+export const language = (state: State) => state.i18n.language;
+
+export const languages = (state: State) => state.i18n.languages;
+
+export const languageIds = (state: State) => state.i18n.languageIds;
+
+export const languageOptions = (state: State) => state.i18n.languageOptions;
+
+export const lang = createSelector(
+	[language, languages],
+	(language, languages) => {
+		return languages[language];
+	}
+);
 
 export const scale = (state: State) => state.settings.UIScale;
 

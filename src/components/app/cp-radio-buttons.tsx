@@ -9,7 +9,7 @@ interface Props {
 	onChange: (value: any) => void;
 }
 
-export const RadioButtons = ({ label, options, value, onChange }: Props) => (
+export const RadioButtons = React.memo(({ label, options, value, onChange }: Props) => (
 	<div className="radio-buttons">
 		<h3>{ label }</h3>
 		{
@@ -33,4 +33,4 @@ export const RadioButtons = ({ label, options, value, onChange }: Props) => (
 			})
 		}
 	</div>
-);
+));

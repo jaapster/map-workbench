@@ -1,24 +1,20 @@
 import React from 'react';
-import { State } from '../../types';
+import { lang } from '../../reducers/selectors/index.selectors';
 import { connect } from 'react-redux';
-import { Dispatch } from 'redux';
 import { Properties } from './cp-properties';
 import { StyleSelector } from './cp-style-selector';
-import { ActionGoToWorld } from '../../reducers/actions';
 import { WorldSelector } from './cp-world-selector';
 import {
-	worldIds,
-	currentWorldId } from '../../reducers/selectors/index.selectors';
+	State,
+	LanguagePack } from '../../types';
 
 interface Props {
-	worldIds: string[];
-	goToWorld: (worldId: string) => void;
-	currentWorldId: string;
+	lang: LanguagePack;
 }
 
-export const _MultiverseSettings = React.memo(({ worldIds, currentWorldId, goToWorld }: Props) => (
+export const _MultiverseSettings = React.memo(({ lang }: Props) => (
 	<Properties>
-		<h2>Multiverse</h2>
+		<h2>{ lang.multiverse.title }</h2>
 		<WorldSelector />
 		<StyleSelector />
 	</Properties>
@@ -27,18 +23,9 @@ export const _MultiverseSettings = React.memo(({ worldIds, currentWorldId, goToW
 
 const mapStateToProps = (state: State) => (
 	{
-		worldIds: worldIds(state),
-		currentWorldId: currentWorldId(state)
+		lang: lang(state)
 	}
 );
 
-const mapDispatchToProps = (dispatch: Dispatch) => (
-	{
-		goToWorld(worldId: string) {
-			dispatch(ActionGoToWorld.create({ worldId }));
-		}
-	}
-);
-
-export const MultiverseSettings = connect(mapStateToProps, mapDispatchToProps)(_MultiverseSettings);
+export const MultiverseSettings = connect(mapStateToProps)(_MultiverseSettings);
 

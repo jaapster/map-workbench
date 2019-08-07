@@ -5,7 +5,8 @@ import {
 	ActionSetMapControlMode,
 	ActionSetMapControlZoom,
 	ActionSetMapControlCenter,
-	ActionSetMapControlMetrics } from './actions';
+	ActionSetMapControlMetrics, ActionSetGlare
+} from './actions';
 import {
 	FEATURE,
 	POLYGON,
@@ -15,6 +16,7 @@ const STATE: MapControlData = {
 	mode: NAVIGATION_MODE,
 	zoom: 1,
 	pitch: 0,
+	glare: false,
 	center: [0, 0],
 	bearing: 0,
 	overviewVisible: false,
@@ -76,6 +78,13 @@ export const mapControlReducer = (state: MapControlData = STATE, action: Action)
 		return {
 			...state,
 			overviewVisible: !state.overviewVisible
+		};
+	}
+
+	if (ActionSetGlare.validate(action)) {
+		return {
+			...state,
+			glare: ActionSetGlare.data(action).glare
 		};
 	}
 

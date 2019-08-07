@@ -6,20 +6,23 @@ import { RadioButtons } from './cp-radio-buttons';
 import { ActionSetCurrentReferenceLayer } from '../../reducers/actions';
 import {
 	referenceStyles,
-	currentReferenceStyleId } from '../../reducers/selectors/index.selectors';
+	currentReferenceStyleId, lang
+} from '../../reducers/selectors/index.selectors';
 import {
 	State,
-	ReferenceStyle } from '../../types';
+	ReferenceStyle, LanguagePack
+} from '../../types';
 
 type Foo = [string, ReferenceStyle];
 
 interface Props {
+	lang: LanguagePack;
 	style: string;
 	styles: Foo[];
 	setStyle: (style: Foo) => void;
 }
 
-export const _StyleSelector = ({ styles, setStyle, style }: Props) => {
+export const _StyleSelector = React.memo(({ lang, styles, setStyle, style }: Props) => {
 	const set = (style: string) => {
 		const s = styles.find(([id]) => id === style);
 
@@ -30,16 +33,17 @@ export const _StyleSelector = ({ styles, setStyle, style }: Props) => {
 
 	return (
 		<RadioButtons
-			label="Reference layer"
+			label={ lang.multiverse.referenceLayer }
 			value={ style }
 			options={ styles.map(([style]) => [style, style]) as [string, string][] }
 			onChange={ set }
 		/>
 	);
-};
+});
 
 const mapStateToProps = (state: State) => (
 	{
+		lang: lang(state),
 		style: currentReferenceStyleId(state) as string,
 		styles: referenceStyles(state)
 	}

@@ -4,16 +4,19 @@ import { MapControl } from '../../map-control/map-control';
 import { Properties } from './cp-properties';
 import {
 	State,
-	Location } from '../../types';
+	Location, LanguagePack
+} from '../../types';
+import { lang } from '../../reducers/selectors/index.selectors';
 
 interface Props {
+	lang: LanguagePack;
 	bookmarks: Location[];
 }
 
-export const _Bookmarks = React.memo(({ bookmarks }: Props) => {
+export const _Bookmarks = React.memo(({ lang, bookmarks }: Props) => {
 	return (
 		<Properties>
-			<h2>Bookmarks</h2>
+			<h2>{ lang.bookmarks.title }</h2>
 			<div className="list">
 				{
 					bookmarks.map(location => (
@@ -33,6 +36,7 @@ export const _Bookmarks = React.memo(({ bookmarks }: Props) => {
 
 const mapStateToProps = (state: State) => (
 	{
+		lang: lang(state),
 		bookmarks: state.bookmarks
 	}
 );

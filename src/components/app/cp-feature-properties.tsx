@@ -4,28 +4,35 @@ import { Value } from './cp-value';
 import { MapControl } from '../../map-control/map-control';
 import {
 	EPSG,
-	Feature } from '../../types';
+	Feature,
+	LanguagePack, State
+} from '../../types';
 import {
 	getRadius,
 	getCoordinate,
 	getFeatureArea,
 	getFeatureLength } from './utils/geojson-properties';
-import { M, M2 } from '../../constants';
+import {
+	M,
+	M2 } from '../../constants';
+import { lang } from '../../reducers/selectors/index.selectors';
+import { connect } from 'react-redux';
 
 interface Props {
-	features: Feature<any>[];
 	CRS: EPSG;
+	lang: LanguagePack;
+	features: Feature<any>[];
 }
 
-export const FeatureProperties = React.memo((props: Props) => {
-	const { features, CRS } = props;
+export const _FeatureProperties = React.memo((props: Props) => {
+	const { CRS, lang, features } = props;
 
 	return (
 		<div className="feature-card">
 			<div className="table">
 				<div className="row">
 					<div className="cell">
-						<span>type</span>
+						<span>{ lang.selectionProperties.type }</span>
 					</div>
 					<div className="cell">
 						<span>
@@ -35,7 +42,7 @@ export const FeatureProperties = React.memo((props: Props) => {
 									? m
 									: m.concat(f.properties.type)
 							), [] as any).length === 1
-								? features[0].properties.type
+								? lang.geometries[features[0].properties.type.toLowerCase()]
 								: '-'
 						}
 						</span>
@@ -43,7 +50,7 @@ export const FeatureProperties = React.memo((props: Props) => {
 				</div>
 				<div className="row">
 					<div className="cell">
-						<span>length</span>
+						<span>{ lang.selectionProperties.length }</span>
 					</div>
 					<div className="cell">
 						<Value
@@ -66,7 +73,7 @@ export const FeatureProperties = React.memo((props: Props) => {
 				</div>
 				<div className="row">
 					<div className="cell">
-						<span>area</span>
+						<span>{ lang.selectionProperties.area }</span>
 					</div>
 					<div className="cell">
 						<Value
@@ -90,7 +97,7 @@ export const FeatureProperties = React.memo((props: Props) => {
 				</div>
 				<div className="row">
 					<div className="cell">
-						<span>center</span>
+						<span>{ lang.selectionProperties.center }</span>
 					</div>
 					<div className="cell">
 						<Value
@@ -104,7 +111,7 @@ export const FeatureProperties = React.memo((props: Props) => {
 				</div>
 				<div className="row">
 					<div className="cell">
-						<span>radius</span>
+						<span>{ lang.selectionProperties.radius }</span>
 					</div>
 					<div className="cell">
 						<Value
@@ -121,3 +128,11 @@ export const FeatureProperties = React.memo((props: Props) => {
 		</div>
 	);
 });
+
+const mapStateToProps = (state: State) => (
+	{
+		lang: lang(state)
+	}
+);
+
+export const FeatureProperties = connect(mapStateToProps)(_FeatureProperties);

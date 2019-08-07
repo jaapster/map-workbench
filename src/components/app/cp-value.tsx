@@ -22,7 +22,7 @@ interface Props {
 	unitSystem?: UnitSystem;
 }
 
-export const _Value = ({ value, unit, unitSystem }: Props) => (
+export const _Value = React.memo(({ value, unit, unitSystem }: Props) => (
 	<span>
 		{
 			value == null
@@ -41,7 +41,7 @@ export const _Value = ({ value, unit, unitSystem }: Props) => (
 
 		}
 	</span>
-);
+));
 
 const mapStateToProps = (state: State) => (
 	{

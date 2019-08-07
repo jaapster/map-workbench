@@ -10,7 +10,7 @@ import {
 	UniverseData,
 	MapControlMode,
 	SelectionVector,
-	FeatureCollection, Location, UnitSystem, Polygon
+	FeatureCollection, Location, UnitSystem, Polygon, LanguagePack
 } from '../types';
 
 export interface Action {
@@ -134,6 +134,14 @@ export const ActionSetUIScale = getActionCreator<{
 	UIScale: number;
 }>('ActionSetUIScale');
 
+export const ActionSetLanguage = getActionCreator<{
+	language: string;
+}>('ActionSetLanguage');
+
+export const ActionSetLanguagePacks = getActionCreator<{
+	languagePacks: Dict<LanguagePack>;
+}>('ActionSetLanguagePacks');
+
 export const ActionToggleOverview = getActionCreator<{
 }>('ActionToggleOverview');
 
@@ -144,3 +152,7 @@ export const ActionSetMapControlMetrics = getActionCreator<{
 	extent: Feature<Polygon>;
 	bearing: number;
 }>('ActionSetMapControlMetrics');
+
+export const ActionSetGlare = getActionCreator<{
+	glare: boolean;
+}>('ActionSetGlare');

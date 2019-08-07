@@ -5,28 +5,32 @@ import { Properties } from './cp-properties';
 import { FeatureProperties } from './cp-feature-properties';
 import {
 	crs,
+	lang,
 	currentSelectionFeatures } from '../../reducers/selectors/index.selectors';
 import {
 	EPSG,
 	State,
-	Feature } from '../../types';
+	Feature,
+	LanguagePack } from '../../types';
 
 interface Props {
-	features: Feature<any>[];
 	CRS: EPSG;
+	lang: LanguagePack;
+	features: Feature<any>[];
 }
 
-export const _Selection = ({ features, CRS }: Props) => (
+export const _Selection = React.memo(({ CRS, lang, features }: Props) => (
 	<Properties>
-		<h2>Selection properties</h2>
+		<h2>{ lang.selectionProperties.title }</h2>
 		<FeatureProperties features={ features } CRS={ CRS } />
 	</Properties>
-);
+));
 
 const mapStateToProps = (state: State) => (
 	{
-		features: currentSelectionFeatures(state),
-		CRS: crs(state)
+		CRS: crs(state),
+		lang: lang(state),
+		features: currentSelectionFeatures(state)
 	}
 );
 

@@ -1,0 +1,150 @@
+{
+	"en": {
+		"name": "English",
+		"settings": {
+			"title": "Settings",
+			"language": "Language",
+			"unitSystem": "Unit system",
+			"uiScale": "Scale",
+			"metric": "Metric",
+			"imperial": "Imperial"
+		},
+		"multiverse": {
+			"title": "Multiverse",
+			"worlds": "Worlds",
+			"referenceLayer": "Reference layer"
+		},
+		"bookmarks": {
+			"title": "Bookmarks"
+		},
+		"selectionProperties": {
+			"title": "Properties",
+			"type": "type",
+			"area": "area",
+			"center": "center",
+			"radius": "radius",
+			"length": "length"
+		},
+		"geometries": {
+			"polygon": "Polygon",
+			"linestring": "Line",
+			"point": "Point",
+			"multipolygon": "Multi polygon",
+			"multilinestring": "Multi line",
+			"multipoint": "Multi point",
+			"rectangle": "Rectangle",
+			"circle": "Circle"
+		}
+	},
+	"nl": {
+		"name": "Nederlands",
+		"settings": {
+			"title": "Instellingen",
+			"language": "Taal",
+			"unitSystem": "Eenheden systeem",
+			"uiScale": "Grootte",
+			"metric": "Metrisch",
+			"imperial": "Imperiaal"
+		},
+		"multiverse": {
+			"title": "Multiversum",
+			"worlds": "Werelden",
+			"referenceLayer": "Referentie laag"
+		},
+		"bookmarks": {
+			"title": "Bladwijzers"
+		},
+		"selectionProperties": {
+			"title": "Eigenschappen",
+			"type": "type",
+			"area": "oppervlakte",
+			"center": "middelpunt",
+			"radius": "straal",
+			"length": "lengte"
+		},
+		"geometries": {
+			"polygon": "Polygoon",
+			"linestring": "Lijn",
+			"point": "Punt",
+			"multipolygon": "Multipolygoon",
+			"multilinestring": "Multilijn",
+			"multipoint": "Multipunt",
+			"rectangle": "Rechthoek",
+			"circle": "Cirkel"
+		}
+	},
+	"fr": {
+		"name": "Français",
+		"settings": {
+			"title": "Parametres",
+			"language": "Langue",
+			"unitSystem": "Systeme d'unité",
+			"uiScale": "Dimension",
+			"metric": "Métrique",
+			"imperial": "Impérial"
+		},
+		"multiverse": {
+			"title": "Multivers",
+			"worlds": "Mondes",
+			"referenceLayer": "Couche de référence"
+		},
+		"bookmarks": {
+			"title": "Signets"
+		},
+		"selectionProperties": {
+			"title": "Propriétés",
+			"type": "type",
+			"area": "surface",
+			"center": "centre",
+			"radius": "rayon",
+			"length": "longueur"
+		},
+		"geometries": {
+			"polygon": "Polygone",
+			"linestring": "Ligne",
+			"point": "Point",
+			"multipolygon": "Multi polygone",
+			"multilinestring": "Multi ligne",
+			"multipoint": "Multi point",
+			"rectangle": "Rectangle",
+			"circle": "Cercle"
+		}
+	},
+	"de": {
+		"name": "Deutsch",
+		"settings": {
+			"title": "Einstellungen",
+			"language": "Sprache",
+			"unitSystem": "Einheitensystem",
+			"uiScale": "Größe",
+			"metric": "Metrisch",
+			"imperial": "Imperial"
+		},
+		"multiverse": {
+			"title": "Multiversum",
+			"worlds": "Welten",
+			"referenceLayer": "Referenzschichte"
+		},
+		"bookmarks": {
+			"title": "Lesezeichen"
+		},
+		"selectionProperties": {
+			"title": "Eigenschaften",
+			"type": "typ",
+			"area": "bereich",
+			"center": "mitte",
+			"radius": "radius",
+			"length": "länge"
+		},
+		"geometries": {
+			"polygon": "Polygon",
+			"linestring": "Linie",
+			"point": "Punkt",
+			"multipolygon": "Multipolygon",
+			"multilinestring": "Multilinie",
+			"multipoint": "Multipunkt",
+			"rectangle": "Rechteck",
+			"circle": "Kreis"
+		}
+	}
+}

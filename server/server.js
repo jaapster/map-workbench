@@ -28,6 +28,10 @@ app.get('/bookmarks', function (req, res) {
 	res.sendFile(path.join(__dirname, 'data', 'data.bookmarks.json'));
 });
 
+app.get('/i18n', function (req, res) {
+	res.sendFile(path.join(__dirname, 'data', 'data.i18n.json'));
+});
+
 app.listen(process.env.PORT || 8080);
 
 console.log('server running on', 8080); // remove me
