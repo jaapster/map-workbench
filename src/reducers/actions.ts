@@ -139,7 +139,7 @@ export const ActionSetLanguage = getActionCreator<{
 }>('ActionSetLanguage');
 
 export const ActionSetLanguagePacks = getActionCreator<{
-	languagePacks: Dict<LanguagePack>;
+	languagePacks: LanguagePack[];
 }>('ActionSetLanguagePacks');
 
 export const ActionToggleOverview = getActionCreator<{

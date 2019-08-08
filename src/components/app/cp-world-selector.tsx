@@ -5,24 +5,25 @@ import { RadioButtons } from './cp-radio-buttons';
 import { ActionGoToWorld } from '../../reducers/actions';
 import {
 	lang,
-	worldOptions,
+	worlds,
 	currentWorldId } from '../../reducers/selectors/index.selectors';
 import {
 	State,
-	LanguagePack } from '../../types';
+	LanguagePack, WorldData
+} from '../../types';
 
 interface Props {
 	lang: LanguagePack;
-	worldOptions: [string, string][];
-	setWorld: (worldId: string) => void;
 	world: string;
+	worlds: WorldData[];
+	setWorld: (worldId: string) => void;
 }
 
-export const _WorldSelector = React.memo(({ lang, worldOptions, world, setWorld }: Props) => (
+export const _WorldSelector = React.memo(({ lang, worlds, world, setWorld }: Props) => (
 	<RadioButtons
 		label={ lang.multiverse.worlds }
 		value={ world }
-		options={ worldOptions }
+		options={ worlds.map(world => [world.id, world.id]) as any }
 		onChange={ setWorld }
 	/>
 ));
@@ -30,8 +31,8 @@ export const _WorldSelector = React.memo(({ lang, worldOptions, world, setWorld 
 const mapStateToProps = (state: State) => (
 	{
 		lang: lang(state),
-		worldOptions: worldOptions(state),
-		world: currentWorldId(state)
+		world: currentWorldId(state),
+		worlds: worlds(state)
 	}
 );
 

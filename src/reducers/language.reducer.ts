@@ -6,7 +6,7 @@ import {
 
 const STATE: LanguageData = {
 	language: '',
-	languagePacks: {}
+	languagePacks: []
 };
 
 export const languageReducer = (state: LanguageData = STATE, action: Action): LanguageData => {
@@ -15,8 +15,8 @@ export const languageReducer = (state: LanguageData = STATE, action: Action): La
 
 		return {
 			...state,
-			language: Object.keys(languagePacks)[0],
-			languagePacks: languagePacks
+			language: languagePacks[0].id,
+			languagePacks
 		};
 	}
 

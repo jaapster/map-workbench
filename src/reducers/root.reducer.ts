@@ -1,5 +1,5 @@
 import { uiReducer as ui } from './ui.reducer';
-import { languageReducer as languages } from './i18n.reducer';
+import { languageReducer as languages } from './language.reducer';
 import { combineReducers } from 'redux';
 import { settingsReducer as settings } from './settings.reducer';
 import { appPhaseReducer as appPhase } from './phase.reducer';

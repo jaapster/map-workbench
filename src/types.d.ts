@@ -94,6 +94,7 @@ export type ReferenceStyle = string | MapboxStyle;
 type SelectionVector = number[];
 
 interface CollectionData {
+	name: string;
 	selection: SelectionVector[];
 	featureCollection: FeatureCollection;
 }
@@ -181,11 +182,13 @@ export interface SettingsData {
 	UIScale: number;
 }
 
+export type DictTree = Dict<string | DictTree>;
+
 export type LanguagePack = Dict<string | LanguagePack>;
 
 export interface LanguageData {
 	language: string;
-	languagePacks: Dict<LanguagePack>;
+	languagePacks: LanguagePack[];
 }
 
 export interface State {

@@ -9,19 +9,19 @@ import {
 import {
 	lang,
 	language,
-	languageOptions } from '../../reducers/selectors/index.selectors';
+	languages } from '../../reducers/selectors/index.selectors';
 
 interface Props {
 	lang: LanguagePack;
 	language: string;
-	languageOptions: [string, string][];
+	languages: LanguagePack[];
 	setLanguage: (language: string) => void;
 }
 
-export const _LanguageSelector = React.memo(({ lang, language, languageOptions, setLanguage }: Props) => (
+export const _LanguageSelector = React.memo(({ lang, language, languages, setLanguage }: Props) => (
 	<RadioButtons
 		label={ lang.settings.language }
-		options={ languageOptions }
+		options={ languages.map(lan => [lan.name, lan.id]) as any }
 		value={ language }
 		onChange={ setLanguage }
 	/>
@@ -31,7 +31,7 @@ const mapStateToProps = (state: State) => (
 	{
 		lang: lang(state),
 		language: language(state),
-		languageOptions: languageOptions(state)
+		languages: languages(state)
 	}
 );
 

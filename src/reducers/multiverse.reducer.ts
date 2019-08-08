@@ -2,7 +2,7 @@ import { oc } from 'ts-optchain';
 import { addAtIndex } from './fn/add-at-index';
 import { moveGeometry } from './fn/move-geometry';
 import { deleteAtIndex } from './fn/delete-at-index';
-import { MultiverseData, WorldData } from '../types';
+import { MultiverseData } from '../types';
 import { updateCoordinates } from './fn/update-coordinate';
 import {
 	Action,

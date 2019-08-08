@@ -1,5 +1,6 @@
-{
-	"en": {
+[
+	{
+		"id": "en",
 		"name": "English",
 		"settings": {
 			"title": "Settings",
@@ -36,7 +37,8 @@
 			"circle": "Circle"
 		}
 	},
-	"nl": {
+	{
+		"id": "nl",
 		"name": "Nederlands",
 		"settings": {
 			"title": "Instellingen",
@@ -73,7 +75,8 @@
 			"circle": "Cirkel"
 		}
 	},
-	"fr": {
+	{
+		"id": "fr",
 		"name": "Français",
 		"settings": {
 			"title": "Parametres",
@@ -110,7 +113,8 @@
 			"circle": "Cercle"
 		}
 	},
-	"de": {
+	{
+		"id": "de",
 		"name": "Deutsch",
 		"settings": {
 			"title": "Einstellungen",
@@ -147,4 +151,4 @@
 			"circle": "Kreis"
 		}
 	}
-}
+]

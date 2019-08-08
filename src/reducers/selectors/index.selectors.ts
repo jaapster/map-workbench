@@ -16,15 +16,6 @@ export const currentWorldId = (state: State) => state.multiverse.currentWorldId;
 export const referenceStyles = (state: State) => state.multiverse.referenceLayers;
 export const currentReferenceStyleId = (state: State) => state.multiverse.currentReferenceLayer;
 
-export const worldOptions = createSelector(
-	[worlds],
-	(worlds) => {
-		return Object.keys(worlds).map((key: any) => {
-			return [key, key];
-		}) as [string, any][];
-	}
-);
-
 export const appPhase = (state: State) => state.appPhase;
 
 export const scale = (state: State) => state.settings.UIScale;
@@ -33,19 +24,10 @@ export const unitSystem = (state: State) => state.settings.unitSystem;
 export const language = (state: State) => state.languages.language;
 export const languages = (state: State) => state.languages.languagePacks;
 
-export const languageOptions = createSelector(
-	[languages],
-	(languages) => {
-		return Object.keys(languages).map((key: any) => {
-			return [languages[key].name, key];
-		}) as [string, any][];
-	}
-);
-
 export const lang = createSelector(
 	[language, languages],
 	(language, languages) => {
-		return languages[language];
+		return languages.find(lang => lang.id === language) || languages[0];
 	}
 );
 
