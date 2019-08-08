@@ -12,6 +12,7 @@ import {
 import {
 	IMPERIAL,
 	METRIC } from '../../constants';
+import { Collapsible } from './cp-collapsible';
 
 interface Props {
 	lang: LanguagePack;
@@ -21,12 +22,14 @@ interface Props {
 }
 
 export const _UnitSystemSelector = React.memo(({ lang, unitSystem, unitSystems, setUnitSystem }: Props) => (
-	<RadioButtons
-		label={ lang.settings.unitSystem }
-		options={ unitSystems.map(([key, value]) => [lang.settings[key], value]) }
-		value={ unitSystem }
-		onChange={ setUnitSystem }
-	/>
+	<Collapsible title={ lang.settings.unitSystem }>
+		<RadioButtons
+			label={ lang.settings.unitSystem }
+			options={ unitSystems.map(([key, value]) => [lang.settings[key], value]) }
+			value={ unitSystem }
+			onChange={ setUnitSystem }
+		/>
+	</Collapsible>
 ));
 
 const systems = [[METRIC, METRIC], [IMPERIAL, IMPERIAL]];

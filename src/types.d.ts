@@ -115,7 +115,7 @@ interface MapData {
 
 interface WorldData {
 	id: string;
-	collections: Dict<CollectionData>;
+	collections: CollectionData[];
 	currentMapId: string;
 	universeIndex: number;
 	currentCollectionId: string;
@@ -127,7 +127,7 @@ interface UniverseData {
 }
 
 export interface MultiverseData {
-	worlds: WorldData[]; // Dict<WorldData>;
+	worlds: WorldData[];
 	universes: UniverseData[];
 	currentWorldId: string;
 	referenceLayers: [string, (string | MapboxStyle)][];
@@ -182,7 +182,6 @@ export interface SettingsData {
 	UIScale: number;
 }
 
-export type DictTree = Dict<string | DictTree>;
 
 export type LanguagePack = Dict<string | LanguagePack>;
 

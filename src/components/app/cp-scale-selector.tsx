@@ -5,6 +5,7 @@ import { connect } from 'react-redux';
 import { Dispatch } from 'redux';
 import { RadioButtons } from './cp-radio-buttons';
 import { ActionSetUIScale } from '../../reducers/actions';
+import { Collapsible } from './cp-collapsible';
 
 interface Props {
 	lang: LanguagePack;
@@ -14,12 +15,14 @@ interface Props {
 }
 
 export const _ScaleSelector = React.memo(({ lang, scale, scales, setScale }: Props) => (
-	<RadioButtons
-		label={ lang.settings.uiScale }
-		value={ scale }
-		options={ scales }
-		onChange={ setScale }
-	/>
+	<Collapsible title={ lang.settings.uiScale }>
+		<RadioButtons
+			label={ lang.settings.uiScale }
+			value={ scale }
+			options={ scales }
+			onChange={ setScale }
+		/>
+	</Collapsible>
 ));
 
 const scales: [string, number][] = [['80%', 0.8], ['90%', 0.9], ['100%', 1], ['110%', 1.1], ['120%', 1.2], ['130%', 1.3]];

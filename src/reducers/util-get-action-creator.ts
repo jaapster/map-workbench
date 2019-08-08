@@ -15,6 +15,9 @@ export const getActionCreator = <Data>(type: string) => {
 			return action.token === token;
 		},
 		data(action: any): Data {
+			if (action.token !== token) {
+				throw new Error(`Action [${ type }] mismatch`);
+			}
 			return action.data;
 		}
 	};

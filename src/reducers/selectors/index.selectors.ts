@@ -34,12 +34,7 @@ export const lang = createSelector(
 export const currentWorld = createSelector(
 	[worlds, currentWorldId, universes],
 	(worlds, worldId, universes) => {
-		const world = worlds.find(world => world.id === worldId);
-
-		if (!world) {
-			throw new Error('World not found');
-		}
-
+		const world = worlds.find(world => world.id === worldId) || worlds[0];
 		const universe = universes[world.universeIndex];
 
 		return {
@@ -56,7 +51,12 @@ export const currentCollectionId = (state: State) => currentWorld(state).current
 
 export const currentWorldCollections = (state: State) => currentWorld(state).collections;
 
-export const currentCollection = (state: State) => currentWorldCollections(state)[currentCollectionId(state)];
+export const currentCollection = createSelector(
+	[currentWorldCollections, currentCollectionId],
+	(collections, collectionId) => {
+		return collections.find(e => e.name === collectionId) || collections[0];
+	}
+);
 
 export const currentSelectionVectors = (state: State) => currentCollection(state).selection;
 

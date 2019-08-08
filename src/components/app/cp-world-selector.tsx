@@ -11,6 +11,7 @@ import {
 	State,
 	WorldData,
 	LanguagePack } from '../../types';
+import { Collapsible } from './cp-collapsible';
 
 interface Props {
 	lang: LanguagePack;
@@ -20,12 +21,14 @@ interface Props {
 }
 
 export const _WorldSelector = React.memo(({ lang, worlds, world, setWorld }: Props) => (
-	<RadioButtons
-		label={ lang.multiverse.worlds }
-		value={ world }
-		options={ worlds.map(e => [e.id, e.id]) as any }
-		onChange={ setWorld }
-	/>
+	<Collapsible title={ lang.multiverse.worlds }>
+		<RadioButtons
+			label={ lang.multiverse.worlds }
+			value={ world }
+			options={ worlds.map(e => [e.id, e.id]) as any }
+			onChange={ setWorld }
+		/>
+	</Collapsible>
 ));
 
 const mapStateToProps = (state: State) => (

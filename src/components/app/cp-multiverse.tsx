@@ -15,8 +15,10 @@ interface Props {
 export const _MultiverseSettings = React.memo(({ lang }: Props) => (
 	<Properties>
 		<h2>{ lang.multiverse.title }</h2>
-		<WorldSelector />
-		<StyleSelector />
+		<div className="body">
+			<WorldSelector />
+			<StyleSelector />
+		</div>
 	</Properties>
 
 ));

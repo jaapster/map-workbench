@@ -11,7 +11,7 @@ interface Props {
 
 export const RadioButtons = React.memo(({ label, options, value, onChange }: Props) => (
 	<div className="radio-buttons">
-		<h3>{ label }</h3>
+		{/*<h3>{ label }</h3>*/}
 		{
 			options.map(([label, val]) => {
 				const className = mergeClasses(

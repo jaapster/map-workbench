@@ -3,6 +3,7 @@ import React from 'react';
 import mapboxGL from 'mapbox-gl';
 import { DOM } from '../../map-control/utils/util-dom';
 import { connect } from 'react-redux';
+import { Crosshair } from './cp-crosshairs';
 import { MapControl } from '../../map-control/map-control';
 import { mergeClasses } from '../app/utils/util-merge-classes';
 import { disableInteractions } from '../../map-control/utils/util-map';
@@ -23,17 +24,6 @@ import {
 	overviewVisible,
 	referenceStyles,
 	currentReferenceStyleId } from '../../reducers/selectors/index.selectors';
-import { Crosshair } from './cp-crosshairs';
-
-const _map = new mapboxGL.Map({
-	zoom: 1,
-	style: 'mapbox://styles/mapbox/light-v10',
-	center: [0, 0],
-	container: DOM.create('div', 'map-container'),
-	fadeDuration: 0
-});
-
-disableInteractions(_map);
 
 interface Props {
 	zoom: number;
@@ -46,6 +36,16 @@ interface Props {
 	referenceLayers: [string, string | MapboxStyle][];
 	referenceLayer: string | MapboxStyle;
 }
+
+const _map = new mapboxGL.Map({
+	zoom: 1,
+	style: 'mapbox://styles/mapbox/light-v10',
+	center: [0, 0],
+	container: DOM.create('div', 'map-container'),
+	fadeDuration: 0
+});
+
+disableInteractions(_map);
 
 @bind
 class SlaveMap extends React.PureComponent<Props> {
@@ -88,8 +88,8 @@ class SlaveMap extends React.PureComponent<Props> {
 			glare,
 			center,
 			extent,
-			referenceLayers,
-			referenceLayer
+			referenceLayer,
+			referenceLayers
 		} = this.props;
 
 		if (scale !== this._scale) {

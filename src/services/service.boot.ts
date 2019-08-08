@@ -1,16 +1,14 @@
 import axios from 'axios';
 import { dispatch } from '../reducers/store';
-import { WorldData } from '../types';
 import { MapControl } from '../map-control/map-control';
 import './service.geo-location';
 import {
 	ActionAddWorld,
 	ActionSetUniverses,
-	ActionSetReferenceLayers,
-	ActionSetCurrentReferenceLayer,
 	ActionSetBookmarks,
-	ActionSetLanguagePacks
-} from '../reducers/actions';
+	ActionSetLanguagePacks,
+	ActionSetReferenceLayers,
+	ActionSetCurrentReferenceLayer } from '../reducers/actions';
 
 export const BootService = {
 	boot() {
@@ -29,8 +27,19 @@ export const BootService = {
 				dispatch(ActionSetBookmarks.create({ bookmarks }));
 				dispatch(ActionSetLanguagePacks.create({ languagePacks }));
 
-				worlds.slice().reverse().forEach((worldData: WorldData) => (
-					dispatch(ActionAddWorld.create({ worldData }))
+				worlds.slice().reverse().forEach((worldData: any) => (
+					dispatch(ActionAddWorld.create({
+						worldData: {
+							...worldData,
+							collections: worldData.collections.map((collection: any) => (
+								{
+									featureCollection: collection,
+									selection: [],
+									name: collection.properties.name
+								}
+							))
+						}
+					}))
 				));
 
 				const [layer, style] = layers[1];

@@ -7,8 +7,8 @@ import { Bearing } from './cp-bearing';
 import { Dispatch } from 'redux';
 import { ZoomLevel } from './cp-zoom-level';
 import { OverView } from './cp-overview';
-import { HashParams } from '../app/cp-hash';
 import { PopUpMenu } from './cp-pop-up-menu';
+import { HashParams } from '../app/cp-hash';
 import { MapControl } from '../../map-control/map-control';
 import { DrawingTools } from './cp-drawing-tool';
 import { mergeClasses } from '../app/utils/util-merge-classes';
@@ -19,7 +19,6 @@ import { CenterCoordinate } from './cp-center-coordinate';
 import { ActionToggleOverview } from '../../reducers/actions';
 import { FeatureCollectionLayer } from './cp-feature-collection-layer';
 import {
-	Dict,
 	State,
 	CollectionData,
 	MapControlMode } from '../../types';
@@ -30,7 +29,7 @@ import {
 
 interface Props {
 	mode: MapControlMode;
-	collections: Dict<CollectionData>;
+	collections: CollectionData[];
 }
 
 @bind
@@ -61,9 +60,9 @@ export class _Map extends React.PureComponent<Props> {
 					<MarkerVertex />
 					<MarkerArrowHead />
 					{
-						Object.entries(collections).map(([key, { featureCollection, selection }]) => (
+						collections.map(({ name, featureCollection, selection }) => (
 							<FeatureCollectionLayer
-								key={ key }
+								key={ name }
 								featureCollection={ featureCollection }
 								selection={ selection }
 							/>

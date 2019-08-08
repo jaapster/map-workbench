@@ -29,17 +29,8 @@ const STATE: MultiverseData = {
 	currentReferenceLayer: 'Empty'
 };
 
-const not = (fn: (...args: any[]) => any) => (...args: any[]) => !fn(...args);
-
-const sameAs = (v1: number[]) => (v2: number[]) => {
-	return JSON.stringify(v1) === JSON.stringify(v2);
-};
-
-export const multiverseReducer = (
-	state: MultiverseData = STATE,
-	action: Action
-): MultiverseData => {
-	const { worlds, currentWorldId } = state;
+export const multiverseReducer = (state: MultiverseData = STATE, action: Action): MultiverseData => {
+	const { universes, worlds, currentWorldId } = state;
 
 	if (ActionSetUniverses.validate(action)) {
 		return {
@@ -63,30 +54,27 @@ export const multiverseReducer = (
 	}
 
 	if (ActionAddWorld.validate(action)) {
-		const { worldData } = ActionAddWorld.data(action);
-		const { worlds, universes } = state;
-		const { universeIndex, collections, id } = worldData;
+		const {
+			worldData,
+			worldData: {
+				id,
+				collections,
+				universeIndex
+			}
+		} = ActionAddWorld.data(action);
+
 		const universe = universes[universeIndex];
 
 		return {
 			...state,
-			worlds: [
-				...worlds,
+			worlds: worlds.concat(
 				{
 					...worldData,
-					collections: Object.keys(worldData.collections).reduce((m, key) => {
-						return {
-							...m,
-							[key]: {
-								featureCollection: worldData.collections[key],
-								selection: []
-							}
-						};
-					}, {}),
 					currentMapId: oc(universe.maps[0]).id(''),
-					currentCollectionId: Object.keys(collections)[0]
+					currentCollectionId: collections[0].name
+
 				}
-			],
+			),
 			currentWorldId: id
 		};
 	}
@@ -99,48 +87,62 @@ export const multiverseReducer = (
 	}
 
 	if (ActionUpdateCoordinates.validate(action)) {
-		const { collectionId, entries } = ActionUpdateCoordinates.data(action);
+		const {
+			entries,
+			collectionId
+		} = ActionUpdateCoordinates.data(action);
 
 		return {
 			...state,
-			worlds: worlds.map(world => world.id === currentWorldId
-				? {
-					...world,
-					collections: {
-						...world.collections,
-						[collectionId]: {
-							...world.collections[collectionId],
-							featureCollection: updateCoordinates(world.collections[collectionId].featureCollection, entries)
-						}
+			worlds: worlds.map(world => (
+				world.id === currentWorldId
+					? {
+						...world,
+						collections: world.collections.map(collection => (
+							collection.name === collectionId
+								? {
+									...collection,
+									featureCollection: updateCoordinates(
+										collection.featureCollection,
+										entries
+									)
+								}
+								: collection
+						))
 					}
-				}
-				: world
-			)
+					: world
+			))
 		};
 	}
 
 	if (ActionMoveGeometry.validate(action)) {
-		const { collectionId, vector, movement } = ActionMoveGeometry.data(action);
+		const {
+			vector,
+			movement,
+			collectionId
+		} = ActionMoveGeometry.data(action);
 
 		return {
 			...state,
-			worlds: worlds.map(world => world.id === currentWorldId
-				? {
-					...world,
-					collections: {
-						...world.collections,
-						[collectionId]: {
-							...world.collections[collectionId],
-							featureCollection: moveGeometry(
-								world.collections[collectionId].featureCollection,
-								vector,
-								movement
-							)
-						}
+			worlds: worlds.map(world => (
+				world.id === currentWorldId
+					? {
+						...world,
+						collections: world.collections.map(collection => (
+							collection.name === collectionId
+								? {
+									...collection,
+									featureCollection: moveGeometry(
+										collection.featureCollection,
+										vector,
+										movement
+									)
+								}
+								: collection
+						))
 					}
-				}
-				: world
-			)
+					: world
+			))
 		};
 	}
 
@@ -153,163 +155,180 @@ export const multiverseReducer = (
 
 		const { vector, multi } = ActionSelect.data(action);
 		const { collections, currentCollectionId } = world;
-		const { selection } = collections[currentCollectionId];
 
-		return selection.find(sameAs(vector))
+		const collection = collections.find(collection => collection.name === currentCollectionId);
+
+		if (!collection) {
+			return state;
+		}
+
+		const { selection } = collection;
+
+		return selection.find(v => v.join() === vector.join())
 			? !multi
 				? state
 				: {
 					...state,
-					worlds: worlds.map(world => world.id === currentWorldId
-						? {
-							...world,
-							collections: {
-								...world.collections,
-								[world.currentCollectionId]: {
-									...world.collections[world.currentCollectionId],
-									selection: world.collections[world.currentCollectionId].selection.filter(not(sameAs(vector)))
-								}
+					worlds: worlds.map(world => (
+						world.id === currentWorldId
+							? {
+								...world,
+								collections: world.collections.map(collection => (
+									collection.name === currentCollectionId
+										? {
+											...collection,
+											selection: collection.selection.filter(
+												v => v.join() !== vector.join()
+											)
+										}
+										: collection
+								))
 							}
-						}
-						: world
-					)
+							: world
+					))
 				}
 			: {
 				...state,
-				worlds: worlds.map(world => world.id === currentWorldId
-					? {
-						...world,
-						collections: {
-							...world.collections,
-							[world.currentCollectionId]: {
-								...world.collections[world.currentCollectionId],
-								selection: vector.length
-									? multi
-										? [...selection, vector]
-										: [vector]
-									: []
-							}
+				worlds: worlds.map(world => (
+					world.id === currentWorldId
+						? {
+							...world,
+							collections: world.collections.map(collection => (
+								collection.name === currentCollectionId
+									? {
+										...collection,
+										selection: vector.length
+											? multi
+												? [...selection, vector]
+												: [vector]
+											: []
+									}
+									: collection
+							))
 						}
-					}
-					: world
-				)
+						: world
+				))
 			};
 	}
 
 	if (ActionClearSelection.validate(action)) {
 		return {
 			...state,
-			worlds: worlds.map((world) => {
-				if (world.id === currentWorldId) {
-					return {
+			worlds: worlds.map(world => (
+				world.id === currentWorldId
+					? {
 						...world,
-						collections: Object.keys(world.collections).reduce((m, key) => (
+						collections: world.collections.map(collection => (
 							{
-								...m,
-								[key]: {
-									...world.collections[key],
-									selection: []
-								}
+								...collection,
+								selection: []
 							}
-						), {})
-					};
-				}
-
-				return world;
-			})
+						))
+					}
+					: world
+			))
 		};
 	}
 
 	if (ActionAddFeature.validate(action)) {
-		const { collectionId, feature } = ActionAddFeature.data(action);
+		const {
+			feature,
+			collectionId
+		} = ActionAddFeature.data(action);
 
 		return {
 			...state,
-			worlds: worlds.map(world => world.id === currentWorldId
-				? {
-					...world,
-					collections: {
-						...world.collections,
-						[collectionId]: {
-							...world.collections[collectionId],
-							featureCollection: {
-								...world.collections[collectionId].featureCollection,
-								features: world.collections[collectionId].featureCollection.features.concat(feature)
-							},
-							selection: world.collections[collectionId].selection.concat(
-								[[world.collections[collectionId].featureCollection.features.length]]
-							)
-						}
+			worlds: worlds.map(world => (
+				world.id === currentWorldId
+					? {
+						...world,
+						collections: world.collections.map(collection => (
+							collection.name === collectionId
+								? {
+									...collection,
+									featureCollection: {
+										...collection.featureCollection,
+										features: collection.featureCollection.features.concat(feature)
+									},
+									selection: collection.selection.concat(
+										[[collection.featureCollection.features.length]]
+									)
+								}
+								: collection
+						))
 					}
-				}
-				: world
-			)
+					: world
+			))
 		};
 	}
 
 	if (ActionAddVertex.validate(action)) {
-		const { collectionId, coordinate, vector } = ActionAddVertex.data(action);
+		const {
+			vector,
+			coordinate,
+			collectionId
+		} = ActionAddVertex.data(action);
 
 		return {
 			...state,
-			worlds: worlds.map(world => world.id === currentWorldId
-				? {
-					...world,
-					collections: {
-						...world.collections,
-						[collectionId]: {
-							...world.collections[collectionId],
-							featureCollection: addAtIndex(
-								world.collections[collectionId].featureCollection,
-								vector,
-								coordinate
-							)
-						}
+			worlds: worlds.map(world => (
+				world.id === currentWorldId
+					? {
+						...world,
+						collections: world.collections.map(collection => (
+							collection.name === collectionId
+								? {
+									...collection,
+									featureCollection: addAtIndex(
+										collection.featureCollection,
+										vector,
+										coordinate
+									)
+								}
+								: collection
+						))
 					}
-				}
-				: world
-			)
+					: world
+			))
 		};
 	}
 
 	if (ActionSetCollection.validate(action)) {
-		const { collectionId } = ActionSetCollection.data(action);
+		const {
+			collectionId
+		} = ActionSetCollection.data(action);
 
 		return {
 			...state,
-			worlds: worlds.map((world) => {
-				if (world.id === currentWorldId) {
-					return {
+			worlds: worlds.map(world => (
+				world.id === currentWorldId
+					? {
 						...world,
 						currentCollectionId: collectionId
-					};
-				}
-
-				return world;
-			})
+					}
+					: world
+			))
 		};
 	}
 
 	if (ActionDeleteSelection.validate(action)) {
 		return {
 			...state,
-			worlds: worlds.map(world => world.id === currentWorldId
-				? {
-					...world,
-					collections: Object.keys(world.collections).reduce((m, key) => {
-						const collection = world.collections[key];
+			worlds: worlds.map(world => (
+				world.id === currentWorldId
+					? {
+						...world,
+						collections: world.collections.map((collection) => {
+							const fs = collection.selection
+								.filter(v => v.length === 1)
+								.map(([i]) => i);
 
-						const fs = collection.selection
-							.filter(v => v.length === 1)
-							.map(([i]) => i);
-
-						// todo: fix bug caused by wrong indices due to
-						//  previously deleted siblings
-						return {
-							...m,
-							[key]: !collection.selection.length
+							// todo: fix bug caused by wrong indices due to
+							//  previously deleted siblings
+							return !collection.selection.length
 								? collection
 								: {
+									...collection,
 									featureCollection: {
 										...collection.featureCollection,
 										features: collection.selection
@@ -328,33 +347,37 @@ export const multiverseReducer = (
 
 										return m.concat([[v[0]]]);
 									}, [])
-								}
-						};
-					}, {})
-				}
-				: world
-			)
+								};
+						})
+					}
+					: world
+			))
 		};
 	}
 
 	if (ActionSetCollectionData.validate(action)) {
-		const { collectionId, featureCollection } = ActionSetCollectionData.data(action);
+		const {
+			collectionId,
+			featureCollection
+		} = ActionSetCollectionData.data(action);
 
 		return {
 			...state,
-			worlds: worlds.map(world => world.id === currentWorldId
-				? {
-					...world,
-					collections: {
-						...world.collections,
-						[collectionId]: {
-							...world.collections[collectionId],
-							featureCollection
-						}
+			worlds: worlds.map(world => (
+				world.id === currentWorldId
+					? {
+						...world,
+						collections: world.collections.map(collection => (
+							collection.name === collectionId
+								? {
+									...collection,
+									featureCollection
+								}
+								: collection
+						))
 					}
-				}
-				: world
-			)
+					: world
+			))
 		};
 	}
 

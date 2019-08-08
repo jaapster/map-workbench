@@ -2,16 +2,17 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { Dispatch } from 'redux';
 import { MapControl } from '../../map-control/map-control';
+import { Collapsible } from './cp-collapsible';
 import { RadioButtons } from './cp-radio-buttons';
 import { ActionSetCurrentReferenceLayer } from '../../reducers/actions';
 import {
+	lang,
 	referenceStyles,
-	currentReferenceStyleId, lang
-} from '../../reducers/selectors/index.selectors';
+	currentReferenceStyleId } from '../../reducers/selectors/index.selectors';
 import {
 	State,
-	ReferenceStyle, LanguagePack
-} from '../../types';
+	LanguagePack,
+	ReferenceStyle } from '../../types';
 
 type Foo = [string, ReferenceStyle];
 
@@ -32,12 +33,14 @@ export const _StyleSelector = React.memo(({ lang, styles, setStyle, style }: Pro
 	};
 
 	return (
-		<RadioButtons
-			label={ lang.multiverse.referenceLayer }
-			value={ style }
-			options={ styles.map(([style]) => [style, style]) as [string, string][] }
-			onChange={ set }
-		/>
+		<Collapsible title={ lang.multiverse.referenceLayer }>
+			<RadioButtons
+				label={ lang.multiverse.referenceLayer }
+				value={ style }
+				options={ styles.map(([style]) => [style, style]) as any }
+				onChange={ set }
+			/>
+		</Collapsible>
 	);
 });
 

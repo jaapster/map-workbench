@@ -4,10 +4,12 @@
 		"extent": [],
 		"universeIndex": 0,
 		"homeExtent": [],
-		"collections": {
-			"trails": {
-				"name": "trails",
+		"collections": [
+			{
 				"type": "FeatureCollection",
+				"properties": {
+					"name": "trails"
+				},
 				"features": [
 					{
 						"type": "Feature",
@@ -135,17 +137,19 @@
 					}
 				]
 			}
-		}
+		]
 	},
 	{
 		"id": "world2",
 		"extent": [],
 		"universeIndex": 1,
 		"homeExtent": [],
-		"collections": {
-			"trails": {
-				"name": "trails",
+		"collections": [
+			{
 				"type": "FeatureCollection",
+				"properties": {
+					"name": "trails"
+				},
 				"features": [
 					{
 						"type": "Feature",
@@ -195,6 +199,6 @@
 					}
 				]
 			}
-		}
+		]
 	}
 ]

@@ -15,9 +15,11 @@ interface Props {
 export const _Settings = React.memo(({ lang }: Props) => (
 	<Properties>
 		<h2>{ lang.settings.title }</h2>
-		<UnitSystemSelector />
-		<LanguageSelector />
-		<ScaleSelector />
+		<div className="body">
+			<UnitSystemSelector />
+			<LanguageSelector />
+			<ScaleSelector />
+		</div>
 	</Properties>
 ));
 

@@ -103,22 +103,20 @@ export const _PanelTabbed = React.memo((props: Props) => {
 			</div>
 			<div className="toggles">
 				{
-					tabs.map((tab: any, i: number) => {
-						return (
-							<div key={ i } className="button-group">
-								<Button
-									onClick={ (e: any) => {
-										e.stopPropagation();
-										e.preventDefault();
-										onTabClick(i);
-									} }
-									depressed={ activeTab === i }
-								>
-									{ tab[0] }
-								</Button>
-							</div>
-						);
-					})
+					tabs.map((tab: any, i: number) => (
+						<div key={ i } className="button-group">
+							<Button
+								onClick={ (e: any) => {
+									e.stopPropagation();
+									e.preventDefault();
+									onTabClick(i);
+								} }
+								depressed={ activeTab === i }
+							>
+								{ tab[0] }
+							</Button>
+						</div>
+					))
 				}
 			</div>
 			{
