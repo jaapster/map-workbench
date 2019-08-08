@@ -20,7 +20,7 @@ export const BootService = {
 				axios.get('/worlds'),
 				axios.get('/referencelayers'),
 				axios.get('/bookmarks'),
-				axios.get('/i18n')
+				axios.get('/languages')
 			])
 			.then((responses) => {
 				const [universeData, worlds, layers, bookmarks, languagePacks] = responses.map(r => r.data);

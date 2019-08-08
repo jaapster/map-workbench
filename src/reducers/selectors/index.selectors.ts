@@ -1,47 +1,46 @@
-import { createSelector } from 'reselect';
 import { State } from '../../types';
+import { createSelector } from 'reselect';
 
 export const zoom = (state: State) => state.mapControl.zoom;
-
-export const bearing = (state: State) => state.mapControl.bearing;
-
-export const pitch = (state: State) => state.mapControl.pitch;
-
 export const mode = (state: State) => state.mapControl.mode;
-
-export const worlds = (state: State) => state.multiverse.worlds;
-
-export const worldIdsString = (state: State) => Object.keys(worlds(state)).join(',');
-
-export const worldIds = createSelector([worldIdsString], str => str.split(','));
-
-export const referenceStyles = (state: State) => state.multiverse.referenceLayers;
-
-export const currentReferenceStyleId = (state: State) => state.multiverse.currentReferenceLayer;
-
+export const pitch = (state: State) => state.mapControl.pitch;
+export const glare = (state: State) => state.mapControl.glare;
+export const center = (state: State) => state.mapControl.center;
+export const extent = (state: State) => state.mapControl.extent;
+export const bearing = (state: State) => state.mapControl.bearing;
 export const overviewVisible = (state: State) => state.mapControl.overviewVisible;
 
-export const glare = (state: State) => state.mapControl.glare;
+export const worlds = (state: State) => state.multiverse.worlds;
+export const universes = (state: State) => state.multiverse.universes;
+export const currentWorldId = (state: State) => state.multiverse.currentWorldId;
+export const referenceStyles = (state: State) => state.multiverse.referenceLayers;
+export const currentReferenceStyleId = (state: State) => state.multiverse.currentReferenceLayer;
 
-export const center = (state: State) => state.mapControl.center;
-
-export const extent = (state: State) => state.mapControl.extent;
+export const worldOptions = createSelector(
+	[worlds],
+	(worlds) => {
+		return Object.keys(worlds).map((key: any) => {
+			return [key, key];
+		}) as [string, any][];
+	}
+);
 
 export const appPhase = (state: State) => state.appPhase;
 
-export const universes = (state: State) => state.multiverse.universes;
-
-export const currentWorldId = (state: State) => state.multiverse.currentWorldId;
-
+export const scale = (state: State) => state.settings.UIScale;
 export const unitSystem = (state: State) => state.settings.unitSystem;
 
-export const language = (state: State) => state.i18n.language;
+export const language = (state: State) => state.languages.language;
+export const languages = (state: State) => state.languages.languagePacks;
 
-export const languages = (state: State) => state.i18n.languages;
-
-export const languageIds = (state: State) => state.i18n.languageIds;
-
-export const languageOptions = (state: State) => state.i18n.languageOptions;
+export const languageOptions = createSelector(
+	[languages],
+	(languages) => {
+		return Object.keys(languages).map((key: any) => {
+			return [languages[key].name, key];
+		}) as [string, any][];
+	}
+);
 
 export const lang = createSelector(
 	[language, languages],
@@ -50,12 +49,15 @@ export const lang = createSelector(
 	}
 );
 
-export const scale = (state: State) => state.settings.UIScale;
-
 export const currentWorld = createSelector(
 	[worlds, currentWorldId, universes],
 	(worlds, worldId, universes) => {
-		const world = worlds[worldId];
+		const world = worlds.find(world => world.id === worldId);
+
+		if (!world) {
+			throw new Error('World not found');
+		}
+
 		const universe = universes[world.universeIndex];
 
 		return {

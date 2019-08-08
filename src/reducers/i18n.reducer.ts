@@ -1,28 +1,22 @@
-import { I18nData } from '../types';
+import { LanguageData } from '../types';
 import {
 	Action,
-	ActionSetLanguage, ActionSetLanguagePacks
-} from './actions';
+	ActionSetLanguage,
+	ActionSetLanguagePacks } from './actions';
 
-const STATE: I18nData = {
+const STATE: LanguageData = {
 	language: '',
-	languages: {},
-	languageIds: [],
-	languageOptions: []
+	languagePacks: {}
 };
 
-export const i18nReducer = (state: I18nData = STATE, action: Action): I18nData => {
+export const languageReducer = (state: LanguageData = STATE, action: Action): LanguageData => {
 	if (ActionSetLanguagePacks.validate(action)) {
 		const { languagePacks } = ActionSetLanguagePacks.data(action);
 
 		return {
 			...state,
-			languages: languagePacks,
 			language: Object.keys(languagePacks)[0],
-			languageIds: Object.keys(languagePacks),
-			languageOptions: Object.keys(languagePacks).map((key: any) => {
-				return [languagePacks[key].name, key];
-			})
+			languagePacks: languagePacks
 		};
 	}
 

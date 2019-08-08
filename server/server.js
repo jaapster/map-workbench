@@ -28,8 +28,8 @@ app.get('/bookmarks', function (req, res) {
 	res.sendFile(path.join(__dirname, 'data', 'data.bookmarks.json'));
 });
 
-app.get('/i18n', function (req, res) {
-	res.sendFile(path.join(__dirname, 'data', 'data.i18n.json'));
+app.get('/languages', function (req, res) {
+	res.sendFile(path.join(__dirname, 'data', 'data.languages.json'));
 });
 
 app.listen(process.env.PORT || 8080);

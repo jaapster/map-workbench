@@ -1,29 +1,36 @@
 import React from 'react';
-import { LanguagePack, State } from '../../types';
 import { connect } from 'react-redux';
 import { Dispatch } from 'redux';
+import { RadioButtons } from './cp-radio-buttons';
 import { ActionGoToWorld } from '../../reducers/actions';
 import {
-	worldIds,
-	currentWorldId, lang
-} from '../../reducers/selectors/index.selectors';
-import { RadioButtons } from './cp-radio-buttons';
+	lang,
+	worldOptions,
+	currentWorldId } from '../../reducers/selectors/index.selectors';
+import {
+	State,
+	LanguagePack } from '../../types';
 
 interface Props {
 	lang: LanguagePack;
-	worlds: [string, string][];
+	worldOptions: [string, string][];
 	setWorld: (worldId: string) => void;
 	world: string;
 }
 
-export const _WorldSelector = React.memo(({ lang, worlds, world, setWorld }: Props) => (
-	<RadioButtons label={ lang.multiverse.worlds } value={ world } options={ worlds } onChange={ setWorld } />
+export const _WorldSelector = React.memo(({ lang, worldOptions, world, setWorld }: Props) => (
+	<RadioButtons
+		label={ lang.multiverse.worlds }
+		value={ world }
+		options={ worldOptions }
+		onChange={ setWorld }
+	/>
 ));
 
 const mapStateToProps = (state: State) => (
 	{
 		lang: lang(state),
-		worlds: worldIds(state).map(id => [id, id]) as [string, string][],
+		worldOptions: worldOptions(state),
 		world: currentWorldId(state)
 	}
 );

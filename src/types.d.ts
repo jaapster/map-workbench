@@ -123,11 +123,10 @@ interface WorldData {
 interface UniverseData {
 	crs: EPSG;
 	maps: MapData[];
-	worlds: WorldData[];
 }
 
 export interface MultiverseData {
-	worlds: Dict<WorldData>;
+	worlds: WorldData[]; // Dict<WorldData>;
 	universes: UniverseData[];
 	currentWorldId: string;
 	referenceLayers: [string, (string | MapboxStyle)][];
@@ -184,11 +183,9 @@ export interface SettingsData {
 
 export type LanguagePack = Dict<string | LanguagePack>;
 
-export interface I18nData {
+export interface LanguageData {
 	language: string;
-	languages: Dict<LanguagePack>;
-	languageIds: string[];
-	languageOptions: [string, string][];
+	languagePacks: Dict<LanguagePack>;
 }
 
 export interface State {
@@ -199,5 +196,5 @@ export interface State {
 	geoLocation: GeoLocationData;
 	bookmarks: Location[];
 	settings: SettingsData;
-	i18n: I18nData;
+	languages: LanguageData;
 }
