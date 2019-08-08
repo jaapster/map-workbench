@@ -21,8 +21,8 @@ interface Props {
 export const _LanguageSelector = React.memo(({ lang, language, languages, setLanguage }: Props) => (
 	<RadioButtons
 		label={ lang.settings.language }
-		options={ languages.map(lan => [lan.name, lan.id]) as any }
 		value={ language }
+		options={ languages.map(e => [e.name, e.id]) as any }
 		onChange={ setLanguage }
 	/>
 ));

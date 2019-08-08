@@ -9,8 +9,8 @@ import {
 	currentWorldId } from '../../reducers/selectors/index.selectors';
 import {
 	State,
-	LanguagePack, WorldData
-} from '../../types';
+	WorldData,
+	LanguagePack } from '../../types';
 
 interface Props {
 	lang: LanguagePack;
@@ -23,7 +23,7 @@ export const _WorldSelector = React.memo(({ lang, worlds, world, setWorld }: Pro
 	<RadioButtons
 		label={ lang.multiverse.worlds }
 		value={ world }
-		options={ worlds.map(world => [world.id, world.id]) as any }
+		options={ worlds.map(e => [e.id, e.id]) as any }
 		onChange={ setWorld }
 	/>
 ));
