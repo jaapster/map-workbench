@@ -1,5 +1,5 @@
 import React from 'react';
-import { mergeClasses } from '../app/utils/util-merge-classes';
+import { mergeClasses } from '../../utils/util-merge-classes';
 import { connect } from 'react-redux';
 import { Dispatch } from 'redux';
 import { ActionSetActiveTab } from '../../reducers/actions/actions';

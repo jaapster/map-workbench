@@ -1,4 +1,4 @@
-import { Co, Feature, Geometry } from '../../types';
+import { Co, Feature, Geometry } from '../types';
 import { getBounds } from './util-get-bounds';
 
 export const getCenter = (features: Feature<Geometry>[]) => {

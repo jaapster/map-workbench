@@ -3,7 +3,7 @@ import {
 	Co,
 	Dict,
 	EPSG,
-	Point,
+	Pt,
 	Polygon,
 	Feature,
 	Geometry,
@@ -50,7 +50,7 @@ export const ActionUpdateCoordinates = getActionCreator<{
 
 export const ActionMoveGeometry = getActionCreator<{
 	collectionId: string,
-	movement: Point,
+	movement: Pt,
 	vector: SelectionVector
 }>('ActionMoveGeometry');
 

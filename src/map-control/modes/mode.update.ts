@@ -7,14 +7,14 @@ import {
 	getState } from '../../reducers/store';
 import {
 	pointAtLength,
-	nearestPointOnLine } from '../utils/util-math';
+	nearestPointOnLine } from '../../utils/util-math';
 import {
 	ang,
 	dis,
-	rot } from '../utils/util-point';
+	rot } from '../../utils/util-point';
 import {
 	Ev,
-	Point } from '../../types';
+	Pt } from '../../types';
 import {
 	CIRCLE,
 	THRESHOLD,
@@ -23,7 +23,7 @@ import {
 import {
 	coToLl,
 	llToCo,
-	geoUnproject } from '../utils/util-geo';
+	geoUnproject } from '../../utils/util-geo';
 import {
 	ActionSelect,
 	ActionAddVertex,
@@ -114,9 +114,9 @@ export class ModeUpdate extends InteractionMode {
 							_k
 						);
 
-						let A: Point;
-						let B: Point;
-						let C: Point;
+						let A: Pt;
+						let B: Pt;
+						let C: Pt;
 
 						if (originalEvent[MODIFIERS.ROTATE]) {
 							// Rotation:

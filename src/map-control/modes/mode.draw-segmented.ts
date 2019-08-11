@@ -1,15 +1,15 @@
 import { Ev } from '../../types';
-import { dis } from '../utils/util-point';
+import { dis } from '../../utils/util-point';
 import { dispatch, getState } from '../../reducers/store';
-import { dropLast } from '../utils/util-list';
+import { dropLast } from '../../utils/util-list';
 import { NAVIGATION_MODE, THRESHOLD } from '../../constants';
 import { InteractionMode } from './mode.interaction';
 import {
 	coToLl,
-	llToCo } from '../utils/util-geo';
+	llToCo } from '../../utils/util-geo';
 import {
 	newPolygon,
-	newLineString } from '../utils/util-geo-json';
+	newLineString } from '../../utils/util-geo-json';
 import {
 	ActionAddVertex,
 	ActionAddFeature,

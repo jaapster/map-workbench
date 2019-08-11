@@ -1,6 +1,6 @@
 import React from 'react';
 import { Co } from '../../../types';
-import { LineString } from './cp-line-string';
+import { LineStringSVG } from './cp-line-string';
 
 interface Props {
 	id: string;
@@ -8,12 +8,12 @@ interface Props {
 	coordinates: Co[][];
 }
 
-export const MultiLineString = React.memo(({ id, coordinates, selected }: Props) => {
+export const MultiLineStringSVG = React.memo(({ id, coordinates, selected }: Props) => {
 	return (
 		<g>
 			{
 				coordinates.map((c, i) => (
-					<LineString
+					<LineStringSVG
 						id={ `${ id }-${ i }` }
 						key={ `${ id }-${ i }` }
 						selected={ selected }

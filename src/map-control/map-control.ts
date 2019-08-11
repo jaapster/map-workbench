@@ -1,14 +1,14 @@
 import bind from 'autobind-decorator';
 import mapboxGL from 'mapbox-gl';
-import { DOM } from './utils/util-dom';
-import { add } from './utils/util-point';
+import { DOM } from '../utils/util-dom';
+import { add } from '../utils/util-point';
 import { token } from '../token';
 import { clamp } from '../utils/util-clamp';
 import { MenuMode } from './modes/mode.menu';
-import { getCenter } from './utils/util-get-center';
+import { getCenter } from '../utils/util-get-center';
 import { ModeUpdate } from './modes/mode.update';
-import { getBounds } from './utils/util-get-bounds';
-import { getTargetZoom } from './utils/util-get-target-zoom';
+import { getBounds } from '../utils/util-get-bounds';
+import { getTargetZoom } from '../utils/util-get-target-zoom';
 import { PointerDevice } from './devices/device.pointer';
 import { DrawPointMode } from './modes/mode.draw-point';
 import { KeyboardDevice } from './devices/device.keyboard';
@@ -16,7 +16,7 @@ import { ModeNavigation } from './modes/mode.navigation';
 import { DrawCircleMode } from './modes/mode.draw-circle';
 import { DrawSegmentedMode } from './modes/mode.draw-segmented';
 import { DrawRectangleMode } from './modes/mode.draw-rectangle';
-import { disableInteractions } from './utils/util-map';
+import { disableInteractions } from '../utils/util-map';
 import { ActionSetMapControlMetrics } from '../reducers/actions/actions';
 import {
 	dispatch,
@@ -39,7 +39,7 @@ import {
 	Co,
 	Ev,
 	EPSG,
-	Point,
+	Pt,
 	Polygon,
 	Feature,
 	Location, Geometry, BBox
@@ -49,7 +49,7 @@ import {
 	coToLl,
 	geoProject,
 	geoDistance,
-	geoUnproject } from './utils/util-geo';
+	geoUnproject } from '../utils/util-geo';
 
 const FIT_PADDING = 64;
 const FIT_MIN_ZOOM = 14;
@@ -124,7 +124,7 @@ export class MapControl {
 		return MapControl.instance.project(co);
 	}
 
-	static unproject(p: Point) {
+	static unproject(p: Pt) {
 		return MapControl.instance.unproject(p);
 	}
 
@@ -491,7 +491,7 @@ export class MapControl {
 		return this._map.project(coToLl(co));
 	}
 
-	unproject(p: Point) {
+	unproject(p: Pt) {
 		return llToCo(this._map.unproject(p));
 	}
 

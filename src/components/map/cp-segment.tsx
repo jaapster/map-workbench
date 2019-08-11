@@ -1,10 +1,10 @@
 import React from 'react';
 import { METRIC } from '../../constants';
 import { connect } from 'react-redux';
-import { addToPath } from './utils/util-add-to-path';
+import { addToPath } from '../../utils/util-add-to-path';
 import { unitSystem } from '../../reducers/selectors/index.selectors';
-import { geoDistance } from '../../map-control/utils/util-geo';
-import { mergeClasses } from '../app/utils/util-merge-classes';
+import { geoDistance } from '../../utils/util-geo';
+import { mergeClasses } from '../../utils/util-merge-classes';
 import {
 	Co,
 	State,

@@ -1,11 +1,11 @@
 import mapboxGL from 'mapbox-gl';
-import { DOM } from './utils/util-dom';
+import { DOM } from '../utils/util-dom';
 import { token } from '../token';
-import { coToLl } from './utils/util-geo';
+import { coToLl } from '../utils/util-geo';
 import { dispatch } from '../reducers/store';
 import { ActionSetGlare } from '../reducers/actions/actions';
 import { KeyboardDevice } from './devices/device.keyboard';
-import { disableInteractions } from './utils/util-map';
+import { disableInteractions } from '../utils/util-map';
 import {
 	EMPTY_STYLE,
 	DEFAULT_LOCATION } from '../constants';

@@ -2,8 +2,8 @@ import React from 'react';
 import { extent } from '../../../reducers/selectors/index.selectors';
 import { connect } from 'react-redux';
 import { Segments } from '../cp-segments';
-import { addToPath } from '../utils/util-add-to-path';
-import { mergeClasses } from '../../app/utils/util-merge-classes';
+import { addToPath } from '../../../utils/util-add-to-path';
+import { mergeClasses } from '../../../utils/util-merge-classes';
 import {
 	Co,
 	State } from '../../../types';
@@ -50,4 +50,4 @@ const mapStateToProps = (state: State) => (
 	}
 );
 
-export const LineString = connect(mapStateToProps)(_LineString);
+export const LineStringSVG = connect(mapStateToProps)(_LineString);

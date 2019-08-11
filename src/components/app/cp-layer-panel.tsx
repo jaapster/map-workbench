@@ -1,7 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { Dispatch } from 'redux';
-import { capitalize } from '../../map-control/utils/util-string';
+import { capitalize } from '../../utils/util-string';
 import { MapControl } from '../../map-control/map-control';
 import { Properties } from './cp-properties';
 import {

@@ -11,8 +11,8 @@ import {
 	LINE_STRING,
 	MULTI_POLYGON,
 	MULTI_LINE_STRING } from '../../constants';
-import { dis } from '../../map-control/utils/util-point';
-import { coToLl, geoProject } from '../../map-control/utils/util-geo';
+import { dis } from '../../utils/util-point';
+import { coToLl, geoProject } from '../../utils/util-geo';
 
 interface Result {
 	index: number[];

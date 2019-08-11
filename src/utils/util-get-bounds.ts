@@ -3,7 +3,7 @@ import { getCoordinates } from './util-get-coordinates';
 import {
 	Bounds,
 	Feature,
-	Geometry } from '../../types';
+	Geometry } from '../types';
 
 export const getBounds = (features: Feature<Geometry>[]): Bounds => (
 	getCoordinates(render(features)).reduce(([[a, b], [c, d]], co) => (

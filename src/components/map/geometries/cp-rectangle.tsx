@@ -1,6 +1,6 @@
 import React from 'react';
 import { Co } from '../../../types';
-import { Polygon } from './cp-polygon';
+import { PolygonSVG } from './cp-polygon';
 
 interface Props {
 	id: string;
@@ -8,9 +8,9 @@ interface Props {
 	coordinates: Co[][];
 }
 
-export const Rectangle = React.memo(({ id, coordinates, selected }: Props) => {
+export const RectangleSVG = React.memo(({ id, coordinates, selected }: Props) => {
 	return (
-		<Polygon
+		<PolygonSVG
 			id={ id }
 			coordinates={ coordinates }
 			selected={ selected }

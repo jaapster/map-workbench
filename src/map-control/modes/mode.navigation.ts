@@ -1,7 +1,7 @@
 import bind from 'autobind-decorator';
 import * as mapboxgl from 'mapbox-gl';
 import { Ev } from '../../types';
-import { DOM } from '../utils/util-dom';
+import { DOM } from '../../utils/util-dom';
 import { InteractionMode } from './mode.interaction';
 
 interface Options {

@@ -1,4 +1,4 @@
-import { getBBox } from '../../map-control/utils/util-get-bbox';
+import { getBBox } from '../../utils/util-get-bbox';
 import {
 	POINT,
 	POLYGON,

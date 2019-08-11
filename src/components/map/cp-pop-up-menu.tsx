@@ -2,7 +2,7 @@ import React from 'react';
 import { mode, mouse } from '../../reducers/selectors/index.selectors';
 import { connect } from 'react-redux';
 import { Dispatch } from 'redux';
-import { mergeClasses } from '../app/utils/util-merge-classes';
+import { mergeClasses } from '../../utils/util-merge-classes';
 import {
 	ActionClearSelection,
 	ActionDeleteSelection,

@@ -2,13 +2,13 @@ import { Ev } from '../../types';
 import { dispatch, getState } from '../../reducers/store';
 import { NAVIGATION_MODE } from '../../constants';
 import { InteractionMode } from './mode.interaction';
-import { llToCo } from '../utils/util-geo';
+import { llToCo } from '../../utils/util-geo';
 import {
 	ActionAddFeature,
 	ActionDeleteSelection,
 	ActionSetMapControlMode } from '../../reducers/actions/actions';
 import { currentCollectionId } from '../../reducers/selectors/index.selectors';
-import { newPoint } from '../utils/util-geo-json';
+import { newPoint } from '../../utils/util-geo-json';
 import { batchActions } from 'redux-batched-actions';
 
 export class DrawPointMode extends InteractionMode {

@@ -1,16 +1,16 @@
-import { newRectangle } from '../utils/util-geo-json';
+import { newRectangle } from '../../utils/util-geo-json';
 import { NAVIGATION_MODE } from '../../constants';
 import { analyseRectangle } from '../../reducers/fn/analyse-rectangle';
 import { DrawSegmentedMode } from './mode.draw-segmented';
-import { nearestPointOnLine } from '../utils/util-math';
+import { nearestPointOnLine } from '../../utils/util-math';
 import {
 	Co,
 	Ev,
-	Point,
+	Pt,
 	SelectionVector } from '../../types';
 import {
 	llToCo,
-	geoUnproject } from '../utils/util-geo';
+	geoUnproject } from '../../utils/util-geo';
 import {
 	dispatch,
 	getState } from '../../reducers/store';
@@ -88,9 +88,9 @@ export class DrawRectangleMode extends DrawSegmentedMode {
 		p1.y += 0.0001;
 		p2.x += 0.0001;
 
-		const A: Point = nearestPointOnLine(merc, [p1, p0]);
-		const B: Point = nearestPointOnLine(merc, [p2, p0]);
-		const C: Point = merc;
+		const A: Pt = nearestPointOnLine(merc, [p1, p0]);
+		const B: Pt = nearestPointOnLine(merc, [p2, p0]);
+		const C: Pt = merc;
 
 		const entries = [
 			[[_i, 0, n1], llToCo(geoUnproject(A))],

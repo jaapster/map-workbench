@@ -1,8 +1,8 @@
 import bind from 'autobind-decorator';
 import mapboxgl from 'mapbox-gl';
 import { EventEmitter } from '../../event-emitter';
-import { geoProject } from '../utils/util-geo';
-import { sub } from '../utils/util-point';
+import { geoProject } from '../../utils/util-geo';
+import { sub } from '../../utils/util-point';
 
 // const log = (...args: any[]) => console.log(...args);
 

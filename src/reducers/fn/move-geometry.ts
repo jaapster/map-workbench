@@ -1,8 +1,8 @@
-import { getBBox } from '../../map-control/utils/util-get-bbox';
+import { getBBox } from '../../utils/util-get-bbox';
 import {
 	Co,
 	Cos,
-	Point,
+	Pt,
 	FeatureCollection } from '../../types';
 import {
 	POINT,
@@ -13,12 +13,12 @@ import {
 	MULTI_LINE_STRING } from '../../constants';
 import {
 	geoProject,
-	geoUnproject } from '../../map-control/utils/util-geo';
+	geoUnproject } from '../../utils/util-geo';
 
 export const moveGeometry = (
 	data: FeatureCollection,
 	index: number[],
-	{ x: dx, y: dy }: Point
+	{ x: dx, y: dy }: Pt
 ) => {
 	const moveCo = ([lng, lat]: Co) => {
 		const { x, y } = geoProject({ lng, lat });

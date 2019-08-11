@@ -1,7 +1,7 @@
 import { Co } from '../../types';
 import {
 	coToLl,
-	geoProject } from '../../map-control/utils/util-geo';
+	geoProject } from '../../utils/util-geo';
 
 export const analyseRectangle = (coordinates: Co[][], nv: number) => {
 	const [cos] = coordinates;

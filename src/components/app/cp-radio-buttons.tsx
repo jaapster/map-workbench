@@ -1,6 +1,6 @@
 import React from 'react';
 import './scss/radio-button.scss';
-import { mergeClasses } from './utils/util-merge-classes';
+import { mergeClasses } from '../../utils/util-merge-classes';
 
 interface Props {
 	label: string;

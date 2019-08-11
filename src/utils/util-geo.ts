@@ -1,5 +1,5 @@
-import { Co, LngLat, Point } from '../../types';
-import { clamp } from '../../utils/util-clamp';
+import { Co, LngLat, Pt } from '../types';
+import { clamp } from './util-clamp';
 
 const R = 6378137.0;
 const MAX_EXTENT = 20037508.342789244;
@@ -37,7 +37,7 @@ export const geoProject = ({ lng, lat }: LngLat) => {
 };
 
 // to wgs84
-export const geoUnproject = ({ x, y }: Point) => {
+export const geoUnproject = ({ x, y }: Pt) => {
 	return {
 		lng: (x * R2D / R),
 		lat: ((Math.PI * 0.5) - 2.0 * Math.atan(Math.exp(-y / R))) * R2D

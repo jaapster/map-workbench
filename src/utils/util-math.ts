@@ -1,8 +1,8 @@
-import { Co, Point } from '../../types';
-import { clamp } from '../../utils/util-clamp';
+import { Co, Pt } from '../types';
+import { clamp } from './util-clamp';
 import { ang } from './util-point';
 
-export const getDistanceToSegment = (p0: Point, p1: Point, p2: Point) => {
+export const getDistanceToSegment = (p0: Pt, p1: Pt, p2: Pt) => {
 	const ldx = p2.x - p1.x;
 	const ldy = p2.y - p1.y;
 	const lenSquared = ldx * ldx + ldy * ldy;
@@ -18,7 +18,7 @@ export const getDistanceToSegment = (p0: Point, p1: Point, p2: Point) => {
 	return Math.sqrt(dx * dx + dy * dy);
 };
 
-const _nearest = (p: Point, a: Point, b: Point, constrain: boolean) => {
+const _nearest = (p: Pt, a: Pt, b: Pt, constrain: boolean) => {
 	const atob = { x: b.x - a.x, y: b.y - a.y };
 	const atop = { x: p.x - a.x, y: p.y - a.y };
 	const len = atob.x * atob.x + atob.y * atob.y;
@@ -29,15 +29,15 @@ const _nearest = (p: Point, a: Point, b: Point, constrain: boolean) => {
 	return { x: a.x + atob.x * t, y: a.y + atob.y * t };
 };
 
-export const nearestPointOnSegment = (p: Point, [a, b]: [Point, Point]) => {
+export const nearestPointOnSegment = (p: Pt, [a, b]: [Pt, Pt]) => {
 	return _nearest(p, a, b, true);
 };
 
-export const nearestPointOnLine = (p: Point, [a, b]: [Point, Point]) => {
+export const nearestPointOnLine = (p: Pt, [a, b]: [Pt, Pt]) => {
 	return _nearest(p, a, b, false);
 };
 
-export const pointAtLength = ([p0, p1]: Point[], l: number) => {
+export const pointAtLength = ([p0, p1]: Pt[], l: number) => {
 	const t = ang(p0, p1);
 
 	return {
@@ -46,7 +46,7 @@ export const pointAtLength = ([p0, p1]: Point[], l: number) => {
 	};
 };
 
-export const signedArea = (xs: Point[]) => (
+export const signedArea = (xs: Pt[]) => (
 	xs.reduce((m, { x, y }, i, s) => (
 		m + ((s[(i + 1) % s.length].x - x) * (s[(i + 1) % s.length].y + y)) / 2
 	), 0)

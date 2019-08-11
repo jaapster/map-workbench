@@ -1,6 +1,6 @@
 import { Ev } from '../../types';
-import { llToCo } from '../utils/util-geo';
-import { newCircle } from '../utils/util-geo-json';
+import { llToCo } from '../../utils/util-geo';
+import { newCircle } from '../../utils/util-geo-json';
 import { NAVIGATION_MODE } from '../../constants';
 import { DrawSegmentedMode } from './mode.draw-segmented';
 import {

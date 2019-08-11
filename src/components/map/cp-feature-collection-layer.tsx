@@ -1,13 +1,13 @@
 import React from 'react';
-import { Point } from './geometries/cp-point';
-import { Circle } from './geometries/cp-circle';
-import { Polygon } from './geometries/cp-polygon';
-import { Rectangle } from './geometries/cp-rectangle';
-import { MultiPoint } from './geometries/cp-multi-point';
-import { LineString } from './geometries/cp-line-string';
-import { MultiPolygon } from './geometries/cp-multi-polygon';
+import { PointSVG } from './geometries/cp-point';
+import { CircleSVG } from './geometries/cp-circle';
+import { PolygonSVG } from './geometries/cp-polygon';
+import { RectangleSVG } from './geometries/cp-rectangle';
+import { MultiPointSVG } from './geometries/cp-multi-point';
+import { LineStringSVG } from './geometries/cp-line-string';
+import { MultiPolygonSVG } from './geometries/cp-multi-polygon';
 import { SelectedVertex } from './cp-selected-vertex';
-import { MultiLineString } from './geometries/cp-multi-line-string';
+import { MultiLineStringSVG } from './geometries/cp-multi-line-string';
 import {
 	POINT,
 	CIRCLE,
@@ -82,21 +82,21 @@ export const _FeatureCollectionLayer = React.memo(({ featureCollection, selectio
 
 							switch (f.properties.type) {
 								case POINT:
-									return <Point { ...p } />;
+									return <PointSVG { ...p } />;
 								case MULTI_POINT:
-									return <MultiPoint { ...p } />;
+									return <MultiPointSVG { ...p } />;
 								case LINE_STRING:
-									return <LineString { ...p } />;
+									return <LineStringSVG { ...p } />;
 								case MULTI_LINE_STRING:
-									return <MultiLineString { ...p } />;
+									return <MultiLineStringSVG { ...p } />;
 								case POLYGON:
-									return <Polygon { ...p } />;
+									return <PolygonSVG { ...p } />;
 								case MULTI_POLYGON:
-									return <MultiPolygon { ...p } />;
+									return <MultiPolygonSVG { ...p } />;
 								case CIRCLE:
-									return <Circle { ...p } />;
+									return <CircleSVG { ...p } />;
 								case RECTANGLE:
-									return <Rectangle { ...p } />;
+									return <RectangleSVG { ...p } />;
 								default:
 									return null;
 							}

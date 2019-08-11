@@ -1,4 +1,4 @@
-import { geoDistance } from '../../../map-control/utils/util-geo';
+import { geoDistance } from './util-geo';
 import {
 	POINT,
 	CIRCLE,
@@ -6,11 +6,11 @@ import {
 	RECTANGLE,
 	LINE_STRING,
 	MULTI_POLYGON,
-	MULTI_LINE_STRING } from '../../../constants';
+	MULTI_LINE_STRING } from '../constants';
 import {
 	Co,
 	Feature,
-	Geometry } from '../../../types';
+	Geometry } from '../types';
 
 const RADIUS = 6378137;
 

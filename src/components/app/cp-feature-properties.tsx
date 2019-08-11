@@ -14,7 +14,7 @@ import {
 	getRadius,
 	getCoordinate,
 	getFeatureArea,
-	getFeatureLength } from './utils/geojson-properties';
+	getFeatureLength } from '../../utils/util-geometry-properties';
 import {
 	M,
 	M2 } from '../../constants';

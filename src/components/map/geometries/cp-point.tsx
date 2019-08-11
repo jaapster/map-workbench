@@ -2,7 +2,7 @@ import React from 'react';
 import { extent } from '../../../reducers/selectors/index.selectors';
 import { connect } from 'react-redux';
 import { MapControl } from '../../../map-control/map-control';
-import { mergeClasses } from '../../app/utils/util-merge-classes';
+import { mergeClasses } from '../../../utils/util-merge-classes';
 import {
 	Co,
 	State } from '../../../types';
@@ -39,4 +39,4 @@ const mapStateToProps = (state: State) => (
 	}
 );
 
-export const Point = connect(mapStateToProps)(_Point);
+export const PointSVG = connect(mapStateToProps)(_Point);

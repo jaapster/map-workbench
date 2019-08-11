@@ -2,9 +2,9 @@ import React from 'react';
 import { extent } from '../../../reducers/selectors/index.selectors';
 import { connect } from 'react-redux';
 import { Segment } from '../cp-segment';
-import { addToPath } from '../utils/util-add-to-path';
-import { mergeClasses } from '../../app/utils/util-merge-classes';
-import { multiPointToLines } from '../../../map-control/utils/util-geo-json';
+import { addToPath } from '../../../utils/util-add-to-path';
+import { mergeClasses } from '../../../utils/util-merge-classes';
+import { multiPointToLines } from '../../../utils/util-geo-json';
 import {
 	Co,
 	State } from '../../../types';
@@ -57,5 +57,5 @@ const mapStateToProps = (state: State) => (
 	}
 );
 
-export const Circle = connect(mapStateToProps)(_Circle);
+export const CircleSVG = connect(mapStateToProps)(_Circle);
 

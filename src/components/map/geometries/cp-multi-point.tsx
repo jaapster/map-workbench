@@ -1,6 +1,6 @@
 import React from 'react';
 import { Co } from '../../../types';
-import { Point } from './cp-point';
+import { PointSVG } from './cp-point';
 
 interface Props {
 	id: string;
@@ -8,12 +8,12 @@ interface Props {
 	coordinates: Co[];
 }
 
-export const MultiPoint = React.memo(({ coordinates, selected, id }: Props) => {
+export const MultiPointSVG = React.memo(({ coordinates, selected, id }: Props) => {
 	return (
 		<g>
 			{
 				coordinates.map((c, i) => (
-					<Point
+					<PointSVG
 						key={ i }
 						id={ `${ id }-${ i }` }
 						coordinates={ c }

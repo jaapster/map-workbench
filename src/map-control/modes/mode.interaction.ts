@@ -1,7 +1,7 @@
 import * as mapboxgl from 'mapbox-gl';
-import { dis } from '../utils/util-point';
-import { DOM } from '../utils/util-dom';
-import { coToLl } from '../utils/util-geo';
+import { dis } from '../../utils/util-point';
+import { DOM } from '../../utils/util-dom';
+import { coToLl } from '../../utils/util-geo';
 import { EventEmitter } from '../../event-emitter';
 import { getNearestVertex } from '../../reducers/fn/get-nearest-vertex';
 import {
@@ -15,7 +15,7 @@ import {
 import {
 	Ev,
 	Dict,
-	Point,
+	Pt,
 	LngLat,
 	FeatureCollection } from '../../types';
 import {
@@ -50,7 +50,7 @@ export class InteractionMode extends EventEmitter {
 
 	protected _onStyleLoaded() {}
 
-	_hit(lngLat: LngLat, point: Point, featureCollection: FeatureCollection) {
+	_hit(lngLat: LngLat, point: Pt, featureCollection: FeatureCollection) {
 		const {
 			index: i1,
 			coordinate: co1

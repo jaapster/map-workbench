@@ -1,8 +1,8 @@
 export interface Ev {
-	merc: Point;
-	point: Point;
+	merc: Pt;
+	point: Pt;
 	lngLat: LngLat;
-	movement: Point;
+	movement: Pt;
 	originalEvent: any;
 }
 
@@ -17,7 +17,7 @@ export interface Location {
 	center: Co;
 }
 
-export interface Point {
+export interface Pt {
 	x: number;
 	y: number;
 }
@@ -36,6 +36,11 @@ export type Cos = Co | Co[] | Co[][] | Co[][][];
 export interface Geometry {
 	type: string;
 	coordinates: Cos;
+}
+
+export interface Point extends Geometry {
+	type: 'Point';
+	coordinates: Co;
 }
 
 export interface LineString extends Geometry {

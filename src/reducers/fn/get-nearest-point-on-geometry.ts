@@ -1,10 +1,10 @@
 import {
 	Co,
-	Point,
+	Pt,
 	FeatureCollection, LngLat } from '../../types';
 import {
 	getDistanceToSegment,
-	nearestPointOnSegment } from '../../map-control/utils/util-math';
+	nearestPointOnSegment } from '../../utils/util-math';
 import {
 	POINT,
 	CIRCLE,
@@ -19,14 +19,14 @@ import {
 	mul,
 	div,
 	dis,
-	hyp } from '../../map-control/utils/util-point';
+	hyp } from '../../utils/util-point';
 import {
 	llToCo,
 	coToLl,
 	geoProject,
-	geoUnproject } from '../../map-control/utils/util-geo';
+	geoUnproject } from '../../utils/util-geo';
 
-const roll = (p0: Point, index: number[]) =>
+const roll = (p0: Pt, index: number[]) =>
 	(m: any, co: Co, i: number, xs: any) => {
 		if (i > 0) {
 			const p1 = geoProject(coToLl(co));

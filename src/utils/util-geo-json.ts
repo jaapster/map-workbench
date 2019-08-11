@@ -6,9 +6,12 @@ import {
 import {
 	Co,
 	BBox,
+	Point,
 	Feature,
+	Polygon,
 	Geometry,
-	MultiPoint } from '../../types';
+	LineString,
+	MultiPoint } from '../types';
 import {
 	POINT,
 	CIRCLE,
@@ -18,7 +21,7 @@ import {
 	RECTANGLE,
 	PRECISION,
 	LINE_STRING,
-	MULTI_POINT } from '../../constants';
+	MULTI_POINT } from '../constants';
 import {
 	llToCo,
 	coToLl,
@@ -26,7 +29,7 @@ import {
 	geoProject,
 	geoUnproject } from './util-geo';
 
-export const newPoint = (coordinates: Co) => (
+export const newPoint = (coordinates: Co): Feature<Point> => (
 	{
 		type: FEATURE,
 		geometry: {
@@ -41,7 +44,7 @@ export const newPoint = (coordinates: Co) => (
 	}
 );
 
-export const newLineString = (coordinates: Co[] = []) => (
+export const newLineString = (coordinates: Co[] = []): Feature<LineString> => (
 	{
 		type: FEATURE,
 		geometry: {
@@ -56,7 +59,7 @@ export const newLineString = (coordinates: Co[] = []) => (
 	}
 );
 
-export const newCircle = (coordinates: Co[] = []) => (
+export const newCircle = (coordinates: Co[] = []): Feature<MultiPoint> => (
 	{
 		type: FEATURE,
 		geometry: {
@@ -71,7 +74,7 @@ export const newCircle = (coordinates: Co[] = []) => (
 	}
 );
 
-export const newRectangle = (coordinates: Co[][] = [[]]) => (
+export const newRectangle = (coordinates: Co[][] = [[]]): Feature<Polygon> => (
 	{
 		type: FEATURE,
 		geometry: {
@@ -82,11 +85,11 @@ export const newRectangle = (coordinates: Co[][] = [[]]) => (
 			type: RECTANGLE,
 			id: uuid()
 		},
-		bbox: getBBox(coordinates[0])
+		bbox: getBBox(coordinates)
 	}
 );
 
-export const newPolygon = (coordinates: Co[][] = [[]]) => (
+export const newPolygon = (coordinates: Co[][] = [[]]): Feature<Polygon> => (
 	{
 		type: FEATURE,
 		geometry: {
@@ -97,7 +100,7 @@ export const newPolygon = (coordinates: Co[][] = [[]]) => (
 			type: POLYGON,
 			id: uuid()
 		},
-		bbox: getBBox(coordinates[0])
+		bbox: getBBox(coordinates)
 	}
 );
 
@@ -119,9 +122,7 @@ export const multiPointToLines = ([co1, co2]: Co[]) => {
 
 export const multiPointToCircle = (feature: Feature<MultiPoint>) => {
 	const { geometry: { coordinates: [co1, co2] }, properties: { id } } = feature;
-
 	const [coordinates] = multiPointToLines([co1, co2]);
-
 	const radius = geoDistance(co1, co2);
 	const circumference = 2 * Math.PI * radius;
 
@@ -167,12 +168,10 @@ export const multiPointToCircle = (feature: Feature<MultiPoint>) => {
 	];
 };
 
-export const render = (features: Feature<Geometry>[]) => {
-	return features.reduce((m, feature) => {
-		if (feature.properties.type === CIRCLE) {
-			return m.concat(multiPointToCircle(feature as Feature<MultiPoint>));
-		}
-
-		return m.concat(feature);
-	}, [] as Feature<Geometry>[]);
-};
+export const render = (features: Feature<Geometry>[]) => (
+	features.reduce((m, feature) => (
+		feature.properties.type === CIRCLE
+			?  m.concat(multiPointToCircle(feature as Feature<MultiPoint>))
+			: m.concat(feature)
+	), [] as Feature<Geometry>[])
+);

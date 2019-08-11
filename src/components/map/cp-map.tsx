@@ -11,7 +11,7 @@ import { HashParams } from '../app/cp-hash';
 import { SystemMenu } from '../app/cp-system-menu';
 import { MapControl } from '../../map-control/map-control';
 import { DrawingTools } from './cp-drawing-tool';
-import { mergeClasses } from '../app/utils/util-merge-classes';
+import { mergeClasses } from '../../utils/util-merge-classes';
 import { MarkerVertex } from './cp-marker-vertex';
 import { OverViewToggle } from './cp-overview-toggle';
 import { MarkerArrowHead } from './cp-marker-arrow-head';

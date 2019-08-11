@@ -3,7 +3,7 @@ import { geoDistance } from './util-geo';
 import {
 	Box,
 	Feature, Geometry
-} from '../../types';
+} from '../types';
 
 export const getTargetZoom = (features: Feature<Geometry>[], box: Box) => {
 	const [a, b] = getBounds(features);
