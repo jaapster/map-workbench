@@ -1,21 +1,21 @@
 import { render } from './util-geo-json';
 import { getCoordinates } from './util-get-coordinates';
 import {
-	Co,
 	Bounds,
-	Feature } from '../../types';
+	Feature,
+	Geometry } from '../../types';
 
-export const getBounds = (features: Feature<any>[]): Bounds => {
-	const cos = getCoordinates(render(features));
-
-	return [
+export const getBounds = (features: Feature<Geometry>[]): Bounds => (
+	getCoordinates(render(features)).reduce(([[a, b], [c, d]], co) => (
 		[
-			cos.reduce((m, [v]: Co) => v < m ? v : m, Infinity),
-			cos.reduce((m, [, v]: Co) => v < m ? v : m, Infinity)
-		],
-		[
-			cos.reduce((m, [v]: Co) => v > m ? v : m, -Infinity),
-			cos.reduce((m, [, v]: Co) => v > m ? v : m, -Infinity)
+			[
+				Math.min(co[0], a),
+				Math.min(co[1], b)
+			],
+			[
+				Math.max(co[0], c),
+				Math.max(co[1], d)
+			]
 		]
-	];
-};
+	), [[Infinity, Infinity], [-Infinity, -Infinity]])
+);

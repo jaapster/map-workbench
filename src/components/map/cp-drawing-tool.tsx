@@ -7,7 +7,7 @@ import {
 import {
 	ActionClearSelection,
 	ActionDeleteSelection,
-	ActionSetMapControlMode } from '../../reducers/actions';
+	ActionSetMapControlMode } from '../../reducers/actions/actions';
 import {
 	Button,
 	ButtonGroup } from '../app/cp-button';
@@ -19,6 +19,7 @@ import {
 	DRAW_CIRCLE_MODE,
 	DRAW_SEGMENTED_MODE,
 	DRAW_RECTANGLE_MODE } from '../../constants';
+import { batchActions } from 'redux-batched-actions';
 
 interface Props {
 	mode: MapControlMode;
@@ -73,7 +74,7 @@ export const _DrawingTools = React.memo((
 				depressed={ mode === DRAW_POINT_MODE }
 				disabled={ isDrawing }
 			>
-				<i className="icon-map-marker-outline" />
+				<i className="icon-map-pin" />
 			</Button>
 		</ButtonGroup>
 		{
@@ -93,7 +94,7 @@ export const _DrawingTools = React.memo((
 								onClick={ deleteSelection }
 								className="delete"
 							>
-								<i className="icon-trashcan" />
+								<i className="icon-trash-2" />
 							</Button>
 						</ButtonGroup>
 					</>
@@ -114,20 +115,28 @@ const mapStateToProps = (state: State) => (
 const mapDispatchToProps = (dispatch: Dispatch) => (
 	{
 		activateDrawSegmentedMode() {
-			dispatch(ActionClearSelection.create({}));
-			dispatch(ActionSetMapControlMode.create({ mode: DRAW_SEGMENTED_MODE }));
+			dispatch(batchActions([
+				ActionClearSelection.create({}),
+				ActionSetMapControlMode.create({ mode: DRAW_SEGMENTED_MODE })
+			]));
 		},
 		activateDrawPointMode() {
-			dispatch(ActionClearSelection.create({}));
-			dispatch(ActionSetMapControlMode.create({ mode: DRAW_POINT_MODE }));
+			dispatch(batchActions([
+				ActionClearSelection.create({}),
+				ActionSetMapControlMode.create({ mode: DRAW_POINT_MODE })
+			]));
 		},
 		activateDrawCircleMode() {
-			dispatch(ActionClearSelection.create({}));
-			dispatch(ActionSetMapControlMode.create({ mode: DRAW_CIRCLE_MODE }));
+			dispatch(batchActions([
+				ActionClearSelection.create({}),
+				ActionSetMapControlMode.create({ mode: DRAW_CIRCLE_MODE })
+			]));
 		},
 		activateDrawRectangleMode() {
-			dispatch(ActionClearSelection.create({}));
-			dispatch(ActionSetMapControlMode.create({ mode: DRAW_RECTANGLE_MODE }));
+			dispatch(batchActions([
+				ActionClearSelection.create({}),
+				ActionSetMapControlMode.create({ mode: DRAW_RECTANGLE_MODE })
+			]));
 		},
 		deleteSelection() {
 			dispatch(ActionDeleteSelection.create({}));

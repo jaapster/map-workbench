@@ -1,171 +1,60 @@
-import bind from 'autobind-decorator';
 import React from 'react';
-import mapboxGL from 'mapbox-gl';
-import { DOM } from '../../map-control/utils/util-dom';
+import { Extent } from './cp-extent';
 import { connect } from 'react-redux';
 import { Crosshair } from './cp-crosshairs';
 import { MapControl } from '../../map-control/map-control';
-import { mergeClasses } from '../app/utils/util-merge-classes';
-import { disableInteractions } from '../../map-control/utils/util-map';
+import { OverviewControl } from '../../map-control/overview-control';
 import {
-	Ev,
 	Co,
 	State,
 	Feature,
-	Polygon,
-	MapboxStyle } from '../../types';
+	Polygon } from '../../types';
 import {
 	zoom,
 	scale,
+	mouse,
 	glare,
 	extent,
 	center,
-	bearing,
-	overviewVisible,
-	referenceStyles,
-	currentReferenceStyleId } from '../../reducers/selectors/index.selectors';
+	glareLevel,
+	overviewOffset,
+	overviewVisible } from '../../reducers/selectors/index.selectors';
 
 interface Props {
 	zoom: number;
-	scale: number;
 	glare: boolean;
+	mouse: Co;
 	center: Co;
-	bearing: number;
 	extent: Feature<Polygon>;
-	overviewVisible: boolean;
-	referenceLayers: [string, string | MapboxStyle][];
-	referenceLayer: string | MapboxStyle;
+	offset: number;
+	overview: boolean;
+	glareLevel: number;
 }
 
-const _map = new mapboxGL.Map({
-	zoom: 1,
-	style: 'mapbox://styles/mapbox/light-v10',
-	center: [0, 0],
-	container: DOM.create('div', 'map-container'),
-	fadeDuration: 0
-});
-
-disableInteractions(_map);
-
-@bind
-class SlaveMap extends React.PureComponent<Props> {
-	private _e?: Ev;
-	private _ref: any;
-	private _scale: number = 0;
-	private _referenceLayer: string | MapboxStyle = '';
-
-	private _setRef(e: any) {
-		this._ref = e;
+const _Overview = React.memo(({ zoom, glare, mouse, center, extent, offset, overview, glareLevel }: Props) => {
+	if (!(overview || glare)) {
+		return null;
 	}
 
-	componentDidMount() {
-		this._ref.appendChild(_map.getContainer());
-		this.forceUpdate();
+	OverviewControl.resize();
+	OverviewControl.setCenter(glare ? mouse : center);
+	OverviewControl.setZoom(glare ? glareLevel : zoom - offset);
 
-		_map.resize();
+	const { width, height } = OverviewControl.getContainer().getBoundingClientRect();
 
-		MapControl.instance.on('mouseMove', this._onMouseMove);
+	if (width === 0) {
+		// todo: find a way to force update of functional component
+		setTimeout(() => MapControl.setZoom(MapControl.getZoom() + 0.0001));
 	}
-
-	componentWillUnmount() {
-		MapControl.instance.off('mouseMove', this._onMouseMove);
-	}
-
-	private _onMouseMove(e: Ev) {
-		const { glare } = this.props;
-
-		this._e = e;
-
-		if (glare) {
-			_map.setCenter(e.lngLat);
-		}
-	}
-
-	render() {
-		const {
-			zoom,
-			scale,
-			glare,
-			center,
-			extent,
-			referenceLayer,
-			referenceLayers
-		} = this.props;
-
-		if (scale !== this._scale) {
-			this._scale = scale;
-
-			_map.resize();
-		}
-
-		if (referenceLayer !== this._referenceLayer) {
-			this._referenceLayer = referenceLayer;
-
-			const s = referenceLayers.find(([id]) => id === referenceLayer);
-
-			if (s) {
-				// @ts-ignore
-				_map.setStyle(s[1]);
-			}
-		}
-
-		const { width: w, height: h } = _map.getContainer().getBoundingClientRect();
-
-		if (glare) {
-			if (this._e) {
-				this._onMouseMove(this._e);
-			}
-
-			_map.setBearing(0);
-			_map.setZoom(19);
-
-			return (
-				<div ref={ this._setRef }>
-					<Crosshair w={ w } h={ h }/>
-				</div>
-			);
-		}
-
-		_map.setCenter(center);
-		_map.setZoom(zoom - 4);
-		// _map.setBearing(bearing);
-
-		const d = extent.geometry.coordinates[0]
-			.slice()
-			.reverse()
-			.reduce((m: string, co: Co, i: number) => {
-				const { x, y } = _map.project(co);
-				return `${ m }${ i ? 'L' : 'M' }${ x } ${ y }`;
-			}, `M0 -1L${ w + 1 } -1L${ w + 1 } ${ h }L0 ${ h }L0 -1`);
-
-		return (
-			<div ref={ this._setRef }>
-				<svg>
-					<path className="extent" d={ d } />
-				</svg>
-			</div>
-		);
-	}
-}
-
-export const _OverView = React.memo((props: Props) => {
-	const { glare, overviewVisible } = props;
-
-	const visible = overviewVisible || glare;
-
-	const className = mergeClasses(
-		'overview',
-		{
-			visible
-		}
-	);
 
 	return (
-		<div className={ className }>
+		<div className="overview" ref={ OverviewControl.attachTo }>
 			{
-				visible
-					? <SlaveMap { ...props } />
-					: null
+				glare
+					? <Crosshair />
+					: overview
+						? <Extent w={ width } h={ height } extent={ extent } />
+						: null
 			}
 		</div>
 	);
@@ -175,14 +64,14 @@ const mapStateToProps = (state: State) => (
 	{
 		zoom: zoom(state),
 		scale: scale(state),
+		mouse: mouse(state),
 		glare: glare(state),
 		center: center(state),
 		extent: extent(state),
-		bearing: bearing(state),
-		referenceLayer: currentReferenceStyleId(state),
-		overviewVisible: overviewVisible(state),
-		referenceLayers: referenceStyles(state)
+		offset: overviewOffset(state),
+		overview: overviewVisible(state),
+		glareLevel: glareLevel(state)
 	}
 );
 
-export const OverView = connect(mapStateToProps)(_OverView);
+export const OverView = connect(mapStateToProps)(_Overview);

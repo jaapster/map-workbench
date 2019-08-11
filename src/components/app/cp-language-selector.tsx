@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { Dispatch } from 'redux';
 import { Collapsible } from './cp-collapsible';
 import { RadioButtons } from './cp-radio-buttons';
-import { ActionSetLanguage } from '../../reducers/actions';
+import { ActionSetLanguage } from '../../reducers/actions/actions';
 import {
 	State,
 	LanguagePack } from '../../types';

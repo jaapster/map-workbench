@@ -1,5 +1,5 @@
 import { Location } from '../types';
-import { Action, ActionSetBookmarks } from './actions';
+import { Action, ActionSetBookmarks } from './actions/actions';
 
 const STATE: Location[] = [];
 

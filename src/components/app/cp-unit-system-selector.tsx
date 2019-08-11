@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { Dispatch } from 'redux';
 import { lang, unitSystem } from '../../reducers/selectors/index.selectors';
 import { RadioButtons } from './cp-radio-buttons';
-import { ActionSetUnitSystem } from '../../reducers/actions';
+import { ActionSetUnitSystem } from '../../reducers/actions/actions';
 import {
 	LanguagePack,
 	State,

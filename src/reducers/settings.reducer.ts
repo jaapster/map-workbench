@@ -3,13 +3,14 @@ import {
 	Action,
 	ActionSetUIScale,
 	ActionSetUnitSystem,
-	ActionToggleUnitSystem } from './actions';
+	ActionToggleUnitSystem } from './actions/actions';
 import {
 	IMPERIAL,
 	METRIC } from '../constants';
 
 const STATE: SettingsData = {
-	UIScale: 1,
+	scales: [1, 1.1, 1.2, 1.5],
+	scale: 1,
 	language: 'en',
 	unitSystem: METRIC
 };
@@ -32,7 +33,7 @@ export const settingsReducer = (state: SettingsData = STATE, action: Action): Se
 	if (ActionSetUIScale.validate(action)) {
 		return {
 			...state,
-			UIScale: ActionSetUIScale.data(action).UIScale
+			scale: ActionSetUIScale.data(action).UIScale
 		};
 	}
 

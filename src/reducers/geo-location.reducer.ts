@@ -1,5 +1,5 @@
 import { GeoLocationData } from '../types';
-import { Action, ActionSetGeoLocationPosition } from './actions';
+import { Action, ActionSetGeoLocationPosition } from './actions/actions';
 
 const STATE: GeoLocationData = {
 	position: [0, 0],

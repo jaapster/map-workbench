@@ -19,12 +19,17 @@ import {
 	MULTI_LINE_STRING } from '../../constants';
 import {
 	Co,
+	Feature,
 	SelectionVector,
-	FeatureCollection } from '../../types';
+	FeatureCollection, State, Geometry
+} from '../../types';
+import { connect } from 'react-redux';
+import { extent } from '../../reducers/selectors/index.selectors';
 
 interface Props {
-	featureCollection: FeatureCollection;
+	extent: Feature<Geometry>;
 	selection: SelectionVector[];
+	featureCollection: FeatureCollection;
 }
 
 const getSelectedVertices = ({ features }: any, selection: any): Co[] => {
@@ -57,42 +62,45 @@ const getSelectedVertices = ({ features }: any, selection: any): Co[] => {
 	}, [] as Co[]);
 };
 
-export const FeatureCollectionLayer = React.memo(({ featureCollection, selection }: Props) => {
+export const _FeatureCollectionLayer = React.memo(({ featureCollection, selection }: Props) => {
 	const selectedFeatureIndices = selection.map(([i]) => i);
+
+	const f = featureCollection.features;
 
 	return (
 		<g>
 			<g>
 				{
-					featureCollection.features.map((f, i) => {
-						const p = {
-							id: f.properties.id,
-							key: f.properties.id,
-							selected: selectedFeatureIndices.includes(i),
-							coordinates: f.geometry.coordinates
-						};
+					f
+						.map((f, i) => {
+							const p = {
+								id: f.properties.id,
+								key: f.properties.id,
+								selected: selectedFeatureIndices.includes(i),
+								coordinates: f.geometry.coordinates
+							};
 
-						switch (f.properties.type) {
-							case POINT:
-								return <Point { ...p } />;
-							case MULTI_POINT:
-								return <MultiPoint { ...p } />;
-							case LINE_STRING:
-								return <LineString { ...p } />;
-							case MULTI_LINE_STRING:
-								return <MultiLineString { ...p } />;
-							case POLYGON:
-								return <Polygon { ...p } />;
-							case MULTI_POLYGON:
-								return <MultiPolygon { ...p } />;
-							case CIRCLE:
-								return <Circle { ...p } />;
-							case RECTANGLE:
-								return <Rectangle { ...p } />;
-							default:
-								return null;
-						}
-					})
+							switch (f.properties.type) {
+								case POINT:
+									return <Point { ...p } />;
+								case MULTI_POINT:
+									return <MultiPoint { ...p } />;
+								case LINE_STRING:
+									return <LineString { ...p } />;
+								case MULTI_LINE_STRING:
+									return <MultiLineString { ...p } />;
+								case POLYGON:
+									return <Polygon { ...p } />;
+								case MULTI_POLYGON:
+									return <MultiPolygon { ...p } />;
+								case CIRCLE:
+									return <Circle { ...p } />;
+								case RECTANGLE:
+									return <Rectangle { ...p } />;
+								default:
+									return null;
+							}
+						})
 				}
 			</g>
 			<g>
@@ -110,3 +118,11 @@ export const FeatureCollectionLayer = React.memo(({ featureCollection, selection
 		</g>
 	);
 });
+
+const mapStateToProps = (state: State) => (
+	{
+		extent: extent(state)
+	}
+);
+
+export const FeatureCollectionLayer = connect(mapStateToProps)(_FeatureCollectionLayer);

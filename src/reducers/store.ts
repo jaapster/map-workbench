@@ -1,14 +1,15 @@
-import { Action } from './actions';
+import { State } from '../types';
+import { Action } from './actions/actions';
 import { createStore } from 'redux';
 import { rootReducer } from './root.reducer';
-import { State } from '../types';
+import { BatchAction, enableBatching } from 'redux-batched-actions';
 
 export const store = createStore(
-	rootReducer,
+	enableBatching(rootReducer),
 	{}
 );
 
-export const dispatch = (action: Action) => {
+export const dispatch = (action: Action | BatchAction) => {
 	store.dispatch(action);
 };
 

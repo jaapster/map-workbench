@@ -9,7 +9,8 @@ import {
 	MULTI_LINE_STRING } from '../../../constants';
 import {
 	Co,
-	Feature } from '../../../types';
+	Feature,
+	Geometry } from '../../../types';
 
 const RADIUS = 6378137;
 
@@ -17,11 +18,11 @@ function rad(num: number) {
 	return num * Math.PI / 180;
 }
 
-export const getRadius = (feature: Feature<any>) => {
+export const getRadius = (feature: Feature<Geometry>) => {
 	if (feature.properties.type === CIRCLE) {
 		const { geometry: { coordinates } } = feature;
 
-		return getLineLength(coordinates);
+		return getLineLength(coordinates as Co[]);
 	}
 
 	return null;
@@ -36,7 +37,7 @@ const addLength = (m: number, co: Co[]) => m + getLineLength(co);
 
 const round = (d: number) => (v: number) => Math.round(v * (10 ** d)) / (10 ** d);
 
-export const getFeatureLength = (feature: Feature<any>) => {
+export const getFeatureLength = (feature: Feature<Geometry>) => {
 	const {
 		properties: { type },
 		geometry: { coordinates }
@@ -49,12 +50,12 @@ export const getFeatureLength = (feature: Feature<any>) => {
 	}
 
 	return type === LINE_STRING
-		? getLineLength(coordinates)
+		? getLineLength(coordinates as Co[])
 		: [MULTI_LINE_STRING, POLYGON, RECTANGLE].includes(type)
-			? coordinates.reduce(addLength, 0)
+			? (coordinates as Co[][]).reduce(addLength, 0)
 			: type === MULTI_POLYGON
 				? coordinates.flat().reduce(addLength, 0)
-				: 0;
+				: null;
 };
 
 export const getRingArea = (cos: Co[]) => {
@@ -108,7 +109,7 @@ export const getPolygonArea = (cos: Co[][]) => {
 	return total;
 };
 
-export const getFeatureArea = (feature: Feature<any>) => {
+export const getFeatureArea = (feature: Feature<Geometry>) => {
 	const { geometry: { coordinates }, properties: { type } } = feature;
 
 	let total = 0;
@@ -123,10 +124,10 @@ export const getFeatureArea = (feature: Feature<any>) => {
 	switch (type) {
 		case POLYGON:
 		case RECTANGLE:
-			return getPolygonArea(coordinates);
+			return getPolygonArea(coordinates as Co[][]);
 		case MULTI_POLYGON:
 			for (i = 0; i < coordinates.length; i += 1) {
-				total += getPolygonArea(coordinates[i]);
+				total += getPolygonArea((coordinates as Co[][][])[i]);
 			}
 			return total;
 		default:
@@ -134,16 +135,16 @@ export const getFeatureArea = (feature: Feature<any>) => {
 	}
 };
 
-export const getCoordinate = (feature: Feature<any>) => {
+export const getCoordinate = (feature: Feature<Geometry>) => {
 	const {
 		properties: { type },
 		geometry: { coordinates }
 	} = feature;
 
 	return type === POINT
-		? coordinates.map(round(6))
+		? (coordinates as Co).map(round(6))
 		: type === CIRCLE
-			? coordinates[0].map(round(6))
+			? (coordinates as Co[])[0].map(round(6))
 			: null;
 };
 

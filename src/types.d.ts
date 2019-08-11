@@ -27,6 +27,8 @@ export interface LngLat {
 	lat: number;
 }
 
+export type BBox = [number, number, number, number];
+
 export type Co = [number, number];
 
 export type Cos = Co | Co[] | Co[][] | Co[][][];
@@ -56,14 +58,15 @@ export interface MultiPolygon extends Geometry {
 	coordinates: Co[][][];
 }
 
-export interface Feature<GeometryJSON> {
+export interface Feature<Geometry> {
 	type: string;
-	geometry: GeometryJSON;
+	geometry: Geometry;
 	properties: {
 		type: string,
 		id: string,
 		text?: string
 	};
+	bbox: BBox;
 }
 
 export interface FeatureCollection {
@@ -141,9 +144,12 @@ export interface MapControlData {
 	zoom: number;
 	pitch: number;
 	glare: boolean;
+	mouse: Co;
 	center: Co;
 	extent: Feature<Polygon>;
 	bearing: number;
+	glareLevel: number;
+	overviewOffset: number;
 	overviewVisible: boolean;
 }
 
@@ -179,7 +185,8 @@ export type UnitSystem = 'metric' | 'imperial';
 export interface SettingsData {
 	unitSystem: UnitSystem;
 	language: string;
-	UIScale: number;
+	scale: number;
+	scales: number[];
 }
 
 
@@ -188,6 +195,11 @@ export type LanguagePack = Dict<string | LanguagePack>;
 export interface LanguageData {
 	language: string;
 	languagePacks: LanguagePack[];
+}
+
+export interface SystemData {
+	appPhase: string;
+	authorized: boolean;
 }
 
 export interface State {
@@ -199,4 +211,5 @@ export interface State {
 	bookmarks: Location[];
 	settings: SettingsData;
 	languages: LanguageData;
+	system: SystemData;
 }

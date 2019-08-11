@@ -1,6 +1,6 @@
 [
 	{
-		"id": "en",
+		"id": "en-US",
 		"name": "English",
 		"settings": {
 			"title": "Settings",
@@ -38,7 +38,7 @@
 		}
 	},
 	{
-		"id": "nl",
+		"id": "nl-NL",
 		"name": "Nederlands",
 		"settings": {
 			"title": "Instellingen",
@@ -76,13 +76,13 @@
 		}
 	},
 	{
-		"id": "fr",
+		"id": "fr-FR",
 		"name": "Français",
 		"settings": {
 			"title": "Parametres",
 			"language": "Langue",
 			"unitSystem": "Systeme d'unité",
-			"uiScale": "Dimension",
+			"uiScale": "Taille",
 			"metric": "Métrique",
 			"imperial": "Impérial"
 		},
@@ -114,7 +114,7 @@
 		}
 	},
 	{
-		"id": "de",
+		"id": "de-DE",
 		"name": "Deutsch",
 		"settings": {
 			"title": "Einstellungen",

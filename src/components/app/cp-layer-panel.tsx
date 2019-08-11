@@ -14,7 +14,8 @@ import {
 	currentFeatureCollection } from '../../reducers/selectors/index.selectors';
 import {
 	ActionSelect,
-	ActionDeleteSelection } from '../../reducers/actions';
+	ActionDeleteSelection } from '../../reducers/actions/actions';
+import { batchActions } from 'redux-batched-actions';
 
 interface Props {
 	del: (collectionId: string, vector: SelectionVector) => void;
@@ -90,8 +91,10 @@ const mapDispatchToProps = (dispatch: Dispatch) => (
 		},
 
 		del(collectionId: string, vector: SelectionVector) {
-			dispatch(ActionSelect.create({ vector, multi: false }));
-			dispatch(ActionDeleteSelection.create({ collectionId }));
+			dispatch(batchActions([
+				ActionSelect.create({ vector, multi: false }),
+				ActionDeleteSelection.create({ collectionId })
+			]));
 		}
 	}
 );

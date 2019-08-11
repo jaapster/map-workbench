@@ -1,22 +1,22 @@
-import { Co, Feature } from '../../types';
+import { Co, Feature, Geometry } from '../../types';
 import {
-	LINE_STRING,
-	MULTI_LINE_STRING,
-	MULTI_POINT, MULTI_POLYGON,
 	POINT,
-	POLYGON, RECTANGLE
-} from '../../constants';
+	POLYGON,
+	MULTI_POINT,
+	LINE_STRING,
+	MULTI_POLYGON,
+	MULTI_LINE_STRING } from '../../constants';
 
-export const getCoordinates = (features: Feature<any>[]) => {
-	return features.reduce((m, { geometry: { coordinates, type } }) => {
-		return type === POINT
-			? m.concat([coordinates])
+export const getCoordinates = (features: Feature<Geometry>[]) => (
+	features.reduce((m, { geometry: { coordinates, type } }) => (
+		type === POINT
+			? m.concat([coordinates as Co])
 			: type === LINE_STRING || type === MULTI_POINT
-				? m.concat(coordinates)
-				: type === POLYGON || type === MULTI_LINE_STRING || type === RECTANGLE
+				? m.concat(coordinates as Co[])
+				: type === POLYGON || type === MULTI_LINE_STRING
 					? m.concat(coordinates.flat(1))
 					: type === MULTI_POLYGON
 						? m.concat(coordinates.flat(2))
-						: m;
-	}, [] as Co[]);
-};
+						: m
+	), [] as Co[])
+);

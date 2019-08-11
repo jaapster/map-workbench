@@ -4,7 +4,7 @@ import './scss/cp-panel-pair.scss';
 import { clamp } from '../../utils/util-clamp';
 import { mergeClasses } from '../app/utils/util-merge-classes';
 import { connect } from 'react-redux';
-import { ActionSetPanelCollapsed } from '../../reducers/actions';
+import { ActionSetPanelCollapsed } from '../../reducers/actions/actions';
 import { Dispatch } from 'redux';
 
 interface Props {
@@ -30,7 +30,7 @@ interface State {
 const DEFAULT_POSITION = 200;
 const DEFAULT_MIN_POSITION = 150;
 const DEFAULT_MAX_POSITION = 300;
-const DEFAULT_COLLAPSED_POSITION = 64;
+const DEFAULT_COLLAPSED_POSITION = 60;
 
 @bind
 export class _PanelPair extends React.PureComponent<Props, State> {

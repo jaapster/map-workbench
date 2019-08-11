@@ -1,4 +1,4 @@
-export const mergeClasses = (...args: Array<any>) => args.reduce((m1, arg) => (
+export const mergeClasses = (...args: any[]) => args.reduce((m1, arg) => (
 	typeof arg === 'string'
 		? `${ m1 }${ arg } `
 		: (

@@ -1,19 +1,20 @@
 import React from 'react';
-import { Co, State } from '../../../types';
+import { extent } from '../../../reducers/selectors/index.selectors';
+import { connect } from 'react-redux';
 import { Segments } from '../cp-segments';
 import { addToPath } from '../utils/util-add-to-path';
 import { mergeClasses } from '../../app/utils/util-merge-classes';
-import { center } from '../../../reducers/selectors/index.selectors';
-import { connect } from 'react-redux';
+import {
+	Co,
+	State } from '../../../types';
 
 interface Props {
 	id: string;
-	center: Co;
 	selected: boolean;
 	coordinates: Co[][];
 }
 
-export const _Polygon = React.memo(({ id, coordinates, selected, center }: Props) => {
+export const _Polygon = React.memo(({ id, coordinates, selected }: Props) => {
 	const className = mergeClasses(
 		'polygon',
 		{
@@ -45,10 +46,10 @@ export const _Polygon = React.memo(({ id, coordinates, selected, center }: Props
 	);
 });
 
-const mapStateToProps = (state: State) => {
-	return {
-		center: center(state)
-	};
-};
+const mapStateToProps = (state: State) => (
+	{
+		extent: extent(state)
+	}
+);
 
 export const Polygon = connect(mapStateToProps)(_Polygon);

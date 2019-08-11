@@ -1,20 +1,21 @@
 import React from 'react';
-import { Co, State } from '../../../types';
+import { extent } from '../../../reducers/selectors/index.selectors';
+import { connect } from 'react-redux';
 import { Segment } from '../cp-segment';
 import { addToPath } from '../utils/util-add-to-path';
 import { mergeClasses } from '../../app/utils/util-merge-classes';
 import { multiPointToLines } from '../../../map-control/utils/util-geo-json';
-import { center } from '../../../reducers/selectors/index.selectors';
-import { connect } from 'react-redux';
+import {
+	Co,
+	State } from '../../../types';
 
 interface Props {
 	id: string;
-	center: Co;
 	selected: boolean;
 	coordinates: Co[];
 }
 
-export const _Circle = React.memo(({ coordinates, selected, id, center }: Props) => {
+export const _Circle = React.memo(({ coordinates, selected, id }: Props) => {
 	const className = mergeClasses(
 		'circle',
 		{
@@ -50,11 +51,11 @@ export const _Circle = React.memo(({ coordinates, selected, id, center }: Props)
 	);
 });
 
-const mapStateToProps = (state: State) => {
-	return {
-		center: center(state)
-	};
-};
+const mapStateToProps = (state: State) => (
+	{
+		extent: extent(state)
+	}
+);
 
 export const Circle = connect(mapStateToProps)(_Circle);
 

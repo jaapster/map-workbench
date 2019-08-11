@@ -28,7 +28,8 @@ import {
 	ActionSetCollection,
 	ActionClearSelection,
 	ActionDeleteSelection,
-	ActionSetMapControlMode } from '../../reducers/actions';
+	ActionSetMapControlMode } from '../../reducers/actions/actions';
+import { batchActions } from 'redux-batched-actions';
 
 export class InteractionMode extends EventEmitter {
 	protected readonly _el: HTMLElement;
@@ -121,9 +122,11 @@ export class InteractionMode extends EventEmitter {
 		const vector = this._hit(lngLat, point, featureCollection);
 
 		if (vector != null) {
-			dispatch(ActionSetCollection.create({ collectionId }));
-			dispatch(ActionSelect.create({ vector, multi }));
-			dispatch(ActionSetMapControlMode.create({ mode: UPDATE_MODE }));
+			dispatch(batchActions([
+				ActionSetCollection.create({ collectionId }),
+				ActionSelect.create({ vector, multi }),
+				ActionSetMapControlMode.create({ mode: UPDATE_MODE })
+			]));
 			// dispatch(ActionShowPropertiesPanel.create({}));
 			// MapControl.resize();
 		}  else {

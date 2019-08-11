@@ -4,7 +4,8 @@ import { Dispatch } from 'redux';
 import { MapControl } from '../../map-control/map-control';
 import { Collapsible } from './cp-collapsible';
 import { RadioButtons } from './cp-radio-buttons';
-import { ActionSetCurrentReferenceLayer } from '../../reducers/actions';
+import { OverviewControl } from '../../map-control/overview-control';
+import { ActionSetCurrentReferenceLayer } from '../../reducers/actions/actions';
 import {
 	lang,
 	referenceStyles,
@@ -56,6 +57,8 @@ const mapDispatchToProps = (dispatch: Dispatch) => (
 	{
 		setStyle([layer, style]: Foo) {
 			MapControl.setStyle(style);
+			OverviewControl.setStyle(style);
+
 			dispatch(ActionSetCurrentReferenceLayer.create({ layer }));
 		}
 	}

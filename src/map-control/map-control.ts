@@ -17,10 +17,7 @@ import { DrawCircleMode } from './modes/mode.draw-circle';
 import { DrawSegmentedMode } from './modes/mode.draw-segmented';
 import { DrawRectangleMode } from './modes/mode.draw-rectangle';
 import { disableInteractions } from './utils/util-map';
-import {
-	ActionSetGlare,
-	ActionSetMapControlMetrics
-} from '../reducers/actions';
+import { ActionSetMapControlMetrics } from '../reducers/actions/actions';
 import {
 	dispatch,
 	getState } from '../reducers/store';
@@ -45,15 +42,14 @@ import {
 	Point,
 	Polygon,
 	Feature,
-	Location,
-	MapboxStyle } from '../types';
+	Location, Geometry, BBox
+} from '../types';
 import {
 	llToCo,
 	coToLl,
 	geoProject,
 	geoDistance,
 	geoUnproject } from './utils/util-geo';
-import { EventEmitter } from '../event-emitter';
 
 const FIT_PADDING = 64;
 const FIT_MIN_ZOOM = 14;
@@ -73,7 +69,7 @@ const DEFAULT_PROPS: Props = {
 };
 
 @bind
-export class MapControl extends EventEmitter {
+export class MapControl {
 	static instance: MapControl;
 
 	static create(props: Props) {
@@ -88,7 +84,7 @@ export class MapControl extends EventEmitter {
 		MapControl.instance.resize();
 	}
 
-	static fitFeatures(features: Feature<any>[]) {
+	static fitFeatures(features: Feature<Geometry>[]) {
 		MapControl.instance.bringInView(features);
 	}
 
@@ -161,6 +157,11 @@ export class MapControl extends EventEmitter {
 		MapControl.instance.persistMetrics();
 	}
 
+	static attachTo(e: any) {
+		e.appendChild(MapControl.instance.getContainer());
+		MapControl.instance.resize();
+	}
+
 	private readonly _map: any;
 	private readonly _menuMode: MenuMode;
 	private readonly _updateMode: ModeUpdate;
@@ -172,11 +173,9 @@ export class MapControl extends EventEmitter {
 	private readonly _drawRectangleMode: DrawRectangleMode;
 	private readonly _drawSegmentedMode: DrawSegmentedMode;
 
-	private _style: string | MapboxStyle;
+	private _mouse: Co = [0, 0];
 
 	constructor(props: Props = DEFAULT_PROPS) {
-		super();
-
 		// add missing universeData
 		const {
 			style,
@@ -185,8 +184,6 @@ export class MapControl extends EventEmitter {
 
 		const { center, zoom } = location;
 		const container = DOM.create('div', 'map-container', document.body);
-
-		this._style = style;
 
 		this._map = new mapboxGL.Map({
 			zoom: zoom - 1,
@@ -230,8 +227,6 @@ export class MapControl extends EventEmitter {
 
 		this._keyboardDevice.on('deleteKeyDown', this._onDeleteKey);
 		this._keyboardDevice.on('escapeKeyDown', this._onEscapeKey);
-		this._keyboardDevice.on('glareKeyDown', MapControl.onGlareKeyDown);
-		this._keyboardDevice.on('glareKeyUp', MapControl.onGlareKeyUp);
 
 		this._map.on('move', MapControl.onMapMove);
 		this._map.on('zoom', MapControl.onMapZoom);
@@ -272,7 +267,9 @@ export class MapControl extends EventEmitter {
 
 	private _onPointerMove(e: Ev) {
 		this._mode().onPointerMove(e);
-		this.trigger('mouseMove', e);
+		this._mouse = llToCo(e.lngLat);
+
+		this.persistMetrics();
 	}
 
 	private _onPointerUp(e: Ev) {
@@ -323,18 +320,11 @@ export class MapControl extends EventEmitter {
 		this._mode().onEscapeKey();
 	}
 
-	static onGlareKeyDown() {
-		dispatch(ActionSetGlare.create({ glare: true }));
-	}
-
-	static onGlareKeyUp() {
-		dispatch(ActionSetGlare.create({ glare: false }));
-	}
-
 	persistMetrics() {
 		dispatch(ActionSetMapControlMetrics.create({
 			zoom: this.getZoom(),
 			pitch: this.getPitch(),
+			mouse: this.getMouse(),
 			center: this.getCenter(),
 			extent: this.getExtent(),
 			bearing: this.getBearing()
@@ -345,7 +335,7 @@ export class MapControl extends EventEmitter {
 		this._map.resize();
 	}
 
-	bringInView(features: Feature<any>[]) {
+	bringInView(features: Feature<Geometry>[]) {
 		if (!this.isInView(features)) {
 			const { width, height } = this.getBoundingClientRect();
 
@@ -367,7 +357,7 @@ export class MapControl extends EventEmitter {
 		}
 	}
 
-	isInView(features: Feature<any>[]) {
+	isInView(features: Feature<Geometry>[]) {
 		const featureBounds = getBounds([{
 			type: FEATURE,
 			geometry: {
@@ -377,7 +367,8 @@ export class MapControl extends EventEmitter {
 			properties: {
 				type: LINE_STRING,
 				id: ''
-			}
+			},
+			bbox: getBounds(features).flat() as BBox
 		}]);
 		const currentZoom = this.getZoom();
 
@@ -406,7 +397,6 @@ export class MapControl extends EventEmitter {
 	}
 
 	setStyle(style: any) {
-		this._style = style;
 		this._map.setStyle(style);
 	}
 
@@ -466,6 +456,10 @@ export class MapControl extends EventEmitter {
 		return this._map.setPitch(pitch);
 	}
 
+	getMouse() {
+		return this._mouse;
+	}
+
 	getExtent(): Feature<Polygon> {
 		const { width, height } = this.getBoundingClientRect();
 
@@ -483,7 +477,8 @@ export class MapControl extends EventEmitter {
 			properties: {
 				id: 'extent',
 				type: POLYGON
-			}
+			},
+			bbox: [c1, c3].flat() as BBox
 		};
 	}
 

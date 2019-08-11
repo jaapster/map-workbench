@@ -2,7 +2,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { Dispatch } from 'redux';
 import { RadioButtons } from './cp-radio-buttons';
-import { ActionGoToWorld } from '../../reducers/actions';
+import { ActionGoToWorld } from '../../reducers/actions/actions';
 import {
 	lang,
 	worlds,

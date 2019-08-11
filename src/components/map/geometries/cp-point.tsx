@@ -1,5 +1,5 @@
 import React from 'react';
-import { center } from '../../../reducers/selectors/index.selectors';
+import { extent } from '../../../reducers/selectors/index.selectors';
 import { connect } from 'react-redux';
 import { MapControl } from '../../../map-control/map-control';
 import { mergeClasses } from '../../app/utils/util-merge-classes';
@@ -9,12 +9,11 @@ import {
 
 interface Props {
 	id: string;
-	center: Co;
 	selected: boolean;
 	coordinates: Co;
 }
 
-export const _Point = React.memo(({ coordinates, selected, center }: Props) => {
+export const _Point = React.memo(({ coordinates, selected }: Props) => {
 	const { x, y } = MapControl.project(coordinates);
 
 	const className = mergeClasses(
@@ -34,10 +33,10 @@ export const _Point = React.memo(({ coordinates, selected, center }: Props) => {
 	);
 });
 
-const mapStateToProps = (state: State) => {
-	return {
-		center: center(state)
-	};
-};
+const mapStateToProps = (state: State) => (
+	{
+		extent: extent(state)
+	}
+);
 
 export const Point = connect(mapStateToProps)(_Point);

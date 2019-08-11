@@ -6,9 +6,10 @@ import { llToCo } from '../utils/util-geo';
 import {
 	ActionAddFeature,
 	ActionDeleteSelection,
-	ActionSetMapControlMode } from '../../reducers/actions';
+	ActionSetMapControlMode } from '../../reducers/actions/actions';
 import { currentCollectionId } from '../../reducers/selectors/index.selectors';
 import { newPoint } from '../utils/util-geo-json';
+import { batchActions } from 'redux-batched-actions';
 
 export class DrawPointMode extends InteractionMode {
 	static create(map: any) {
@@ -25,12 +26,10 @@ export class DrawPointMode extends InteractionMode {
 
 		const co = llToCo(e.lngLat);
 
-		dispatch(ActionAddFeature.create({
-			collectionId,
-			feature: newPoint(co)
-		}));
-
-		dispatch(ActionSetMapControlMode.create({ mode: NAVIGATION_MODE }));
+		dispatch(batchActions([
+			ActionAddFeature.create({ collectionId, feature: newPoint(co) }),
+			ActionSetMapControlMode.create({ mode: NAVIGATION_MODE })
+		]));
 	}
 
 	onPointerUp(e: Ev) {}
@@ -42,7 +41,9 @@ export class DrawPointMode extends InteractionMode {
 			return;
 		}
 
-		dispatch(ActionDeleteSelection.create({ collectionId }));
-		dispatch(ActionSetMapControlMode.create({ mode: NAVIGATION_MODE }));
+		dispatch(batchActions([
+			ActionDeleteSelection.create({ collectionId }),
+			ActionSetMapControlMode.create({ mode: NAVIGATION_MODE })
+		]));
 	}
 }

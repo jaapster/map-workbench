@@ -2,7 +2,7 @@ import React from 'react';
 import { crs } from '../../reducers/selectors/index.selectors';
 import { connect } from 'react-redux';
 import { Dispatch } from 'redux';
-import { ActionSetMapControlCRS } from '../../reducers/actions';
+import { ActionSetMapControlCRS } from '../../reducers/actions/actions';
 import {
 	EPSG,
 	State } from '../../types';

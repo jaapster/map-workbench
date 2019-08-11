@@ -5,7 +5,9 @@ import {
 	Co,
 	EPSG,
 	State } from '../../types';
-import { center, crs } from '../../reducers/selectors/index.selectors';
+import {
+	crs,
+	center } from '../../reducers/selectors/index.selectors';
 
 interface Props {
 	CRS: EPSG;

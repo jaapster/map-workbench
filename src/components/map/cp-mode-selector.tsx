@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import { Dispatch } from 'redux';
 import {
 	ActionClearSelection,
-	ActionSetMapControlMode } from '../../reducers/actions';
+	ActionSetMapControlMode } from '../../reducers/actions/actions';
 import {
 	Button,
 	ButtonGroup } from '../app/cp-button';
@@ -19,6 +19,7 @@ import {
 	DRAW_CIRCLE_MODE,
 	DRAW_SEGMENTED_MODE,
 	DRAW_RECTANGLE_MODE } from '../../constants';
+import { batchActions } from 'redux-batched-actions';
 
 interface Props {
 	mode: MapControlMode;
@@ -100,20 +101,28 @@ const mapStateToProps = (state: State) => (
 const mapDispatchToProps = (dispatch: Dispatch) => (
 	{
 		activateDrawSegmentedMode() {
-			dispatch(ActionClearSelection.create({}));
-			dispatch(ActionSetMapControlMode.create({ mode: DRAW_SEGMENTED_MODE }));
+			dispatch(batchActions([
+				ActionClearSelection.create({}),
+				ActionSetMapControlMode.create({ mode: DRAW_SEGMENTED_MODE })
+			]));
 		},
 		activateDrawPointMode() {
-			dispatch(ActionClearSelection.create({}));
-			dispatch(ActionSetMapControlMode.create({ mode: DRAW_POINT_MODE }));
+			dispatch(batchActions([
+				ActionClearSelection.create({}),
+				ActionSetMapControlMode.create({ mode: DRAW_POINT_MODE })]
+			));
 		},
 		activateDrawCircleMode() {
-			dispatch(ActionClearSelection.create({}));
-			dispatch(ActionSetMapControlMode.create({ mode: DRAW_CIRCLE_MODE }));
+			dispatch(batchActions([
+				ActionClearSelection.create({}),
+				ActionSetMapControlMode.create({ mode: DRAW_CIRCLE_MODE })
+			]));
 		},
 		activateDrawRectangleMode() {
-			dispatch(ActionClearSelection.create({}));
-			dispatch(ActionSetMapControlMode.create({ mode: DRAW_RECTANGLE_MODE }));
+			dispatch(batchActions([
+				ActionClearSelection.create({}),
+				ActionSetMapControlMode.create({ mode: DRAW_RECTANGLE_MODE })
+			]));
 		},
 		activateNavigationMode() {
 			dispatch(ActionSetMapControlMode.create({ mode: NAVIGATION_MODE }));

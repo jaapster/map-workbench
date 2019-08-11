@@ -28,11 +28,12 @@ import {
 	ActionSelect,
 	ActionAddVertex,
 	ActionMoveGeometry,
-	ActionUpdateCoordinates } from '../../reducers/actions';
+	ActionUpdateCoordinates } from '../../reducers/actions/actions';
 import {
 	currentCollectionId,
 	currentSelectionVectors,
 	currentFeatureCollection } from '../../reducers/selectors/index.selectors';
+import { batchActions } from 'redux-batched-actions';
 
 @bind
 export class ModeUpdate extends InteractionMode {
@@ -69,13 +70,14 @@ export class ModeUpdate extends InteractionMode {
 						const d = dis(point, p);
 
 						if (d < THRESHOLD) {
-							dispatch(ActionSelect.create({ multi: false, vector }));
-
-							dispatch(ActionAddVertex.create({
-								vector,
-								coordinate,
-								collectionId
-							}));
+							dispatch(batchActions([
+								ActionSelect.create({ multi: false, vector }),
+								ActionAddVertex.create({
+									vector,
+									coordinate,
+									collectionId
+								})
+							]));
 						}
 					}
 				}

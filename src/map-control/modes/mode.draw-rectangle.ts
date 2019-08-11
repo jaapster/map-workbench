@@ -18,11 +18,12 @@ import {
 	ActionAddFeature,
 	ActionDeleteSelection,
 	ActionSetMapControlMode,
-	ActionUpdateCoordinates } from '../../reducers/actions';
+	ActionUpdateCoordinates } from '../../reducers/actions/actions';
 import {
 	currentCollectionId,
 	currentSelectionVectors,
 	currentFeatureCollection } from '../../reducers/selectors/index.selectors';
+import { batchActions } from 'redux-batched-actions';
 
 export class DrawRectangleMode extends DrawSegmentedMode {
 	static create(map: any) {
@@ -115,7 +116,9 @@ export class DrawRectangleMode extends DrawSegmentedMode {
 			return;
 		}
 
-		dispatch(ActionDeleteSelection.create({ collectionId }));
-		dispatch(ActionSetMapControlMode.create({ mode: NAVIGATION_MODE }));
+		dispatch(batchActions([
+			ActionDeleteSelection.create({ collectionId }),
+			ActionSetMapControlMode.create({ mode: NAVIGATION_MODE })
+		]));
 	}
 }

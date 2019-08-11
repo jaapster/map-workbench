@@ -4,14 +4,18 @@ import {
 	Dict,
 	EPSG,
 	Point,
+	Polygon,
 	Feature,
+	Geometry,
+	Location,
 	WorldData,
+	UnitSystem,
 	MapboxStyle,
+	LanguagePack,
 	UniverseData,
 	MapControlMode,
 	SelectionVector,
-	FeatureCollection, Location, UnitSystem, Polygon, LanguagePack
-} from '../types';
+	FeatureCollection } from '../../types';
 
 export interface Action {
 	type: string;
@@ -65,7 +69,7 @@ export const ActionSetCollectionData = getActionCreator<{
 
 export const ActionAddFeature = getActionCreator<{
 	collectionId: string,
-	feature: Feature<any>
+	feature: Feature<Geometry>
 }>('ActionAddFeature');
 
 export const ActionAddVertex = getActionCreator<{
@@ -92,6 +96,10 @@ export const ActionSetMapControlMode = getActionCreator<{
 export const ActionSetMapControlZoom = getActionCreator<{
 	zoom: number
 }>('ActionSetMapControlZoom');
+
+export const ActionSetOverviewOffset = getActionCreator<{
+	offset: number
+}>('ActionSetOverviewOffset');
 
 export const ActionSetMapControlCenter = getActionCreator<{
 	center: Co
@@ -148,6 +156,7 @@ export const ActionToggleOverview = getActionCreator<{
 export const ActionSetMapControlMetrics = getActionCreator<{
 	zoom: number;
 	pitch: number;
+	mouse: Co;
 	center: Co;
 	extent: Feature<Polygon>;
 	bearing: number;
@@ -156,3 +165,9 @@ export const ActionSetMapControlMetrics = getActionCreator<{
 export const ActionSetGlare = getActionCreator<{
 	glare: boolean;
 }>('ActionSetGlare');
+
+export const ActionAuthorize = getActionCreator<{
+}>('ActionAuthorize');
+
+export const ActionLogout = getActionCreator<{
+}>('ActionLogout');

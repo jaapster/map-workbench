@@ -2,7 +2,7 @@ import { LanguageData } from '../types';
 import {
 	Action,
 	ActionSetLanguage,
-	ActionSetLanguagePacks } from './actions';
+	ActionSetLanguagePacks } from './actions/actions';
 
 const STATE: LanguageData = {
 	language: '',

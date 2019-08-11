@@ -16,11 +16,12 @@ import {
 	ActionDeleteSelection,
 	ActionSetCollectionData,
 	ActionUpdateCoordinates,
-	ActionSetMapControlMode } from '../../reducers/actions';
+	ActionSetMapControlMode } from '../../reducers/actions/actions';
 import {
 	currentCollectionId,
 	currentSelectionVectors,
 	currentFeatureCollection } from '../../reducers/selectors/index.selectors';
+import { batchActions } from 'redux-batched-actions';
 
 export class DrawSegmentedMode extends InteractionMode {
 	static create(map: any) {
@@ -161,7 +162,9 @@ export class DrawSegmentedMode extends InteractionMode {
 			return;
 		}
 
-		dispatch(ActionDeleteSelection.create({ collectionId }));
-		dispatch(ActionSetMapControlMode.create({ mode: NAVIGATION_MODE }));
+		dispatch(batchActions([
+			ActionDeleteSelection.create({ collectionId }),
+			ActionSetMapControlMode.create({ mode: NAVIGATION_MODE })
+		]));
 	}
 }

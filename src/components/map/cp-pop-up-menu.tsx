@@ -1,21 +1,24 @@
 import React from 'react';
-import { mode } from '../../reducers/selectors/index.selectors';
+import { mode, mouse } from '../../reducers/selectors/index.selectors';
 import { connect } from 'react-redux';
 import { Dispatch } from 'redux';
 import { mergeClasses } from '../app/utils/util-merge-classes';
 import {
 	ActionClearSelection,
 	ActionDeleteSelection,
-	ActionSetMapControlMode } from '../../reducers/actions';
+	ActionSetMapControlMode } from '../../reducers/actions/actions';
 import {
 	MENU_MODE,
 	NAVIGATION_MODE } from '../../constants';
 import {
 	State,
-	MapControlMode } from '../../types';
+	MapControlMode, Co
+} from '../../types';
+import { MapControl } from '../../map-control/map-control';
 
 interface P1 {
 	mode: MapControlMode;
+	mouse: Co;
 }
 
 interface P2 {
@@ -24,19 +27,19 @@ interface P2 {
 	deleteSelection: () => void;
 }
 
-let mouse: { left: number, top: number } = { left: 0, top: 0 };
+const foo = (co: Co) => {
+	const { x: left, y: top } = MapControl.project(co);
 
-window.addEventListener('mousemove', ({ clientX, clientY }: any) => {
-	mouse = { left: clientX, top: clientY };
-});
+	return { top, left };
+};
 
-export const _PopUpMenu = React.memo(({ mode, close, clearSelection, deleteSelection }: P1 & P2) => (
+export const _PopUpMenu = React.memo(({ mode, mouse, close, clearSelection, deleteSelection }: P1 & P2) => (
 	mode === MENU_MODE
 		? (
 			<div
 				onMouseDown={ close }
 				className="context-menu list"
-				style={ mouse }
+				style={ foo(mouse) }
 			>
 				{
 					[
@@ -68,7 +71,8 @@ export const _PopUpMenu = React.memo(({ mode, close, clearSelection, deleteSelec
 
 const mapStateToProps = (state: State): P1 => (
 	{
-		mode: mode(state)
+		mode: mode(state),
+		mouse: mouse(state)
 	}
 );
 

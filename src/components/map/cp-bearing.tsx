@@ -21,7 +21,7 @@ export const _Bearing = React.memo(({ pitch, bearing }: Props) => (
 		<Button onClick={ reset }>
 			<div style={ { transform: `scaleY(${ 1 - (pitch / 120) })` } }>
 				<div style={ { transform: `rotate(${ bearing }deg)` } }>
-					<i className="icon-arrow-up" />
+					<i className="icon-navigation-2" />
 				</div>
 			</div>
 		</Button>

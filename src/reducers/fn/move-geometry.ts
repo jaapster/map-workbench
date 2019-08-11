@@ -1,9 +1,9 @@
+import { getBBox } from '../../map-control/utils/util-get-bbox';
 import {
 	Co,
 	Cos,
 	Point,
-	FeatureCollection
-} from '../../types';
+	FeatureCollection } from '../../types';
 import {
 	POINT,
 	POLYGON,
@@ -32,22 +32,25 @@ export const moveGeometry = (
 			if (i === index[0]) {
 				const { geometry,  geometry: { type, coordinates } } = feature;
 
+				const newCoordinates = type === POINT
+					? moveCo(coordinates as Co)
+					: (coordinates as any).map((c1: Cos) => (
+						type === LINE_STRING || type === MULTI_POINT)
+							? moveCo(c1 as Co)
+							: type === POLYGON || type === MULTI_LINE_STRING
+								? (c1 as Co[]).map(moveCo)
+								: type === MULTI_POLYGON
+									? (c1 as Co[][]).map(c2 => c2.map(moveCo))
+									: c1
+					);
+
 				return {
 					...feature,
 					geometry: {
 						...geometry,
-						coordinates: type === POINT
-							? moveCo(coordinates as Co)
-							: (coordinates as any).map((c1: Cos) => (
-								type === LINE_STRING || type === MULTI_POINT)
-									? moveCo(c1 as Co)
-									: type === POLYGON || type === MULTI_LINE_STRING
-										? (c1 as Co[]).map(moveCo)
-										: type === MULTI_POLYGON
-											? (c1 as Co[][]).map(c2 => c2.map(moveCo))
-											: c1
-							)
-					}
+						coordinates: newCoordinates
+					},
+					bbox: getBBox(newCoordinates)
 				};
 			}
 

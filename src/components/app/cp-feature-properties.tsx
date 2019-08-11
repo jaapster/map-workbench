@@ -1,11 +1,14 @@
 import React from 'react';
 import './scss/feature-card.scss';
+import { lang } from '../../reducers/selectors/index.selectors';
 import { Value } from './cp-value';
+import { connect } from 'react-redux';
 import { MapControl } from '../../map-control/map-control';
 import {
 	EPSG,
+	State,
 	Feature,
-	LanguagePack, State
+	LanguagePack, Geometry
 } from '../../types';
 import {
 	getRadius,
@@ -15,13 +18,11 @@ import {
 import {
 	M,
 	M2 } from '../../constants';
-import { lang } from '../../reducers/selectors/index.selectors';
-import { connect } from 'react-redux';
 
 interface Props {
 	CRS: EPSG;
 	lang: LanguagePack;
-	features: Feature<any>[];
+	features: Feature<Geometry>[];
 }
 
 export const _FeatureProperties = React.memo((props: Props) => {
@@ -103,6 +104,7 @@ export const _FeatureProperties = React.memo((props: Props) => {
 						<Value
 							value={
 								features.length === 1
+									// @ts-ignore
 									? MapControl.projectToCRS(getCoordinate(features[0]), CRS)
 									: null
 							}

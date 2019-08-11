@@ -27,7 +27,7 @@
 	border: 1px dotted grey;
 }
 
-.top-bar,
+//.top-bar,
 .bottom-bar,
 .top-bar-right {
 	position: absolute;
@@ -37,16 +37,29 @@
 	pointer-events: none;
 
 	> * {
-		margin-right: 1px;
+		//margin-right: 1px;
 
-		&:last-child {
-			margin-right: 0;
-		}
+		//&:last-child {
+		//	margin-right: 0;
+		//}
 	}
 }
 
 .top-bar {
+	position: absolute;
 	top: 0;
+	left: 0;
+	right: 0;
+	z-index: 1000;
+
+	display: flex;
+	flex-direction: row;
+	justify-content: space-between;
+
+	span {
+		display: flex;
+		flex-direction: row;
+	}
 }
 
 .bottom-bar {
@@ -190,14 +203,9 @@ circle {
 	top: 0;
 	right: 0;
 	padding: 0;
-	width: 0;
-	height: 0;
 	z-index: 2;
 	border-left: 1px solid green;
 	border-bottom: 1px solid green;
-
-	&.visible {
-		width: 15em;
-		height: 15em;
-	}
+	width: 15em;
+	height: 15em;
 }

@@ -3,7 +3,7 @@ import {
 	Action,
 	ActionSetActiveTab,
 	ActionSetPanelCollapsed, ActionShowPropertiesPanel
-} from './actions';
+} from './actions/actions';
 
 const STATE: UIData = {
 	tabs: {},

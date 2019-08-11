@@ -60,11 +60,11 @@ export const _Main = React.memo(({ scale }: Props) => {
 					tabGroupId="mainTabs"
 					tabs={
 						[
-							[<i className="icon-th-list" />, <Selection />],
-							[<i className="icon-pencil" />, <LayerPanels />],
-							[<i className="icon-bookmark" />, <Bookmarks />],
-							[<i className="icon-globe" />, <MultiverseSettings />],
-							[<i className="icon-cog" />, <Settings />]
+							[<i className="icon-list" />, <Selection />],
+							[<i className="icon-box" />, <LayerPanels />],
+							[<i className="icon-star" />, <Bookmarks />],
+							[<i className="icon-layers" />, <MultiverseSettings />],
+							[<i className="icon-settings" />, <Settings />]
 						]
 					}
 				>

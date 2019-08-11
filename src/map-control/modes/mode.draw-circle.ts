@@ -9,10 +9,11 @@ import {
 import {
 	ActionAddFeature,
 	ActionDeleteSelection,
-	ActionSetMapControlMode } from '../../reducers/actions';
+	ActionSetMapControlMode } from '../../reducers/actions/actions';
 import {
 	currentCollectionId,
 	currentSelectionVectors } from '../../reducers/selectors/index.selectors';
+import { batchActions } from 'redux-batched-actions';
 
 export class DrawCircleMode extends DrawSegmentedMode {
 	static create(map: any) {
@@ -59,7 +60,9 @@ export class DrawCircleMode extends DrawSegmentedMode {
 			return;
 		}
 
-		dispatch(ActionDeleteSelection.create({ collectionId }));
-		dispatch(ActionSetMapControlMode.create({ mode: NAVIGATION_MODE }));
+		dispatch(batchActions([
+			ActionDeleteSelection.create({ collectionId }),
+			ActionSetMapControlMode.create({ mode: NAVIGATION_MODE })
+		]));
 	}
 }

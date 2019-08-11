@@ -11,12 +11,13 @@ import {
 	EPSG,
 	State,
 	Feature,
-	LanguagePack } from '../../types';
+	LanguagePack, Geometry
+} from '../../types';
 
 interface Props {
 	CRS: EPSG;
 	lang: LanguagePack;
-	features: Feature<any>[];
+	features: Feature<Geometry>[];
 }
 
 export const _Selection = React.memo(({ CRS, lang, features }: Props) => (

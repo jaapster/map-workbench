@@ -19,7 +19,7 @@ import {
 	ActionUpdateCoordinates,
 	ActionSetCollectionData,
 	ActionSetReferenceLayers,
-	ActionSetCurrentReferenceLayer } from './actions';
+	ActionSetCurrentReferenceLayer } from './actions/actions';
 
 const STATE: MultiverseData = {
 	worlds: [],

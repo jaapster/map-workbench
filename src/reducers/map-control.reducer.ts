@@ -1,12 +1,13 @@
-import { MapControlData } from '../types';
+import { BBox, MapControlData } from '../types';
 import {
 	Action,
+	ActionSetGlare,
 	ActionToggleOverview,
+	ActionSetOverviewOffset,
 	ActionSetMapControlMode,
 	ActionSetMapControlZoom,
 	ActionSetMapControlCenter,
-	ActionSetMapControlMetrics, ActionSetGlare
-} from './actions';
+	ActionSetMapControlMetrics } from './actions/actions';
 import {
 	FEATURE,
 	POLYGON,
@@ -17,8 +18,11 @@ const STATE: MapControlData = {
 	zoom: 1,
 	pitch: 0,
 	glare: false,
+	mouse: [0, 0],
 	center: [0, 0],
 	bearing: 0,
+	glareLevel: 19,
+	overviewOffset: 3,
 	overviewVisible: false,
 	extent: {
 		type: FEATURE,
@@ -29,7 +33,8 @@ const STATE: MapControlData = {
 		properties: {
 			id: 'extent',
 			type: POLYGON
-		}
+		},
+		bbox: [0, 0, 0, 0] as BBox
 	}
 };
 
@@ -44,14 +49,19 @@ export const mapControlReducer = (state: MapControlData = STATE, action: Action)
 	}
 
 	if (ActionSetMapControlMetrics.validate(action)) {
-		const { zoom, pitch, center, extent, bearing } = ActionSetMapControlMetrics.data(action);
+		const { zoom, pitch, mouse, center, extent, bearing } = ActionSetMapControlMetrics.data(action);
 
 		return {
 			...state,
 			zoom,
 			pitch,
-			center,
-			extent,
+			mouse,
+			center: state.center.join() !== center.join()
+				? center
+				: state.center,
+			extent: state.extent.geometry.coordinates.toString() !== extent.geometry.coordinates.toString()
+				? extent
+				: state.extent,
 			bearing
 		};
 	}
@@ -85,6 +95,13 @@ export const mapControlReducer = (state: MapControlData = STATE, action: Action)
 		return {
 			...state,
 			glare: ActionSetGlare.data(action).glare
+		};
+	}
+
+	if (ActionSetOverviewOffset.validate(action)) {
+		return {
+			...state,
+			overviewOffset: ActionSetOverviewOffset.data(action).offset
 		};
 	}
 

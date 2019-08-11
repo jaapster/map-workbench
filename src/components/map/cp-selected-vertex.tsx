@@ -1,12 +1,13 @@
 import React from 'react';
-import { Co, State } from '../../types';
-import { MapControl } from '../../map-control/map-control';
-import { center } from '../../reducers/selectors/index.selectors';
+import { extent } from '../../reducers/selectors/index.selectors';
 import { connect } from 'react-redux';
+import { MapControl } from '../../map-control/map-control';
+import {
+	Co,
+	State } from '../../types';
 
 interface Props {
 	animate: boolean;
-	center: Co;
 	coordinates: Co;
 }
 
@@ -40,10 +41,10 @@ export const _SelectedVertex = React.memo(({ coordinates, animate }: Props) => {
 	);
 });
 
-const mapStateToProps = (state: State) => {
-	return {
-		center: center(state)
-	};
-};
+const mapStateToProps = (state: State) => (
+	{
+		extent: extent(state)
+	}
+);
 
 export const SelectedVertex = connect(mapStateToProps)(_SelectedVertex);

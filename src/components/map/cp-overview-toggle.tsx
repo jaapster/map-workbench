@@ -3,7 +3,7 @@ import React from 'react';
 import { State } from '../../types';
 import { overviewVisible } from '../../reducers/selectors/index.selectors';
 import { Dispatch } from 'redux';
-import { ActionToggleOverview } from '../../reducers/actions';
+import { ActionToggleOverview } from '../../reducers/actions/actions';
 import { connect } from 'react-redux';
 
 interface Props {
@@ -17,8 +17,8 @@ export const _OverViewToggle = React.memo(({ overviewVisible, toggle }: Props) =
 			<Button onClick={ toggle } depressed={ overviewVisible }>
 				<i className={
 					overviewVisible
-						? 'icon-resize1'
-						: 'icon-resize'
+						? 'icon-arrow-up-right'
+						: 'icon-arrow-down-left'
 				} />
 			</Button>
 		</div>

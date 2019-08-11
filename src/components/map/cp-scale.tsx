@@ -16,7 +16,7 @@ import {
 	mToFt,
 	milesToMeters } from '../../utils/util-conversion';
 import { Dispatch } from 'redux';
-import { ActionToggleUnitSystem } from '../../reducers/actions';
+import { ActionToggleUnitSystem } from '../../reducers/actions/actions';
 
 interface Props {
 	center: Co;

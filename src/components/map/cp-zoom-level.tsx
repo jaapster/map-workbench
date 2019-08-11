@@ -1,9 +1,11 @@
 import React from 'react';
+import { zoom } from '../../reducers/selectors/index.selectors';
 import { State } from '../../types';
 import { connect } from 'react-redux';
-import { zoom } from '../../reducers/selectors/index.selectors';
 import { MapControl } from '../../map-control/map-control';
-import { Button, ButtonGroup } from '../app/cp-button';
+import {
+	Button,
+	ButtonGroup } from '../app/cp-button';
 
 interface Props {
 	zoom: number;
