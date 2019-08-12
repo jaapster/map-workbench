@@ -28,6 +28,8 @@ interface Props {
 export const _FeatureProperties = React.memo((props: Props) => {
 	const { CRS, lang, features } = props;
 
+	const center = features[0] && getCoordinate(features[0]);
+
 	return (
 		<div className="feature-card">
 			<div className="table">
@@ -84,12 +86,12 @@ export const _FeatureProperties = React.memo((props: Props) => {
 
 									return v == null
 										? null
-										: m === null
-											? i > 0
-												? null
-												: v
+										: m !== null
 											// @ts-ignore
-											: m + v;
+											? m + v
+											: i > 0
+												? null
+												: v;
 								}, null)
 							}
 							unit={ M2 }
@@ -103,9 +105,8 @@ export const _FeatureProperties = React.memo((props: Props) => {
 					<div className="cell">
 						<Value
 							value={
-								features.length === 1
-									// @ts-ignore
-									? MapControl.projectToCRS(getCoordinate(features[0]), CRS)
+								features.length === 1 && center
+									? MapControl.projectToCRS(center, CRS)
 									: null
 							}
 						/>

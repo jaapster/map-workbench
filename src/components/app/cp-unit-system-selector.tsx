@@ -24,9 +24,8 @@ interface Props {
 export const _UnitSystemSelector = React.memo(({ lang, unitSystem, unitSystems, setUnitSystem }: Props) => (
 	<Collapsible title={ lang.settings.unitSystem }>
 		<RadioButtons
-			label={ lang.settings.unitSystem }
-			options={ unitSystems.map(([key, value]) => [lang.settings[key], value]) }
 			value={ unitSystem }
+			options={ unitSystems.map(([key, value]) => [lang.settings[key], value]) }
 			onChange={ setUnitSystem }
 		/>
 	</Collapsible>

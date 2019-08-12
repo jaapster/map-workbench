@@ -8,6 +8,7 @@ import { MenuMode } from './modes/mode.menu';
 import { getCenter } from '../utils/util-get-center';
 import { ModeUpdate } from './modes/mode.update';
 import { getBounds } from '../utils/util-get-bounds';
+import { newPolygon } from '../utils/util-geo-json';
 import { getTargetZoom } from '../utils/util-get-target-zoom';
 import { PointerDevice } from './devices/device.pointer';
 import { DrawPointMode } from './modes/mode.draw-point';
@@ -22,12 +23,9 @@ import {
 	dispatch,
 	getState } from '../reducers/store';
 import {
-	POLYGON,
-	FEATURE,
 	PROJECTED,
 	GEOGRAPHIC,
 	EMPTY_STYLE,
-	LINE_STRING,
 	UPDATE_MODE,
 	NAVIGATION_MODE,
 	DEFAULT_LOCATION,
@@ -36,14 +34,14 @@ import {
 	DRAW_SEGMENTED_MODE,
 	DRAW_RECTANGLE_MODE } from '../constants';
 import {
+	Pt,
 	Co,
 	Ev,
 	EPSG,
-	Pt,
 	Polygon,
 	Feature,
-	Location, Geometry, BBox
-} from '../types';
+	Geometry,
+	Location } from '../types';
 import {
 	llToCo,
 	coToLl,
@@ -134,7 +132,7 @@ export class MapControl {
 
 	static projectToCRS(co: Co, CRS: EPSG) {
 		if (co == null) {
-			return null; // [0, 0];
+			return null;
 		}
 
 		if (CRS === GEOGRAPHIC) {
@@ -268,7 +266,6 @@ export class MapControl {
 	private _onPointerMove(e: Ev) {
 		this._mode().onPointerMove(e);
 		this._mouse = llToCo(e.lngLat);
-
 		this.persistMetrics();
 	}
 
@@ -324,7 +321,7 @@ export class MapControl {
 		dispatch(ActionSetMapControlMetrics.create({
 			zoom: this.getZoom(),
 			pitch: this.getPitch(),
-			mouse: this.getMouse(),
+			mouse: this._mouse,
 			center: this.getCenter(),
 			extent: this.getExtent(),
 			bearing: this.getBearing()
@@ -358,36 +355,24 @@ export class MapControl {
 	}
 
 	isInView(features: Feature<Geometry>[]) {
-		const featureBounds = getBounds([{
-			type: FEATURE,
-			geometry: {
-				type: LINE_STRING,
-				coordinates: getBounds(features)
-			},
-			properties: {
-				type: LINE_STRING,
-				id: ''
-			},
-			bbox: getBounds(features).flat() as BBox
-		}]);
 		const currentZoom = this.getZoom();
 
 		// get current extent in pixels
-		const { top: t, left: l, width, height } = this.getBoundingClientRect();
+		const { top, left, width, height } = this.getBoundingClientRect();
 
-		const left = FIT_PADDING;
-		const top = FIT_PADDING;
-		const right = width - l - FIT_PADDING;
-		const bottom = height - t - FIT_PADDING;
+		const l = FIT_PADDING;
+		const t = FIT_PADDING;
+		const r = width - left - FIT_PADDING;
+		const bt = height - top - FIT_PADDING;
 
 		// get geometry extent in pixels
-		const [a, b] = featureBounds.map(this.project);
+		const [a, b] = getBounds(features).map(this.project);
 
 		return (
-			a.x > left && a.x < right &&
-			b.x > left && b.x < right &&
-			a.y > top && a.y < bottom &&
-			b.y > top && b.y < bottom &&
+			a.x > l && a.x < r &&
+			b.x > l && b.x < r &&
+			a.y > t && a.y < bt &&
+			b.y > t && b.y < bt &&
 			currentZoom >= FIT_MIN_ZOOM && currentZoom <= FIT_MAX_ZOOM
 		);
 	}
@@ -419,7 +404,6 @@ export class MapControl {
 		return llToCo(this._map.getCenter());
 	}
 
-	// expects WGS84
 	setCenter(co: Co) {
 		this._map.setCenter(coToLl(co));
 	}
@@ -456,37 +440,22 @@ export class MapControl {
 		return this._map.setPitch(pitch);
 	}
 
-	getMouse() {
-		return this._mouse;
-	}
-
 	getExtent(): Feature<Polygon> {
 		const { width, height } = this.getBoundingClientRect();
+		const p = 0;
 
-		const c1 = this.unproject({ x: 0, y: 0 });
-		const c2 = this.unproject({ x: width, y: 0 });
-		const c3 = this.unproject({ x: width, y: height });
-		const c4 = this.unproject({ x: 0, y: height });
+		const c1 = this.unproject({ x: p, y: p });
+		const c2 = this.unproject({ x: width - p, y: p });
+		const c3 = this.unproject({ x: width - p, y: height - p });
+		const c4 = this.unproject({ x: p, y: height - p });
 
-		return {
-			type: FEATURE,
-			geometry: {
-				type: POLYGON,
-				coordinates: [[c1, c2, c3, c4, c1]]
-			},
-			properties: {
-				id: 'extent',
-				type: POLYGON
-			},
-			bbox: [c1, c3].flat() as BBox
-		};
+		return newPolygon([[c1, c2, c3, c4, c1]]);
 	}
 
 	getBoundingClientRect() {
 		return this.getContainer().getBoundingClientRect();
 	}
 
-	// project to screen coordinates
 	project(co: Co) {
 		return this._map.project(coToLl(co));
 	}

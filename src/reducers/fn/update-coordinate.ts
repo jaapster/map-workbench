@@ -1,14 +1,14 @@
-import { getBBox } from '../../utils/util-get-bbox';
 import {
-	POINT,
-	POLYGON,
-	MULTI_POINT,
+	CIRCLE,
 	LINE_STRING,
+	MULTI_LINE_STRING,
+	MULTI_POINT,
 	MULTI_POLYGON,
-	MULTI_LINE_STRING } from '../../constants';
-import {
-	Co,
-	FeatureCollection } from '../../types';
+	POINT,
+	POLYGON
+} from '../../constants';
+import { Co, FeatureCollection } from '../../types';
+import { getBBox, getCircleBBox } from '../../utils/util-get-bbox';
 
 const ringMap = (co: Co, _l: number) => (co3: Co, l: number, xs: Co[]) => (
 	l === _l || (_l === 0 && l === xs.length - 1)
@@ -20,7 +20,11 @@ export const updateCoordinate = (data: FeatureCollection, [_i, _j, _k, _l]: numb
 	{
 		...data,
 		features: data.features.map((feature: any, i: number) => {
-			const { geometry, geometry: { type, coordinates } } = feature;
+			if (i !== _i) {
+				return feature;
+			}
+
+			const { geometry, geometry: { type, coordinates }, properties } = feature;
 
 			const newCoordinates = type === POINT
 				? co
@@ -28,34 +32,34 @@ export const updateCoordinate = (data: FeatureCollection, [_i, _j, _k, _l]: numb
 					j !== _j
 						? co1
 						: type === LINE_STRING || type === MULTI_POINT
-						? co
-						: type === MULTI_LINE_STRING
-							? (co1 as Co[]).map((co2: Co, k: number) => (
-								k === _k
-									? co
-									: co2
-							))
-							: type === POLYGON
-								? (co1 as Co[]).map(ringMap(co, _k))
-								: type === MULTI_POLYGON
-									? (co1 as Co[][]).map((co2: Co[], k: number) => (
-										k === _k
-											? co2.map(ringMap(co, _l))
-											: co2
-									))
-									: co1
+							? co
+							: type === MULTI_LINE_STRING
+								? (co1 as Co[]).map((co2: Co, k: number) => (
+									k === _k
+										? co
+										: co2
+								))
+								: type === POLYGON
+									? (co1 as Co[]).map(ringMap(co, _k))
+									: type === MULTI_POLYGON
+										? (co1 as Co[][]).map((co2: Co[], k: number) => (
+											k === _k
+												? co2.map(ringMap(co, _l))
+												: co2
+										))
+										: co1
 				));
 
-			return i !== _i
-				? feature
-				: {
-					...feature,
-					geometry: {
-						...geometry,
-						coordinates: newCoordinates
-					},
-					bbox: getBBox(newCoordinates)
-				};
+			return {
+				...feature,
+				geometry: {
+					...geometry,
+					coordinates: newCoordinates
+				},
+				bbox: properties.type === CIRCLE
+					? getCircleBBox(newCoordinates)
+					: getBBox(newCoordinates)
+			};
 		})
 	}
 );

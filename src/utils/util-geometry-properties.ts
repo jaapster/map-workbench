@@ -135,16 +135,16 @@ export const getFeatureArea = (feature: Feature<Geometry>) => {
 	}
 };
 
-export const getCoordinate = (feature: Feature<Geometry>) => {
+export const getCoordinate = (feature: Feature<Geometry>): Co | null => {
 	const {
 		properties: { type },
 		geometry: { coordinates }
 	} = feature;
 
 	return type === POINT
-		? (coordinates as Co).map(round(6))
+		? (coordinates as Co).map(round(6)) as Co
 		: type === CIRCLE
-			? (coordinates as Co[])[0].map(round(6))
+			? (coordinates as Co[])[0].map(round(6)) as Co
 			: null;
 };
 

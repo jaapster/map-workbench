@@ -25,7 +25,6 @@ interface D {
 export const _LanguageSelector = React.memo(({ lang, language, languages, setLanguage }: S & D) => (
 	<Collapsible title={ lang.settings.language }>
 		<RadioButtons
-			label={ lang.settings.language }
 			value={ language }
 			options={ languages.map(e => [e.name, e.id]) as any }
 			onChange={ setLanguage }

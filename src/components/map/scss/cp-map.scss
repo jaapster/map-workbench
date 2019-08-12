@@ -47,6 +47,7 @@
 
 .top-bar {
 	position: absolute;
+	pointer-events: none;
 	top: 0;
 	left: 0;
 	right: 0;
@@ -77,7 +78,7 @@
 	margin-right: 1px;
 	width: auto;
 	padding: 0.5em 0;
-	background: deeppink; // mediumseagreen;
+	background: grey; // deeppink; // mediumseagreen;
 	transition: width 100ms;
 	text-align: left;
 	opacity: 1;
@@ -157,6 +158,11 @@ path {
 		fill: green;
 		stroke: none;
 		opacity: 0.3;
+	}
+
+	&.bbox {
+		stroke: grey;
+		stroke-dasharray: 2;
 	}
 }
 

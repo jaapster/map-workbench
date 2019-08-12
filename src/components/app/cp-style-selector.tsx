@@ -36,7 +36,6 @@ export const _StyleSelector = React.memo(({ lang, styles, setStyle, style }: Pro
 	return (
 		<Collapsible title={ lang.multiverse.referenceLayer }>
 			<RadioButtons
-				label={ lang.multiverse.referenceLayer }
 				value={ style }
 				options={ styles.map(([style]) => [style, style]) as any }
 				onChange={ set }

@@ -3,15 +3,13 @@ import './scss/radio-button.scss';
 import { mergeClasses } from '../../utils/util-merge-classes';
 
 interface Props {
-	label: string;
 	value: any;
 	options: [string, any][];
 	onChange: (value: any) => void;
 }
 
-export const RadioButtons = React.memo(({ label, options, value, onChange }: Props) => (
+export const RadioButtons = React.memo(({ options, value, onChange }: Props) => (
 	<div className="radio-buttons">
-		{/*<h3>{ label }</h3>*/}
 		{
 			options.map(([label, val]) => {
 				const className = mergeClasses(

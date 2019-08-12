@@ -68,14 +68,14 @@ export class _PanelPair extends React.PureComponent<Props, State> {
 			this.startX = e.clientX;
 			this.startY = e.clientY;
 
-			document.addEventListener('pointermove', this.onPointerMove);
-			document.addEventListener('pointerup', this.onPointerUp);
+			document.addEventListener('mousemove', this.onPointerMove);
+			document.addEventListener('mouseup', this.onPointerUp);
 
 			this.setState({ dragging: true });
 		}
 	}
 
-	protected onPointerMove(e: PointerEvent) {
+	protected onPointerMove(e: MouseEvent) {
 		if (!this.getCollapsed()) {
 			const {
 				children,
@@ -88,8 +88,9 @@ export class _PanelPair extends React.PureComponent<Props, State> {
 				? e.clientX - this.startX
 				: e.clientY - this.startY;
 
-			// @ts-ignore
-			const fact = children[0].props.primary ? 1 : -1;
+			const c = children && (children as any)[0];
+
+			const fact = c.props.primary ? 1 : -1;
 
 			this.setState({
 				position: clamp(
@@ -101,7 +102,7 @@ export class _PanelPair extends React.PureComponent<Props, State> {
 		}
 	}
 
-	protected onPointerUp(e: PointerEvent) {
+	protected onPointerUp(e: MouseEvent) {
 		if (this.startX === e.clientX  && this.startY === e.clientY) {
 			this.toggle();
 		}
@@ -144,8 +145,8 @@ export class _PanelPair extends React.PureComponent<Props, State> {
 	}
 
 	protected removeListeners() {
-		document.removeEventListener('pointermove', this.onPointerMove);
-		document.removeEventListener('pointerup', this.onPointerUp);
+		document.removeEventListener('mousemove', this.onPointerMove);
+		document.removeEventListener('mouseup', this.onPointerUp);
 	}
 
 	protected setRef(e: HTMLDivElement) {
@@ -200,10 +201,8 @@ export class _PanelPair extends React.PureComponent<Props, State> {
 				<div className={ className } ref={ this.setRef }>
 					{
 						[
-							// @ts-ignore
-							React.cloneElement(a, { key: 'a', first: true, ...props }),
-							// @ts-ignore
-							React.cloneElement(b, { key: 'b', first: false, ...props })
+							React.cloneElement(a as any, { key: 'a', first: true, ...props }),
+							React.cloneElement(b as any, { key: 'b', first: false, ...props })
 						]
 					}
 				</div>

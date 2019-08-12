@@ -124,7 +124,7 @@ export const _PanelTabbed = React.memo((props: Props) => {
 					? (
 						<div
 							className="panel-drag-handle"
-							onPointerDown={ onPointerDown }
+							onMouseDown={ onPointerDown }
 						/>
 					)
 					: null

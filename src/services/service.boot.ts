@@ -16,11 +16,11 @@ export const BootService = {
 	boot() {
 		return Promise
 			.all([
-				axios.get('/universes'),
-				axios.get('/worlds'),
-				axios.get('/referencelayers'),
-				axios.get('/bookmarks'),
-				axios.get('/languages')
+				axios.get('/api/universes'),
+				axios.get('/api/worlds'),
+				axios.get('/api/referencelayers'),
+				axios.get('/api/bookmarks'),
+				axios.get('/api/languages')
 			])
 			.then((responses) => {
 				const [universeData, worlds, layers, bookmarks, languagePacks] = responses.map(r => r.data);

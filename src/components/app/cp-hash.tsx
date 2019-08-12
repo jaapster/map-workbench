@@ -27,18 +27,18 @@ const getHashParams = () => {
 	return hash.split(SEPARATOR).reduce((m, item) => {
 		const [key, value] = item.split(ASSIGN);
 
-		let v;
 
 		try {
-			v = JSON.parse(value);
+			return {
+				...m,
+				[key]: JSON.parse(value)
+			};
 		} catch (e) {
-			v = value;
+			return {
+				...m,
+				[key]: value
+			};
 		}
-
-		return {
-			...m,
-			[key]: v
-		};
 	}, {} as any);
 };
 

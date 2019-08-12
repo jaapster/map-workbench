@@ -33,8 +33,10 @@ export type Co = [number, number];
 
 export type Cos = Co | Co[] | Co[][] | Co[][][];
 
+export type GeometryType = 'Point' | 'MultiPoint' | 'LineString' | 'MultiLineString' | 'Polygon' | 'MultiPolygon';
+
 export interface Geometry {
-	type: string;
+	type: GeometryType;
 	coordinates: Cos;
 }
 
@@ -43,13 +45,18 @@ export interface Point extends Geometry {
 	coordinates: Co;
 }
 
+export interface MultiPoint extends Geometry {
+	type: 'MultiPoint';
+	coordinates: Co[];
+}
+
 export interface LineString extends Geometry {
 	type: 'LineString';
 	coordinates: Co[];
 }
 
-export interface MultiPoint extends Geometry {
-	type: 'MultiPoint';
+export interface MultiLineString extends Geometry {
+	type: 'MultiLineString';
 	coordinates: Co[];
 }
 
@@ -67,8 +74,8 @@ export interface Feature<Geometry> {
 	type: string;
 	geometry: Geometry;
 	properties: {
-		type: string,
 		id: string,
+		type: string,
 		text?: string
 	};
 	bbox: BBox;

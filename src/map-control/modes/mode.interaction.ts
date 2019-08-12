@@ -1,26 +1,20 @@
 import * as mapboxgl from 'mapbox-gl';
-import { dis } from '../../utils/util-point';
 import { DOM } from '../../utils/util-dom';
-import { coToLl } from '../../utils/util-geo';
+import { getHit } from '../../utils/util-get-hit';
+import { MapControl } from '../map-control';
+import { batchActions } from 'redux-batched-actions';
 import { EventEmitter } from '../../event-emitter';
-import { getNearestVertex } from '../../reducers/fn/get-nearest-vertex';
 import {
 	currentCollectionId,
-	currentFeatureCollection
-} from '../../reducers/selectors/index.selectors';
-import { getNearestPointOnGeometry } from '../../reducers/fn/get-nearest-point-on-geometry';
+	currentFeatureCollection } from '../../reducers/selectors/index.selectors';
 import {
 	dispatch,
 	getState } from '../../reducers/store';
 import {
 	Ev,
-	Dict,
-	Pt,
-	LngLat,
-	FeatureCollection } from '../../types';
+	Dict } from '../../types';
 import {
 	MENU_MODE,
-	THRESHOLD,
 	UPDATE_MODE,
 	NAVIGATION_MODE } from '../../constants';
 import {
@@ -29,7 +23,6 @@ import {
 	ActionClearSelection,
 	ActionDeleteSelection,
 	ActionSetMapControlMode } from '../../reducers/actions/actions';
-import { batchActions } from 'redux-batched-actions';
 
 export class InteractionMode extends EventEmitter {
 	protected readonly _el: HTMLElement;
@@ -49,40 +42,6 @@ export class InteractionMode extends EventEmitter {
 	}
 
 	protected _onStyleLoaded() {}
-
-	_hit(lngLat: LngLat, point: Pt, featureCollection: FeatureCollection) {
-		const {
-			index: i1,
-			coordinate: co1
-		} = getNearestVertex(lngLat, featureCollection);
-
-		if (co1 === null) {
-			return null;
-		}
-
-		const p1 = this._map.project(coToLl(co1));
-
-		if (dis(point, p1) < THRESHOLD) {
-			return i1;
-		}
-
-		const {
-			index: i2,
-			coordinate: co2
-		} = getNearestPointOnGeometry(lngLat, featureCollection);
-
-		if (co2 === null) {
-			return null;
-		}
-
-		const p2 = this._map.project(coToLl(co2));
-
-		if (dis(point, p2) < THRESHOLD) {
-			return [i2[0]];
-		}
-
-		return null;
-	}
 
 	destroy() {
 		this._map.off('style.load', this._onStyleLoaded);
@@ -119,7 +78,7 @@ export class InteractionMode extends EventEmitter {
 
 		const collectionId = currentCollectionId(state);
 		const featureCollection = currentFeatureCollection(state);
-		const vector = this._hit(lngLat, point, featureCollection);
+		const vector = getHit(lngLat, point, featureCollection, MapControl);
 
 		if (vector != null) {
 			dispatch(batchActions([
@@ -127,8 +86,6 @@ export class InteractionMode extends EventEmitter {
 				ActionSelect.create({ vector, multi }),
 				ActionSetMapControlMode.create({ mode: UPDATE_MODE })
 			]));
-			// dispatch(ActionShowPropertiesPanel.create({}));
-			// MapControl.resize();
 		}  else {
 			if (!multi) {
 				dispatch(ActionSetMapControlMode.create({ mode: NAVIGATION_MODE }));

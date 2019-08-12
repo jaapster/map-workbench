@@ -47,24 +47,8 @@ export class OverviewControl {
 		OverviewControl.instance.setZoom(zoom);
 	}
 
-	static zoomIn() {
-		OverviewControl.instance.zoomIn();
-	}
-
-	static zoomOut() {
-		OverviewControl.instance.zoomOut();
-	}
-
 	static setCenter(center: Co) {
 		OverviewControl.instance.setCenter(center);
-	}
-
-	static setBearing(bearing: number) {
-		OverviewControl.instance.setBearing(bearing);
-	}
-
-	static setPitch(pitch: number) {
-		OverviewControl.instance.setPitch(pitch);
 	}
 
 	static setStyle(style: any) {
@@ -104,8 +88,6 @@ export class OverviewControl {
 			style,
 			center,
 			maxZoom: GLOBAL_MAX_ZOOM - 1,
-			// temporarily attach container element to body to keep
-			// mapbox from complaining about missing CSS file
 			container,
 			fadeDuration: 0
 		});
@@ -151,28 +133,8 @@ export class OverviewControl {
 		this._map.setCenter(coToLl(co));
 	}
 
-	getZoom() {
-		return this._map.getZoom() + 1;
-	}
-
 	setZoom(zoom: number) {
 		this._map.setZoom(zoom - 1);
-	}
-
-	zoomIn() {
-		this.setZoom(Math.round(this.getZoom() + 1));
-	}
-
-	zoomOut() {
-		this.setZoom(Math.round(this.getZoom() - 1));
-	}
-
-	setBearing(bearing: number) {
-		this._map.setBearing(bearing);
-	}
-
-	setPitch(pitch: number) {
-		return this._map.setPitch(pitch);
 	}
 
 	project(co: Co) {

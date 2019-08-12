@@ -22,7 +22,6 @@ interface Props {
 export const _ScaleSelector = React.memo(({ lang, scale, scales, setScale }: Props) => (
 	<Collapsible title={ lang.settings.uiScale }>
 		<RadioButtons
-			label={ lang.settings.uiScale }
 			value={ scale }
 			options={ scales.map(s => [`${ (s * 100) | 0 }%`, s]) }
 			onChange={ setScale }

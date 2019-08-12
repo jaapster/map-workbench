@@ -1,4 +1,6 @@
 import bind from 'autobind-decorator';
+import { Ev } from '../../types';
+import { batchActions } from 'redux-batched-actions';
 import { InteractionMode } from './mode.interaction';
 import { analyseRectangle } from '../../reducers/fn/analyse-rectangle';
 import { getNearestPointOnGeometry } from '../../reducers/fn/get-nearest-point-on-geometry';
@@ -12,9 +14,6 @@ import {
 	ang,
 	dis,
 	rot } from '../../utils/util-point';
-import {
-	Ev,
-	Pt } from '../../types';
 import {
 	CIRCLE,
 	THRESHOLD,
@@ -33,7 +32,6 @@ import {
 	currentCollectionId,
 	currentSelectionVectors,
 	currentFeatureCollection } from '../../reducers/selectors/index.selectors';
-import { batchActions } from 'redux-batched-actions';
 
 @bind
 export class ModeUpdate extends InteractionMode {
@@ -114,10 +112,6 @@ export class ModeUpdate extends InteractionMode {
 							_k
 						);
 
-						let A: Pt;
-						let B: Pt;
-						let C: Pt;
-
 						if (originalEvent[MODIFIERS.ROTATE]) {
 							// Rotation:
 							// get the rotation increment in radians
@@ -126,38 +120,47 @@ export class ModeUpdate extends InteractionMode {
 							const t = (ang(p0, merc) - ang(p0, p3));
 
 							// rotate all points and unproject to lngLat
-							A = rot(p1, p0, t);
-							B = rot(p2, p0, t);
-							C = rot(p3, p0, t);
+							dispatch(ActionUpdateCoordinates.create({
+								collectionId,
+								entries: [
+									[[_i, 0, n1], llToCo(geoUnproject(rot(p1, p0, t)))],
+									[[_i, 0, n2], llToCo(geoUnproject(rot(p2, p0, t)))],
+									[[_i, 0, _k], llToCo(geoUnproject(rot(p3, p0, t)))]
+								]
+							}));
 						} else if (originalEvent[MODIFIERS.CONSERVE_RATIO]) {
 							// Resize while conserving aspect ratio
-							A = nearestPointOnLine(merc, [p0, p1]);
-							B = pointAtLength([p0, p2], dis(p0, A) / this._ratio);
-							C = nearestPointOnLine(B, [merc, A]);
+							const A = nearestPointOnLine(merc, [p0, p1]);
+							const B = pointAtLength([p0, p2], dis(p0, A) / this._ratio);
+
+							dispatch(ActionUpdateCoordinates.create({
+								collectionId,
+								entries: [
+									[[_i, 0, n1], llToCo(geoUnproject(A))],
+									[[_i, 0, n2], llToCo(geoUnproject(B))],
+									[[_i, 0, _k], llToCo(geoUnproject(nearestPointOnLine(B, [merc, A])))]
+								]
+							}));
 						} else {
 							// Simple resizing:
 							// get the new positions of the two neighbouring
 							// points and unproject to lngLat
 
 							// offset points just a little otherwise nearestPointOnLine will fail
-							// todo: fix nearestPointOnLine (is that even possible?)
+							// todo: fix nearestPointOnLine zero length
+							//  crash (is that even possible?)
 							p1.y += 0.0001;
 							p2.x += 0.0001;
 
-							A = nearestPointOnLine(merc, [p1, p0]);
-							B = nearestPointOnLine(merc, [p2, p0]);
-							C = merc;
+							dispatch(ActionUpdateCoordinates.create({
+								collectionId,
+								entries: [
+									[[_i, 0, n1], llToCo(geoUnproject(nearestPointOnLine(merc, [p1, p0])))],
+									[[_i, 0, n2], llToCo(geoUnproject(nearestPointOnLine(merc, [p2, p0])))],
+									[[_i, 0, _k], llToCo(geoUnproject(merc))]
+								]
+							}));
 						}
-
-						// update the coordinates in the feature collection
-						dispatch(ActionUpdateCoordinates.create({
-							collectionId,
-							entries: [
-								[[_i, 0, n1], llToCo(geoUnproject(A))],
-								[[_i, 0, n2], llToCo(geoUnproject(B))],
-								[[_i, 0, _k], llToCo(geoUnproject(C))]
-							]
-						}));
 					} else {
 						// change one coordinate in de the feature collection
 						// at vector [_i, _j, _k]

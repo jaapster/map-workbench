@@ -1,4 +1,5 @@
-import { BBox, MapControlData } from '../types';
+import { newPolygon } from '../utils/util-geo-json';
+import { NAVIGATION_MODE } from '../constants';
 import {
 	Action,
 	ActionSetGlare,
@@ -9,33 +10,23 @@ import {
 	ActionSetMapControlCenter,
 	ActionSetMapControlMetrics } from './actions/actions';
 import {
-	FEATURE,
-	POLYGON,
-	NAVIGATION_MODE } from '../constants';
+	Co,
+	MapControlData } from '../types';
+
+const zero: Co = [0, 0];
 
 const STATE: MapControlData = {
 	mode: NAVIGATION_MODE,
 	zoom: 1,
 	pitch: 0,
 	glare: false,
-	mouse: [0, 0],
-	center: [0, 0],
+	mouse: zero,
+	center: zero,
 	bearing: 0,
-	glareLevel: 19,
+	glareLevel: 21,
 	overviewOffset: 3,
 	overviewVisible: false,
-	extent: {
-		type: FEATURE,
-		geometry: {
-			type: POLYGON,
-			coordinates: [[[0, 0], [0, 0], [0, 0], [0, 0]]]
-		},
-		properties: {
-			id: 'extent',
-			type: POLYGON
-		},
-		bbox: [0, 0, 0, 0] as BBox
-	}
+	extent: newPolygon([[zero, zero, zero, zero, zero]])
 };
 
 export const mapControlReducer = (state: MapControlData = STATE, action: Action): MapControlData => {

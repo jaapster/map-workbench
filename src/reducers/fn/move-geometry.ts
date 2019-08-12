@@ -1,4 +1,4 @@
-import { getBBox } from '../../utils/util-get-bbox';
+import { getBBox, getCircleBBox } from '../../utils/util-get-bbox';
 import {
 	Co,
 	Cos,
@@ -10,7 +10,8 @@ import {
 	LINE_STRING,
 	MULTI_POINT,
 	MULTI_POLYGON,
-	MULTI_LINE_STRING } from '../../constants';
+	MULTI_LINE_STRING, CIRCLE
+} from '../../constants';
 import {
 	geoProject,
 	geoUnproject } from '../../utils/util-geo';
@@ -30,7 +31,7 @@ export const moveGeometry = (
 		...data,
 		features: data.features.map((feature, i) => {
 			if (i === index[0]) {
-				const { geometry,  geometry: { type, coordinates } } = feature;
+				const { geometry,  geometry: { type, coordinates }, properties } = feature;
 
 				const newCoordinates = type === POINT
 					? moveCo(coordinates as Co)
@@ -50,7 +51,9 @@ export const moveGeometry = (
 						...geometry,
 						coordinates: newCoordinates
 					},
-					bbox: getBBox(newCoordinates)
+					bbox: properties.type === CIRCLE
+						? getCircleBBox(newCoordinates)
+						: getBBox(newCoordinates)
 				};
 			}
 

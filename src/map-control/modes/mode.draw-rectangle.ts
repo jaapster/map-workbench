@@ -84,7 +84,8 @@ export class DrawRectangleMode extends DrawSegmentedMode {
 		);
 
 		// offset points just a little otherwise nearestPointOnLine will fail
-		// todo: fix nearestPointOnLine (is that even possible?)
+		// todo: fix nearestPointOnLine zero length crash (is that even
+		//  possible?)
 		p1.y += 0.0001;
 		p2.x += 0.0001;
 

@@ -42,7 +42,7 @@ export const Panel = React.memo((props: Props) => {
 					? (
 						<div
 							className="panel-drag-handle"
-							onPointerDown={ onPointerDown }
+							onMouseUp={ onPointerDown }
 						/>
 					)
 					: null

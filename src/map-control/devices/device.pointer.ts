@@ -3,38 +3,22 @@ import mapboxgl from 'mapbox-gl';
 import { EventEmitter } from '../../event-emitter';
 import { geoProject } from '../../utils/util-geo';
 import { sub } from '../../utils/util-point';
-
-// const log = (...args: any[]) => console.log(...args);
+import { LngLat } from '../../types';
 
 let prev: any;
 
-// @ts-ignore
-const toEvent = (e: mapboxgl.MapTouchEvent | mapboxgl.MapMouseEvent | TouchEvent | MouseEvent, map?: any) => {
-	if (map) {
+const toEvent = (e: any) => {
+	const merc = geoProject(e.lngLat as LngLat);
 
-	}
-
-	// @ts-ignore
-	const merc = !(e instanceof MouseEvent || (window.TouchEvent && e instanceof TouchEvent))
-		// @ts-ignore
-		? geoProject(e.lngLat)
-		: { x: 0, y: 0 };
-
-    const ev = {
-        ...e,
+	prev = {
+		...e,
 		merc,
-        movement: prev
+		movement: prev
 			? sub(merc, prev.merc)
-			: { x: 0, y: 0 },
-		features: !(e instanceof MouseEvent)
-			// @ts-ignore
-			? e.target.queryRenderedFeatures(e.point)
-			: []
-    };
+			: { x: 0, y: 0 }
+	};
 
-	prev = ev;
-
-	return ev;
+	return prev;
 };
 
 @bind
@@ -63,8 +47,6 @@ export class PointerDevice extends EventEmitter {
         map.on('touchend', this._onTouchEnd);
 
         map.on('wheel', this._onWheel);
-
-        // todo: add real handler for this
         map.on('contextmenu', PointerDevice._onContextMenu);
 
 		window.addEventListener('mouseup', this._reset);
@@ -82,7 +64,6 @@ export class PointerDevice extends EventEmitter {
 	}
 
     private _onPointerDown(e: any) {
-        // log('pointerdown');
 		this.trigger('pointerdown', e);
 
 		this._pointerDown = true;
@@ -94,7 +75,6 @@ export class PointerDevice extends EventEmitter {
     }
 
     private _onPointerMove(e: any) {
-        // log('pointermove', e);
 		this.trigger('pointermove', e);
 
 		if (this._pointerDown) {
@@ -113,8 +93,6 @@ export class PointerDevice extends EventEmitter {
 		this.trigger('pointerup', e);
 
         if (!this._longPressSincePointerDown) {
-            // log('pointerup');
-
             this._clearLongPressTimeout();
 
             if (!this._movedSincePointerDown) {
@@ -141,8 +119,6 @@ export class PointerDevice extends EventEmitter {
 
         const { originalEvent: { button, ctrlKey } } = e;
 
-        // this.trigger('pointerclick', e);
-
         this.trigger(
 			button === 2 || ctrlKey
 				? 'pointeraltclick'
@@ -151,60 +127,39 @@ export class PointerDevice extends EventEmitter {
     }
 
     private _onPointerDblClick(e: any) {
-        // log('pointerdblclick');
         this.trigger('pointerdblclick', e);
     }
 
     private _onPointerLongPress(e: any) {
-        // log('pointerlongpress');
         this.trigger('pointerlongpress', e);
 
         this._pointerDown = false;
         this._longPressSincePointerDown = true;
     }
 
-	// private _onContextMenu(e: mapboxgl.MapMouseEvent) {
-	// 	e.originalEvent.preventDefault();
-	// 	e.originalEvent.stopPropagation();
-	//
-	// 	// this._clearDblClickTimeout();
-	// 	this.trigger('pointeraltclick');
-	// }
-
     private _onMouseDown(e: mapboxgl.MapMouseEvent) {
-        // log('mousedown', e);
 		e.originalEvent.preventDefault();
 
         this._onPointerDown(toEvent(e));
     }
 
     private _onMouseMove(e: mapboxgl.MapMouseEvent) {
-        // log('mousemove', e);
-
         this._onPointerMove(toEvent(e));
     }
 
     private _onMouseUp(e: mapboxgl.MapMouseEvent | MouseEvent) {
-        // log('mouseup', e);
-
         this._onPointerUp(toEvent(e));
     }
 
     private _onTouchStart(e: mapboxgl.MapTouchEvent) {
-        // log('touchstart', e);
-
         this._onPointerDown(toEvent(e));
     }
 
     private _onTouchMove(e: mapboxgl.MapTouchEvent | TouchEvent) {
-        // log('touchmove', e);
-
         this._onPointerMove(toEvent(e));
     }
 
     private _onTouchEnd(e: mapboxgl.MapTouchEvent | TouchEvent) {
-        // log('touchend', e);
-
         this._onPointerUp(toEvent(e));
     }
 
@@ -217,7 +172,6 @@ export class PointerDevice extends EventEmitter {
     }
 
     private _setDblClickTimeout(e: mapboxgl.MapMouseEvent) {
-    	// 220
         this._timeoutDblClick = setTimeout(() => this._onPointerClick(e), 220);
     }
 

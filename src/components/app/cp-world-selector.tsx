@@ -23,7 +23,6 @@ interface Props {
 export const _WorldSelector = React.memo(({ lang, worlds, world, setWorld }: Props) => (
 	<Collapsible title={ lang.multiverse.worlds }>
 		<RadioButtons
-			label={ lang.multiverse.worlds }
 			value={ world }
 			options={ worlds.map(e => [e.id, e.id]) as any }
 			onChange={ setWorld }

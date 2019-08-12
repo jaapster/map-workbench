@@ -3,9 +3,7 @@ import {
 	coToLl,
 	geoProject } from '../../utils/util-geo';
 
-export const analyseRectangle = (coordinates: Co[][], nv: number) => {
-	const [cos] = coordinates;
-
+export const analyseRectangle = ([cos]: Co[][], nv: number) => {
 	// get the coordinate indices of the points
 	// opposite, clockwise and counter clockwise from
 	// the reference point (typically the one that is dragged)

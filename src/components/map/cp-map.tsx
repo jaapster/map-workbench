@@ -73,10 +73,16 @@ export const _Map = ({ mode, glare, offset, overview, collections, setOverviewOf
 						glare || overview
 							? (
 								<ButtonGroup>
-									<Button onClick={ () => setOverviewOffset(offset - 1) }>
+									<Button
+										onClick={ () => setOverviewOffset(offset - 1) }
+										disabled={ glare }
+									>
 										<i className="icon-plus1" />
 									</Button>
-									<Button onClick={ () => setOverviewOffset(offset + 1) }>
+									<Button
+										onClick={ () => setOverviewOffset(offset + 1) }
+										disabled={ glare }
+									>
 										<i className="icon-minus1" />
 									</Button>
 								</ButtonGroup>

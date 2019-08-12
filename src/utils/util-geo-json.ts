@@ -120,7 +120,11 @@ export const multiPointToLines = ([co1, co2]: Co[]) => {
 	return [coordinates, [co1, co2]];
 };
 
-export const multiPointToCircle = (feature: Feature<MultiPoint>) => {
+export const multiPointToCircle = (feature: Feature<MultiPoint>): [
+	Feature<Polygon>,
+	Feature<LineString>,
+	Feature<LineString>
+] => {
 	const { geometry: { coordinates: [co1, co2] }, properties: { id } } = feature;
 	const [coordinates] = multiPointToLines([co1, co2]);
 	const radius = geoDistance(co1, co2);
@@ -134,8 +138,8 @@ export const multiPointToCircle = (feature: Feature<MultiPoint>) => {
 				coordinates: [coordinates]
 			},
 			properties: {
-				type: POLYGON,
-				id
+				id,
+				type: POLYGON
 			},
 			bbox: getBBox(coordinates)
 		},
@@ -146,9 +150,9 @@ export const multiPointToCircle = (feature: Feature<MultiPoint>) => {
 				coordinates
 			},
 			properties: {
+				id,
 				type: SEGMENT,
-				text: circumference.toFixed(PRECISION),
-				id
+				text: circumference.toFixed(PRECISION)
 			},
 			bbox: getBBox(coordinates)
 		},
@@ -159,9 +163,9 @@ export const multiPointToCircle = (feature: Feature<MultiPoint>) => {
 				coordinates: [co1, co2]
 			},
 			properties: {
+				id,
 				type: SEGMENT,
-				text: radius.toFixed(PRECISION),
-				id
+				text: radius.toFixed(PRECISION)
 			},
 			bbox: getBBox([co1, co2])
 		}
