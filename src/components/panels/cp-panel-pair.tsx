@@ -4,7 +4,7 @@ import './scss/cp-panel-pair.scss';
 import { clamp } from '../../utils/util-clamp';
 import { mergeClasses } from '../../utils/util-merge-classes';
 import { connect } from 'react-redux';
-import { ActionSetPanelCollapsed } from '../../reducers/actions/actions';
+import { ActionSetPanelCollapsed } from '../../store/actions/actions';
 import { Dispatch } from 'redux';
 
 interface Props {
@@ -102,22 +102,10 @@ export class _PanelPair extends React.PureComponent<Props, State> {
 		}
 	}
 
-	protected onPointerUp(e: MouseEvent) {
-		if (this.startX === e.clientX  && this.startY === e.clientY) {
-			this.toggle();
-		}
-
+	protected onPointerUp() {
 		this.removeListeners();
 
 		this.setState({ dragging: false });
-	}
-
-	protected toggle() {
-		const { panelGroupId, setCollapsed } = this.props;
-
-		setCollapsed(panelGroupId, !this.getCollapsed());
-
-		this.onResize();
 	}
 
 	protected open() {

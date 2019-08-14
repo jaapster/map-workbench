@@ -2,7 +2,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { Dispatch } from 'redux';
 import { capitalize } from '../../utils/util-string';
-import { MapControl } from '../../map-control/map-control';
+import { MapControl } from '../../misc/map-control/map-control';
 import { Properties } from './cp-properties';
 import {
 	State,
@@ -11,10 +11,10 @@ import {
 import {
 	currentCollectionId,
 	currentSelectionVectors,
-	currentFeatureCollection } from '../../reducers/selectors/index.selectors';
+	currentFeatureCollection } from '../../store/selectors/index.selectors';
 import {
 	ActionSelect,
-	ActionDeleteSelection } from '../../reducers/actions/actions';
+	ActionDeleteSelection } from '../../store/actions/actions';
 import { batchActions } from 'redux-batched-actions';
 
 interface Props {

@@ -2,28 +2,16 @@ import React from 'react';
 import { Main } from './cp-main';
 import { State } from '../../types';
 import { connect } from 'react-redux';
-import { appPhase, authorized } from '../../reducers/selectors/index.selectors';
-import { Dispatch } from 'redux';
-import { BootService } from '../../services/service.boot';
-import { ActionSetAppPhase } from '../../reducers/actions/actions';
-// import { Login } from './cp-login';
+import { appPhase, authorized } from '../../store/selectors/index.selectors';
 
-interface P1 {
+interface Props {
 	appPhase: string;
 	authorized: boolean;
 }
 
-interface P2 {
-	setAppPhaseToBooted: () => void;
-}
-
-export const _App = React.memo(({ appPhase, authorized, setAppPhaseToBooted }: P1 & P2) => {
+export const _App = React.memo(({ appPhase, authorized }: Props) => {
 	// if (authorized) {
 		if (appPhase !== 'booted') {
-			BootService
-				.boot()
-				.then(setAppPhaseToBooted);
-
 			return <div>Booting...</div>;
 		}
 
@@ -33,19 +21,11 @@ export const _App = React.memo(({ appPhase, authorized, setAppPhaseToBooted }: P
 	// return <Login />;
 });
 
-const mapStateToProps = (state: State): P1 => (
+const mapStateToProps = (state: State): Props => (
 	{
 		appPhase: appPhase(state),
 		authorized: authorized(state)
 	}
 );
 
-const mapDispatchToProps = (dispatch: Dispatch): P2 => (
-	{
-		setAppPhaseToBooted() {
-			dispatch(ActionSetAppPhase.create({ phase: 'booted' }));
-		}
-	}
-);
-
-export const App = connect(mapStateToProps, mapDispatchToProps)(_App);
+export const App = connect(mapStateToProps)(_App);

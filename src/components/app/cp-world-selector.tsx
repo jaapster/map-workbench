@@ -2,11 +2,11 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { Dispatch } from 'redux';
 import { RadioButtons } from './cp-radio-buttons';
-import { ActionGoToWorld } from '../../reducers/actions/actions';
+import { ActionGoToWorld } from '../../store/actions/actions';
 import {
 	lang,
 	worlds,
-	currentWorldId } from '../../reducers/selectors/index.selectors';
+	currentWorldId } from '../../store/selectors/index.selectors';
 import {
 	State,
 	WorldData,

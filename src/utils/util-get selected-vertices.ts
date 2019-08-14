@@ -1,4 +1,4 @@
-import { POINT } from '../constants';
+import { POINT } from '../constants/constants';
 import {
 	Co,
 	SelectionVector,

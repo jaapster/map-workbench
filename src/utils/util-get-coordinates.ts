@@ -5,7 +5,7 @@ import {
 	MULTI_POINT,
 	LINE_STRING,
 	MULTI_POLYGON,
-	MULTI_LINE_STRING } from '../constants';
+	MULTI_LINE_STRING } from '../constants/constants';
 
 export const getCoordinates = (features: Feature<Geometry>[]) => (
 	features.reduce((m, { geometry: { coordinates, type } }) => (

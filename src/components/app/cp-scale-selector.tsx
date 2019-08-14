@@ -3,11 +3,11 @@ import { connect } from 'react-redux';
 import { Dispatch } from 'redux';
 import { Collapsible } from './cp-collapsible';
 import { RadioButtons } from './cp-radio-buttons';
-import { ActionSetUIScale } from '../../reducers/actions/actions';
+import { ActionSetUIScale } from '../../store/actions/actions';
 import {
 	lang,
 	scale,
-	scales } from '../../reducers/selectors/index.selectors';
+	scales } from '../../store/selectors/index.selectors';
 import {
 	State,
 	LanguagePack } from '../../types';

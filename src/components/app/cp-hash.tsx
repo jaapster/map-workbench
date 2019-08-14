@@ -1,12 +1,12 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { debounce } from 'lodash';
-import { MapControl } from '../../map-control/map-control';
+import { MapControl } from '../../misc/map-control/map-control';
 import {
 	Co,
 	EPSG,
 	State } from '../../types';
-import { center, crs, zoom } from '../../reducers/selectors/index.selectors';
+import { center, crs, zoom } from '../../store/selectors/index.selectors';
 
 interface Props {
 	CRS: EPSG;

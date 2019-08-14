@@ -1,7 +1,7 @@
 import React from 'react';
-import { extent } from '../../reducers/selectors/index.selectors';
+import { extent } from '../../store/selectors/index.selectors';
 import { connect } from 'react-redux';
-import { MapControl } from '../../map-control/map-control';
+import { MapControl } from '../../misc/map-control/map-control';
 import {
 	Co,
 	State } from '../../types';

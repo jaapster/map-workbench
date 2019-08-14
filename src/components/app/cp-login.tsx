@@ -1,7 +1,7 @@
 import React from 'react';
 import { Button } from './cp-button';
 import { Dispatch } from 'redux';
-import { ActionAuthorize } from '../../reducers/actions/actions';
+import { ActionAuthorize } from '../../store/actions/actions';
 import { connect } from 'react-redux';
 
 interface Props {

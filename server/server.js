@@ -1,16 +1,25 @@
+const fs = require('fs');
 const express = require('express');
+const proxy = require('express-http-proxy');
+const https = require('https');
 const bodyParser = require('body-parser');
 const path = require('path');
+const selection = require('./selection');
+
 const app = express();
-app.use(express.static(path.join(__dirname, 'build')));
 
-app.get('/ping', function (req, res) {
-	return res.send('pong');
+const xy = proxy('selite:10060', {
+	https: true,
+	secure: false,
+	proxyReqOptDecorator: function(proxyReqOpts, originalReq) {
+		proxyReqOpts.rejectUnauthorized = false;
+		return proxyReqOpts;
+	}
 });
 
-app.get('/', function (req, res) {
-	res.sendFile(path.join(__dirname, 'build', 'index.html'));
-});
+app.use(bodyParser.json());
+
+app.get('/lite/application.json', xy);
 
 app.get('/api/universes', function (req, res) {
 	res.sendFile(path.join(__dirname, 'data', 'data.universes.json'));
@@ -32,6 +41,19 @@ app.get('/api/languages', function (req, res) {
 	res.sendFile(path.join(__dirname, 'data', 'data.languages.json'));
 });
 
-app.listen(process.env.PORT || 8080);
+app.get('/api/selection/:lngLat', selection.onGet);
 
-console.log('server running on', 8080);
+app.post('/api/v2/applications/:appId/projects/:projectId/maps/:mapId/selection', selection.onPost);
+
+
+const httpsServer = https.createServer(
+	{
+		key: fs.readFileSync('./localhost+2-key.pem'),
+		cert: fs.readFileSync('./localhost+2.pem')
+	},
+	app
+);
+
+httpsServer.listen(8080, () => {
+	console.log(`HTTPS Server running on port ${8080}`);
+});

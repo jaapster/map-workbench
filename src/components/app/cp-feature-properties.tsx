@@ -1,9 +1,9 @@
 import React from 'react';
 import './scss/feature-card.scss';
-import { lang } from '../../reducers/selectors/index.selectors';
+import { lang } from '../../store/selectors/index.selectors';
 import { Value } from './cp-value';
 import { connect } from 'react-redux';
-import { MapControl } from '../../map-control/map-control';
+import { MapControl } from '../../misc/map-control/map-control';
 import {
 	EPSG,
 	State,
@@ -17,7 +17,7 @@ import {
 	getFeatureLength } from '../../utils/util-geometry-properties';
 import {
 	M,
-	M2 } from '../../constants';
+	M2 } from '../../constants/constants';
 
 interface Props {
 	CRS: EPSG;

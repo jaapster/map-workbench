@@ -7,12 +7,12 @@ import { Settings } from './cp-settings';
 import { Selection } from './cp-selection';
 import { PanelPair } from '../panels/cp-panel-pair';
 import { Bookmarks } from './cp-locations';
-import { MapControl } from '../../map-control/map-control';
+import { MapControl } from '../../misc/map-control/map-control';
 import { LayerPanels } from '../map/cp-layer-panels';
 import { PanelTabbed } from '../panels/cp-panel-tabbed';
 import { MultiverseSettings } from './cp-multiverse';
 import { State } from '../../types';
-import { scale } from '../../reducers/selectors/index.selectors';
+import { scale } from '../../store/selectors/index.selectors';
 import { connect } from 'react-redux';
 
 interface Props {

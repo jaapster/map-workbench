@@ -5,11 +5,11 @@ import { connect } from 'react-redux';
 import { Bearing } from './cp-bearing';
 import { Dispatch } from 'redux';
 import { ZoomLevel } from './cp-zoom-level';
-import { OverView } from './cp-overview';
+import { SecondaryMap } from './cp-overview';
 import { PopUpMenu } from './cp-pop-up-menu';
 import { HashParams } from '../app/cp-hash';
 import { SystemMenu } from '../app/cp-system-menu';
-import { MapControl } from '../../map-control/map-control';
+import { MapControl } from '../../misc/map-control/map-control';
 import { DrawingTools } from './cp-drawing-tool';
 import { mergeClasses } from '../../utils/util-merge-classes';
 import { MarkerVertex } from './cp-marker-vertex';
@@ -19,7 +19,7 @@ import { CenterCoordinate } from './cp-center-coordinate';
 import {
 	ActionSetOverviewOffset,
 	ActionToggleOverview
-} from '../../reducers/actions/actions';
+} from '../../store/actions/actions';
 import { FeatureCollectionLayer } from './cp-feature-collection-layer';
 import {
 	State,
@@ -29,7 +29,7 @@ import {
 	mode,
 	overviewVisible,
 	currentWorldCollections, glare, overviewOffset
-} from '../../reducers/selectors/index.selectors';
+} from '../../store/selectors/index.selectors';
 import { Button, ButtonGroup } from '../app/cp-button';
 
 interface Props {
@@ -104,7 +104,7 @@ export const _Map = ({ mode, glare, offset, overview, collections, setOverviewOf
 			</div>
 			<PopUpMenu />
 			<HashParams />
-			<OverView />
+			<SecondaryMap />
 		</div>
 	);
 };

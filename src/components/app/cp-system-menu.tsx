@@ -1,7 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { Dispatch } from 'redux';
-import { ActionLogout } from '../../reducers/actions/actions';
+import { ActionLogout } from '../../store/actions/actions';
 import {
 	Button,
 	ButtonGroup } from './cp-button';

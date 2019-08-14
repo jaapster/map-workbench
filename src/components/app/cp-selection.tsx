@@ -6,7 +6,7 @@ import { FeatureProperties } from './cp-feature-properties';
 import {
 	crs,
 	lang,
-	currentSelectionFeatures } from '../../reducers/selectors/index.selectors';
+	currentSelectionFeatures } from '../../store/selectors/index.selectors';
 import {
 	EPSG,
 	State,

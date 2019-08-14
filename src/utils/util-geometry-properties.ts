@@ -6,7 +6,7 @@ import {
 	RECTANGLE,
 	LINE_STRING,
 	MULTI_POLYGON,
-	MULTI_LINE_STRING } from '../constants';
+	MULTI_LINE_STRING } from '../constants/constants';
 import {
 	Co,
 	Feature,

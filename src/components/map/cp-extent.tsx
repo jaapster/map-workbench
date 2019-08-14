@@ -1,6 +1,6 @@
 import React from 'react';
 import { Co, Feature, Polygon } from '../../types';
-import { OverviewControl } from '../../map-control/overview-control';
+import { SecondaryMapControl } from '../../misc/map-control/secondary-map-control';
 
 interface Props {
 	w: number;
@@ -16,7 +16,7 @@ export const Extent = ({ w, h, extent }: Props) => (
 				.slice()
 				.reverse()
 				.reduce((m: string, co: Co, i: number) => {
-					const { x, y } = OverviewControl.project(co);
+					const { x, y } = SecondaryMapControl.project(co);
 					return `${ m }${ i ? 'L' : 'M' }${ x } ${ y }`;
 				}, `M0 -1L${ w + 1 } -1L${ w + 1 } ${ h }L0 ${ h }L0 -1`)
 			}

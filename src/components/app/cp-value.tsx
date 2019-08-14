@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { unitSystem } from '../../reducers/selectors/index.selectors';
+import { unitSystem } from '../../store/selectors/index.selectors';
 import {
 	mToFt,
 	m2ToFt2,
@@ -11,7 +11,7 @@ import {
 import {
 	M,
 	M2,
-	METRIC } from '../../constants';
+	METRIC } from '../../constants/constants';
 import {
 	State,
 	UnitSystem } from '../../types';

@@ -1,9 +1,9 @@
 import { Button } from '../app/cp-button';
 import React from 'react';
 import { State } from '../../types';
-import { overviewVisible } from '../../reducers/selectors/index.selectors';
+import { overviewVisible } from '../../store/selectors/index.selectors';
 import { Dispatch } from 'redux';
-import { ActionToggleOverview } from '../../reducers/actions/actions';
+import { ActionToggleOverview } from '../../store/actions/actions';
 import { connect } from 'react-redux';
 
 interface Props {

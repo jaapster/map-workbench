@@ -1,5 +1,5 @@
 import React from 'react';
-import { extent } from '../../reducers/selectors/index.selectors';
+import { extent } from '../../store/selectors/index.selectors';
 import { connect } from 'react-redux';
 // import { BBoxSVG } from './geometries/cp-bbox';
 import { PointSVG } from './geometries/cp-point';
@@ -21,7 +21,7 @@ import {
 	LINE_STRING,
 	MULTI_POINT,
 	MULTI_POLYGON,
-	MULTI_LINE_STRING } from '../../constants';
+	MULTI_LINE_STRING } from '../../constants/constants';
 import {
 	State,
 	Feature,

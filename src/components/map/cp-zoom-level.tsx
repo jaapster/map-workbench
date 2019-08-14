@@ -1,8 +1,8 @@
 import React from 'react';
-import { zoom } from '../../reducers/selectors/index.selectors';
+import { zoom } from '../../store/selectors/index.selectors';
 import { State } from '../../types';
 import { connect } from 'react-redux';
-import { MapControl } from '../../map-control/map-control';
+import { MapControl } from '../../misc/map-control/map-control';
 import {
 	Button,
 	ButtonGroup } from '../app/cp-button';

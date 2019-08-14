@@ -1,7 +1,7 @@
 import { dis } from './util-point';
-import { THRESHOLD } from '../constants';
-import { getNearestVertex } from '../reducers/fn/get-nearest-vertex';
-import { getNearestPointOnGeometry } from '../reducers/fn/get-nearest-point-on-geometry';
+import { THRESHOLD } from '../constants/constants';
+import { getNearestVertex } from '../store/reducers/fn/get-nearest-vertex';
+import { getNearestPointOnGeometry } from '../store/reducers/fn/get-nearest-point-on-geometry';
 import {
 	Pt,
 	LngLat,

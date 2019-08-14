@@ -21,7 +21,7 @@ import {
 	RECTANGLE,
 	PRECISION,
 	LINE_STRING,
-	MULTI_POINT } from '../constants';
+	MULTI_POINT } from '../constants/constants';
 import {
 	llToCo,
 	coToLl,

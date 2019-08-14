@@ -1,5 +1,5 @@
 import React from 'react';
-import { extent } from '../../../reducers/selectors/index.selectors';
+import { extent } from '../../../store/selectors/index.selectors';
 import { connect } from 'react-redux';
 import { addToPath } from '../../../utils/util-add-to-path';
 import {

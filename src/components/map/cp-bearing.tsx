@@ -2,9 +2,9 @@ import React from 'react';
 import { State } from '../../types';
 import { connect } from 'react-redux';
 // import { zoom } from '../../reducers/selectors/index.selectors';
-import { MapControl } from '../../map-control/map-control';
+import { MapControl } from '../../misc/map-control/map-control';
 import { Button, ButtonGroup } from '../app/cp-button';
-import { bearing, pitch } from '../../reducers/selectors/index.selectors';
+import { bearing, pitch } from '../../store/selectors/index.selectors';
 
 interface Props {
 	pitch: number;

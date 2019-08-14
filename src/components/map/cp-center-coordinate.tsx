@@ -1,13 +1,13 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { MapControl } from '../../map-control/map-control';
+import { MapControl } from '../../misc/map-control/map-control';
 import {
 	Co,
 	EPSG,
 	State } from '../../types';
 import {
 	crs,
-	center } from '../../reducers/selectors/index.selectors';
+	center } from '../../store/selectors/index.selectors';
 
 interface Props {
 	CRS: EPSG;

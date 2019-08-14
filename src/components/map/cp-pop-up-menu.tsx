@@ -1,20 +1,20 @@
 import React from 'react';
-import { mode, mouse } from '../../reducers/selectors/index.selectors';
+import { mode, mouse } from '../../store/selectors/index.selectors';
 import { connect } from 'react-redux';
 import { Dispatch } from 'redux';
 import { mergeClasses } from '../../utils/util-merge-classes';
 import {
 	ActionClearSelection,
 	ActionDeleteSelection,
-	ActionSetMapControlMode } from '../../reducers/actions/actions';
+	ActionSetMapControlMode } from '../../store/actions/actions';
 import {
 	MENU_MODE,
-	NAVIGATION_MODE } from '../../constants';
+	NAVIGATION_MODE } from '../../constants/constants';
 import {
 	State,
 	MapControlMode, Co
 } from '../../types';
-import { MapControl } from '../../map-control/map-control';
+import { MapControl } from '../../misc/map-control/map-control';
 
 interface P1 {
 	mode: MapControlMode;

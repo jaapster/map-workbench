@@ -1,5 +1,5 @@
 import React from 'react';
-import { lang } from '../../reducers/selectors/index.selectors';
+import { lang } from '../../store/selectors/index.selectors';
 import { connect } from 'react-redux';
 import { Properties } from './cp-properties';
 import { StyleSelector } from './cp-style-selector';

@@ -1,12 +1,12 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { MapControl } from '../../map-control/map-control';
+import { MapControl } from '../../misc/map-control/map-control';
 import {
 	center,
-	unitSystem } from '../../reducers/selectors/index.selectors';
+	unitSystem } from '../../store/selectors/index.selectors';
 import {
 	METRIC,
-	SCALE_BASE_WIDTH } from '../../constants';
+	SCALE_BASE_WIDTH } from '../../constants/constants';
 import {
 	Co,
 	State,
@@ -16,7 +16,7 @@ import {
 	mToFt,
 	milesToMeters } from '../../utils/util-conversion';
 import { Dispatch } from 'redux';
-import { ActionToggleUnitSystem } from '../../reducers/actions/actions';
+import { ActionToggleUnitSystem } from '../../store/actions/actions';
 
 interface Props {
 	center: Co;

@@ -1,12 +1,12 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { MapControl } from '../../map-control/map-control';
+import { MapControl } from '../../misc/map-control/map-control';
 import { Properties } from './cp-properties';
 import {
 	State,
 	Location, LanguagePack
 } from '../../types';
-import { lang } from '../../reducers/selectors/index.selectors';
+import { lang } from '../../store/selectors/index.selectors';
 
 interface Props {
 	lang: LanguagePack;

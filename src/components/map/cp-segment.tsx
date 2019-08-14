@@ -1,8 +1,8 @@
 import React from 'react';
-import { METRIC } from '../../constants';
+import { METRIC } from '../../constants/constants';
 import { connect } from 'react-redux';
 import { addToPath } from '../../utils/util-add-to-path';
-import { unitSystem } from '../../reducers/selectors/index.selectors';
+import { unitSystem } from '../../store/selectors/index.selectors';
 import { geoDistance } from '../../utils/util-geo';
 import { mergeClasses } from '../../utils/util-merge-classes';
 import {

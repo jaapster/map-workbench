@@ -3,11 +3,11 @@ import { connect } from 'react-redux';
 import { Dispatch } from 'redux';
 import {
 	mode,
-	currentSelectionFeatures } from '../../reducers/selectors/index.selectors';
+	currentSelectionFeatures } from '../../store/selectors/index.selectors';
 import {
 	ActionClearSelection,
 	ActionDeleteSelection,
-	ActionSetMapControlMode } from '../../reducers/actions/actions';
+	ActionSetMapControlMode } from '../../store/actions/actions';
 import {
 	Button,
 	ButtonGroup } from '../app/cp-button';
@@ -18,7 +18,7 @@ import {
 	DRAW_POINT_MODE,
 	DRAW_CIRCLE_MODE,
 	DRAW_SEGMENTED_MODE,
-	DRAW_RECTANGLE_MODE } from '../../constants';
+	DRAW_RECTANGLE_MODE } from '../../constants/constants';
 import { batchActions } from 'redux-batched-actions';
 
 interface Props {

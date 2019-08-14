@@ -1,6 +1,6 @@
 import React from 'react';
 import './scss/properties.scss';
-import { lang } from '../../reducers/selectors/index.selectors';
+import { lang } from '../../store/selectors/index.selectors';
 import { LanguagePack, State } from '../../types';
 import { Properties } from './cp-properties';
 import { UnitSystemSelector } from './cp-unit-system-selector';

@@ -1,4 +1,4 @@
-import { PRECISION } from '../constants';
+import { PRECISION } from '../constants/constants';
 
 export const mToFt = (m: number) => m * 3.2808399;
 

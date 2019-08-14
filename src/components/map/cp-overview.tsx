@@ -2,8 +2,8 @@ import React from 'react';
 import { Extent } from './cp-extent';
 import { connect } from 'react-redux';
 import { Crosshair } from './cp-crosshairs';
-import { MapControl } from '../../map-control/map-control';
-import { OverviewControl } from '../../map-control/overview-control';
+import { MapControl } from '../../misc/map-control/map-control';
+import { SecondaryMapControl } from '../../misc/map-control/secondary-map-control';
 import {
 	Co,
 	State,
@@ -11,67 +11,107 @@ import {
 	Polygon } from '../../types';
 import {
 	zoom,
-	scale,
 	mouse,
 	glare,
 	extent,
 	center,
 	glareLevel,
 	overviewOffset,
-	overviewVisible } from '../../reducers/selectors/index.selectors';
+	overviewVisible } from '../../store/selectors/index.selectors';
 
-interface Props {
-	zoom: number;
-	glare: boolean;
+interface GlareProps {
 	mouse: Co;
-	center: Co;
-	extent: Feature<Polygon>;
-	offset: number;
-	overview: boolean;
 	glareLevel: number;
 }
 
-const _Overview = React.memo(({ zoom, glare, mouse, center, extent, offset, overview, glareLevel }: Props) => {
-	if (!(overview || glare)) {
-		return null;
-	}
+const _GlareMap = React.memo((props: GlareProps) => {
+	const { mouse, glareLevel } = props;
 
-	OverviewControl.resize();
-	OverviewControl.setCenter(glare ? mouse : center);
-	OverviewControl.setZoom(glare ? glareLevel : zoom - offset);
-
-	const { width, height } = OverviewControl.getContainer().getBoundingClientRect();
-
-	if (width === 0) {
-		// todo: find a way to force update of functional component
-		setTimeout(() => MapControl.setZoom(MapControl.getZoom() + 0.0001));
-	}
+	SecondaryMapControl.setCenter(mouse);
+	SecondaryMapControl.setZoom(glareLevel);
 
 	return (
-		<div className="overview" ref={ OverviewControl.attachTo }>
-			{
-				glare
-					? <Crosshair />
-					: overview
-						? <Extent w={ width } h={ height } extent={ extent } />
-						: null
-			}
+		<div className="overview" ref={ SecondaryMapControl.attachTo }>
+			<Crosshair />
 		</div>
 	);
 });
 
-const mapStateToProps = (state: State) => (
+const mapStateToPropsGlare = (state: State): GlareProps => (
 	{
-		zoom: zoom(state),
-		scale: scale(state),
 		mouse: mouse(state),
-		glare: glare(state),
-		center: center(state),
-		extent: extent(state),
-		offset: overviewOffset(state),
-		overview: overviewVisible(state),
 		glareLevel: glareLevel(state)
 	}
 );
 
-export const OverView = connect(mapStateToProps)(_Overview);
+const GlareMap = connect(mapStateToPropsGlare)(_GlareMap);
+
+interface OverviewProps {
+	zoom: number;
+	center: Co;
+	extent: Feature<Polygon>;
+	offset: number;
+}
+
+const _OverviewMap = React.memo((props: OverviewProps) => {
+	const { zoom, center, extent, offset } = props;
+
+	SecondaryMapControl.setCenter(center);
+	SecondaryMapControl.setZoom(zoom - offset);
+
+	const { width, height } = SecondaryMapControl
+		.getContainer()
+		.getBoundingClientRect();
+
+	return (
+		<div className="overview" ref={ SecondaryMapControl.attachTo }>
+			<Extent w={ width } h={ height } extent={ extent } />
+		</div>
+	);
+});
+
+const mapStateToPropsOverview = (state: State): OverviewProps => (
+	{
+		zoom: zoom(state),
+		center: center(state),
+		extent: extent(state),
+		offset: overviewOffset(state)
+	}
+);
+
+const OverviewMap = connect(mapStateToPropsOverview)(_OverviewMap);
+
+interface SecondaryMapProps {
+	glare: boolean;
+	overview: boolean;
+}
+
+const _SecondaryMap = React.memo((props: SecondaryMapProps) => {
+	const { glare, overview } = props;
+
+	if (glare || overview) {
+		SecondaryMapControl.resize();
+
+		const { width } = SecondaryMapControl
+			.getContainer()
+			.getBoundingClientRect();
+
+		if (width === 0) {
+			// todo: find a way to force update of functional component
+			setTimeout(() => MapControl.setZoom(MapControl.getZoom() + 0.0001));
+		}
+
+		return glare ? <GlareMap /> : <OverviewMap />;
+	}
+
+	return null;
+});
+
+const mapStateToProps = (state: State) => (
+	{
+		glare: glare(state),
+		overview: overviewVisible(state)
+	}
+);
+
+export const SecondaryMap = connect(mapStateToProps)(_SecondaryMap);

@@ -2,7 +2,7 @@ import React from 'react';
 import { mergeClasses } from '../../utils/util-merge-classes';
 import { connect } from 'react-redux';
 import { Dispatch } from 'redux';
-import { ActionSetActiveTab } from '../../reducers/actions/actions';
+import { ActionSetActiveTab } from '../../store/actions/actions';
 import { State } from '../../types';
 import { Button } from '../app/cp-button';
 

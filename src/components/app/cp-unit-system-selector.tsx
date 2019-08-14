@@ -1,9 +1,9 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { Dispatch } from 'redux';
-import { lang, unitSystem } from '../../reducers/selectors/index.selectors';
+import { lang, unitSystem } from '../../store/selectors/index.selectors';
 import { RadioButtons } from './cp-radio-buttons';
-import { ActionSetUnitSystem } from '../../reducers/actions/actions';
+import { ActionSetUnitSystem } from '../../store/actions/actions';
 import {
 	LanguagePack,
 	State,
@@ -11,7 +11,7 @@ import {
 } from '../../types';
 import {
 	IMPERIAL,
-	METRIC } from '../../constants';
+	METRIC } from '../../constants/constants';
 import { Collapsible } from './cp-collapsible';
 
 interface Props {
