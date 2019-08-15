@@ -1,15 +1,15 @@
 import 'array-flat-polyfill';
-import React from 'react';
-import ReactDOM from 'react-dom';
 import './style/index.scss';
 import './style/fonts/icomoon/style.css';
+import React from 'react';
+import ReactDOM from 'react-dom';
 import { App } from './components/app/cp-app';
 import { store } from './store/store';
 import { Provider } from 'react-redux';
-import { ActionLoadProject } from './store/actions/actions';
+import { ActionLoadApplicationInfo } from './store/actions/actions';
 
 // @ts-ignore
-store.dispatch(ActionLoadProject.create());
+store.dispatch(ActionLoadApplicationInfo.create());
 
 ReactDOM.render((
 	<Provider store={ store }>

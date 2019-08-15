@@ -20,6 +20,7 @@ const xy = proxy('selite:10060', {
 app.use(bodyParser.json());
 
 app.get('/lite/application.json', xy);
+app.post('/auth/xy', xy);
 
 app.get('/api/universes', function (req, res) {
 	res.sendFile(path.join(__dirname, 'data', 'data.universes.json'));

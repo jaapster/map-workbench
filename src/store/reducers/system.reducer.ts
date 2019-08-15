@@ -1,14 +1,19 @@
 import { SystemData } from '../../types';
 import {
 	Action,
-	ActionAuthorize,
 	ActionLogout,
-	ActionSetAppPhase
-} from '../actions/actions';
+	ActionSetAppPhase,
+	ActionSetAuthorized,
+	ActionSetAuthenticated,
+	ActionSetAuthenticationError } from '../actions/actions';
 
 const STATE: SystemData = {
+	appId: '',
 	appPhase: 'booting',
-	authorized: false
+	authorized: false,
+	authenticated: false,
+	requestPending: false,
+	authenticationError: null
 };
 
 export const systemReducer = (state: SystemData = STATE, action: Action): SystemData => {
@@ -19,17 +24,37 @@ export const systemReducer = (state: SystemData = STATE, action: Action): System
 		};
 	}
 
-	if (ActionAuthorize.validate(action)) {
-		return {
-			...state,
-			authorized: true
-		};
-	}
-
 	if (ActionLogout.validate(action)) {
 		return {
 			...state,
-			authorized: false
+			authorized: false,
+			authenticated: false
+		};
+	}
+
+	if (ActionSetAuthorized.validate(action)) {
+		return {
+			...state,
+			authorized: ActionSetAuthorized.data(action).authorized
+		};
+	}
+
+	if (ActionSetAuthenticated.validate(action)) {
+		const authenticated = ActionSetAuthenticated.data(action).authenticated;
+
+		return {
+			...state,
+			authenticated,
+			authenticationError: authenticated
+				? null
+				: state.authenticationError
+		};
+	}
+
+	if (ActionSetAuthenticationError.validate(action)) {
+		return {
+			...state,
+			authenticationError: ActionSetAuthenticationError.data(action).authenticationError
 		};
 	}
 

@@ -174,11 +174,20 @@ export const ActionSetGlare = getActionCreator<{
 	glare: boolean;
 }>('ActionSetGlare');
 
-export const ActionAuthorize = getActionCreator<{
-}>('ActionAuthorize');
-
 export const ActionLogout = getActionCreator<{
 }>('ActionLogout');
+
+export const ActionSetAuthorized = getActionCreator<{
+	authorized: boolean;
+}>('ActionSetAuthorized');
+
+export const ActionSetAuthenticated = getActionCreator<{
+	authenticated: boolean;
+}>('ActionSetAuthenticated');
+
+export const ActionSetAuthenticationError = getActionCreator<{
+	authenticationError: string;
+}>('ActionSetAuthenticationError');
 
 export const ActionRequestSelection = {
 	create({ point }: { point: Pt }) {
@@ -190,6 +199,16 @@ export const ActionRequestSelection = {
 				geometry: getSelectionBuffer(point)
 				// @ts-ignore
 			}).then(res => console.log(res.data));
+		};
+	}
+};
+
+export const ActionLoadApplicationInfo = {
+	create() {
+		return (dispatch: Dispatch) => {
+			axios
+				.get('/application.json')
+				.then(r => console.log(r));
 		};
 	}
 };
@@ -244,6 +263,37 @@ export const ActionLoadProject = {
 							ActionSetAppPhase.create({ phase: 'booted' })
 						])
 					));
+				});
+		};
+	}
+};
+
+export const ActionAuthenticate = {
+	create(credentials: { userName: string, password: string }) {
+		return (dispatch: Dispatch) => {
+			axios
+				.post('/auth/xy', credentials)
+				.then(({ data }) => {
+					if (data.isSuccess) {
+						dispatch(
+							batchActions([
+								ActionSetAuthorized.create({ authorized: true }),
+								ActionSetAuthenticated.create({ authenticated: true })
+							])
+						);
+
+						// @ts-ignore
+						dispatch(ActionLoadProject.create());
+					} else {
+						// should not happen as status 200 is always success
+					}
+				})
+				.catch(({ response }: any) => {
+					if (response.status === 401) {
+						dispatch(ActionSetAuthenticationError.create({
+							authenticationError: `${ 401 }`
+						}));
+					}
 				});
 		};
 	}

@@ -25,6 +25,7 @@ export const currentReferenceStyleId = (state: State) => state.multiverse.curren
 
 export const appPhase = (state: State) => state.system.appPhase;
 export const authorized = (state: State) => state.system.authorized;
+export const authenticationError = (state: State) => state.system.authenticationError;
 export const applicationId = (state: State) => '0000000001';
 
 export const projectPath = createSelector(

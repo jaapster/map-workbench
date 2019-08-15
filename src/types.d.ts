@@ -210,18 +210,22 @@ export interface LanguageData {
 }
 
 export interface SystemData {
+	appId: string;
 	appPhase: string;
 	authorized: boolean;
+	authenticated: boolean;
+	requestPending: boolean;
+	authenticationError: string | null;
 }
 
 export interface State {
+	ui: UIData;
+	system: SystemData;
+	settings: SettingsData;
+	appPhase: string;
+	bookmarks: Location[];
+	languages: LanguageData;
 	multiverse: MultiverseData;
 	mapControl: MapControlData;
-	appPhase: string;
-	ui: UIData;
 	geoLocation: GeoLocationData;
-	bookmarks: Location[];
-	settings: SettingsData;
-	languages: LanguageData;
-	system: SystemData;
 }

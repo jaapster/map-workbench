@@ -1,6 +1,7 @@
 import React from 'react';
 import { Main } from './cp-main';
 import { State } from '../../types';
+import { Login } from './cp-login';
 import { connect } from 'react-redux';
 import { appPhase, authorized } from '../../store/selectors/index.selectors';
 
@@ -10,15 +11,15 @@ interface Props {
 }
 
 export const _App = React.memo(({ appPhase, authorized }: Props) => {
-	// if (authorized) {
+	if (authorized) {
 		if (appPhase !== 'booted') {
-			return <div>Booting...</div>;
+			return <div>Loading project...</div>;
 		}
 
 		return <Main />;
-	// }
+	}
 
-	// return <Login />;
+	return <Login />;
 });
 
 const mapStateToProps = (state: State): Props => (

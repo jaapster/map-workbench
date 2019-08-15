@@ -156,8 +156,10 @@ export class MapControl {
 	}
 
 	static attachTo(e: any) {
-		e.appendChild(MapControl.instance.getContainer());
-		MapControl.instance.resize();
+		if (e) {
+			e.appendChild(MapControl.instance.getContainer());
+			MapControl.instance.resize();
+		}
 	}
 
 	private readonly _map: any;
