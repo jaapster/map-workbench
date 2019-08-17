@@ -1,5 +1,7 @@
 import { Location } from 'se';
-import { Action, ActionSetBookmarks } from 'lite/store/actions/actions';
+import {
+	Action,
+	ActionSetBookmarks } from 'lite/store/actions/actions';
 
 const STATE: Location[] = [];
 

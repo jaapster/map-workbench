@@ -9,7 +9,7 @@
 		"import-name": false,
 		"indent": false,
 		"max-line-length": false,
-		"max-file-line-count": [true, 501],
+		"max-file-line-count": false,
 		"member-access": false,
 		"new-parens": true,
 		"no-arg": true,

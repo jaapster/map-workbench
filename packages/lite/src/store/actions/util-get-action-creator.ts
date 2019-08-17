@@ -19,6 +19,9 @@ export const getActionCreator = <Data>(type: string) => {
 				throw new Error(`Action [${ type }] mismatch`);
 			}
 			return action.data;
+		},
+		type() {
+			return type;
 		}
 	};
 };

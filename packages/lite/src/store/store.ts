@@ -22,3 +22,6 @@ export const getState = (): State => store.getState() as State;
 
 // export const subscribe = (fn: any) => store.subscribe(fn);
 
+// @ts-ignore
+window.state = () => console.log(store.getState()); // remove me
+

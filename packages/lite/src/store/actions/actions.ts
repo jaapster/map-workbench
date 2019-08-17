@@ -206,10 +206,6 @@ export const ActionSetUserData = getActionCreator<{
 	userData: UserData;
 }>('ActionSetUserData');
 
-export const ActionSetApplicationsList = getActionCreator<{
-	applications: ApplicationListData[];
-}>('ActionSetApplicationsList');
-
 export const ActionSetServerInfo = getActionCreator<{
 	server: ServerInfoData;
 }>('ActionSetServerInfo');
@@ -258,7 +254,11 @@ export const ActionLoadWorldInfo = {
 			}/worlds/${
 				worldId
 			}`).then(({ data: worldInfo }: { data: WorldInfoData }) => {
-				dispatch(ActionAddWorldInfo.create({ worldInfo }));
+				dispatch(ActionAddWorldInfo.create({ worldInfo: {
+					...worldInfo,
+					worldId,
+					universeIndex
+				} as WorldInfoData }));
 			});
 		};
 	}
@@ -404,8 +404,7 @@ export const ActionAuthorize = {
 								ActionSetAppId.create({ appId }),
 								ActionSetUserData.create({ userData }),
 								ActionSetAuthorized.create({ authorized: true }),
-								ActionSetAuthenticated.create({ authenticated: true }),
-								ActionSetApplicationsList.create({ applications })
+								ActionSetAuthenticated.create({ authenticated: true })
 							]));
 
 							// @ts-ignore

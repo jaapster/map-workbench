@@ -1,5 +1,7 @@
 import { GeoLocationData } from 'se';
-import { Action, ActionSetGeoLocationPosition } from 'lite/store/actions/actions';
+import {
+	Action,
+	ActionSetGeoLocationPosition } from 'lite/store/actions/actions';
 
 const STATE: GeoLocationData = {
 	position: [0, 0],

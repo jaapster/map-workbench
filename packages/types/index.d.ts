@@ -471,33 +471,32 @@ export interface ProjectData {
 		isGeographic?: boolean;
 		isMultiWorld?: boolean;
 	}[];
+	worlds: WorldInfoData[];
 }
 
 export interface SystemData {
-	user: UserData | null;
 	appId: string;
-	worlds: WorldInfoData[];
-	server: ServerInfoData | null;
-	project: ProjectData | null;
 	appPhase: string;
 	authorized: boolean;
-	application: ApplicationInfoData | null;
-	applications: ApplicationListData[];
 	authenticated: boolean;
 	requestPending: boolean;
-	serverSettings: ServerSettingsData | null;
 	authenticationError: string | null;
 }
 
 export interface State {
+	user: UserData | null;
+	server: ServerInfoData;
+	project: ProjectData;
+	application: ApplicationInfoData;
+	serverSettings: ServerSettingsData;
+
 	ui: UIData;
 	system: SystemData;
 	settings: SettingsData;
-	appPhase: string;
 	bookmarks: Location[];
 	languages: LanguageData;
 	multiverse: MultiverseData;
 	mapControl: MapControlData;
 	geoLocation: GeoLocationData;
-	application: ApplicationInfoData;
+
 }
