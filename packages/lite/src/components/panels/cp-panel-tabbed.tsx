@@ -1,0 +1,150 @@
+import React from 'react';
+import { mergeClasses } from 'lite/utils/util-merge-classes';
+import { connect } from 'react-redux';
+import { Dispatch } from 'redux';
+import { ActionSetActiveTab } from 'lite/store/actions/actions';
+import { State } from 'se';
+import { Button } from 'lite/components/app/cp-button';
+
+interface AttributeProps {
+	open?: () => any;
+	close?: () => any;
+	first?: boolean;
+	primary?: boolean;
+	children?: any;
+	position?: number;
+	vertical?: boolean;
+	horizontal?: boolean;
+	onPointerDown?: (e: React.PointerEvent<HTMLDivElement>) => void;
+
+	tabGroupId: string;
+	tabs: any;
+}
+
+interface MappedStateProps {
+	tabData?: any;
+}
+
+interface MappedDispatchProps {
+	setActiveTab?: (tabGroup: string, tab: number) => void;
+}
+
+type Props = AttributeProps & MappedStateProps & MappedDispatchProps;
+
+export const _PanelTabbed = React.memo((props: Props) => {
+	const {
+		primary,
+		horizontal,
+		position,
+		first,
+		onPointerDown,
+		tabs,
+		tabGroupId,
+		tabData,
+		open,
+		close,
+		setActiveTab
+	} = props;
+
+	const { activeTab } = tabData[tabGroupId] || { activeTab: 0 };
+
+	const onTabClick = (tab: number) => {
+		if (tab === activeTab) {
+			if (close) {
+				close();
+			}
+
+			if (setActiveTab) {
+				setActiveTab(tabGroupId, -1);
+			}
+		} else {
+			if (open) {
+				open();
+			}
+
+			if (setActiveTab) {
+				setActiveTab(tabGroupId, tab);
+			}
+		}
+	};
+
+	const className = mergeClasses(
+		'panel',
+		'panel-tabbed',
+		{
+			'panel-primary': primary
+		}
+	);
+
+	const style = {
+		[
+			primary
+				? horizontal
+					? 'width'
+					: 'height'
+				: horizontal
+					? first
+						? 'right'
+						: 'left'
+					: first
+						? 'bottom'
+						: 'top'
+			]: position
+	};
+
+	return (
+		<div className={ className } style={ style }>
+			<div className="active-content">
+				{
+					tabs[activeTab]
+						? tabs[activeTab][1]
+						: null
+				}
+			</div>
+			<div className="toggles">
+				{
+					tabs.map((tab: any, i: number) => (
+						<div key={ i } className="button-group">
+							<Button
+								onClick={ (e: any) => {
+									e.stopPropagation();
+									e.preventDefault();
+									onTabClick(i);
+								} }
+								depressed={ activeTab === i }
+							>
+								{ tab[0] }
+							</Button>
+						</div>
+					))
+				}
+			</div>
+			{
+				primary && activeTab > -1
+					? (
+						<div
+							className="panel-drag-handle"
+							onMouseDown={ onPointerDown }
+						/>
+					)
+					: null
+			}
+		</div>
+	);
+});
+
+const mapStateToProps = (state: State): MappedStateProps => (
+	{
+		tabData: state.ui.tabs
+	}
+);
+
+const mapDispatchToProps = (dispatch: Dispatch): MappedDispatchProps => (
+	{
+		setActiveTab(tabGroupId: string, activeTab: number) {
+			dispatch(ActionSetActiveTab.create({ tabGroupId, activeTab }));
+		}
+	}
+);
+
+export const PanelTabbed = connect(mapStateToProps, mapDispatchToProps)(_PanelTabbed);

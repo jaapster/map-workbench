@@ -1,0 +1,8 @@
+{
+	"name": "@types/se",
+	"version": "2020.1.0",
+	"description": "",
+	"dependencies": {
+		"typescript": "^3.5.2"
+	}
+}

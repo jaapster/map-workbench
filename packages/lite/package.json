@@ -1,0 +1,30 @@
+{
+	"name": "@se/lite",
+	"version": "0.1.0",
+	"private": true,
+	"dependencies": {
+		"@types/lodash": "^4.14.136",
+		"@types/mapbox-gl": "^0.51.8",
+		"@types/react": "^16.9.1",
+		"@types/react-dom": "^16.8.4",
+		"@types/react-redux": "^7.1.1",
+		"@types/redux-thunk": "^2.1.0",
+		"@types/se": "2020.1.0",
+		"@types/uuid": "^3.4.5",
+		"array-flat-polyfill": "^1.0.1",
+		"autobind-decorator": "^2.4.0",
+		"axios": "^0.19.0",
+		"lodash": "^4.17.14",
+		"mapbox-gl": "^1.0.0",
+		"react": "^16.8.6",
+		"react-dom": "^16.8.6",
+		"react-redux": "^7.1.0",
+		"redux": "^4.0.4",
+		"redux-batched-actions": "^0.4.1",
+		"redux-thunk": "^2.3.0",
+		"reselect": "^4.0.0",
+		"ts-optchain": "^0.1.7",
+		"typescript": "^3.5.2",
+		"uuid": "^3.3.2"
+	}
+}
