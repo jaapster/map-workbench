@@ -8,6 +8,7 @@ import {
 	GEOGRAPHIC } from 'lite/constants';
 
 const STATE: ProjectData = {
+	id: '',
 	businessFormRegistrations: [],
 	coordinateSystems: [],
 	exportDefinitions: [],
@@ -26,7 +27,7 @@ const STATE: ProjectData = {
 	styleEndpoints: [],
 	universes: [],
 	worlds: [{
-		worldId: 'DEFAULT',
+		id: 'default',
 		universeIndex: 0,
 		defaultEnvelope: {
 			type: POLYGON,

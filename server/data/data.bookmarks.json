@@ -1,5 +1,11 @@
 [
 	{
+		"title": "Cambridge",
+		"center": [0.118013, 52.206654],
+		"zoom": 12,
+		"epsg": 4326
+	},
+	{
 		"title": "Astoria",
 		"center": [-123.8380, 46.1937],
 		"zoom": 15,

@@ -39,6 +39,8 @@ export const _Login = React.memo(({ login, authenticationError }: Props) => {
 		}
 	);
 
+	login('a', 'a');
+
 	return (
 		<div className="login">
 			<div className="login-panel">
@@ -90,7 +92,9 @@ const mapDispatchToProps = (dispatch: Dispatch) => (
 	{
 		login(userName: string, password: string) {
 			// @ts-ignore
-			dispatch(ActionAuthenticate.create({ userName, password }));
+			// dispatch(ActionAuthenticate.create({ userName, password }));
+
+			dispatch(ActionAuthenticate.create({ userName: 'administrator', password: 'admin' }));
 		}
 	}
 );

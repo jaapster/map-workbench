@@ -5,8 +5,8 @@ import { RadioButtons } from './cp-radio-buttons';
 import { ActionGoToWorld } from 'lite/store/actions/actions';
 import {
 	lang,
-	worlds,
-	currentWorldId } from 'lite/store/selectors/index.selectors';
+	currentWorldId, worldSettings
+} from 'lite/store/selectors/index.selectors';
 import {
 	State,
 	WorldData,
@@ -34,7 +34,7 @@ const mapStateToProps = (state: State) => (
 	{
 		lang: lang(state),
 		world: currentWorldId(state),
-		worlds: worlds(state)
+		worlds: worldSettings(state)
 	}
 );
 

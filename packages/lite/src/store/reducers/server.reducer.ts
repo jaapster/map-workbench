@@ -1,4 +1,4 @@
-import  {ServerInfoData } from 'se';
+import  { ServerInfoData } from 'se';
 import {
 	Action,
 	ActionSetServerInfo } from 'lite/store/actions/actions';

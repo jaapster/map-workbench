@@ -18,16 +18,21 @@ import { MarkerArrowHead } from './cp-marker-arrow-head';
 import { CenterCoordinate } from './cp-center-coordinate';
 import { FeatureCollectionLayer } from './cp-feature-collection-layer';
 import {
-	ActionSetOverviewOffset,
-	ActionToggleOverview } from 'lite/store/actions/actions';
+	ActionToggleOverview,
+	ActionSetOverviewOffset } from 'lite/store/actions/actions';
 import {
 	State,
+	MapboxStyle,
+	MapboxLayer,
 	CollectionData,
 	MapControlMode } from 'se';
 import {
 	mode,
+	glare,
+	visibleLayers,
+	overviewOffset,
 	overviewVisible,
-	currentWorldCollections, glare, overviewOffset } from 'lite/store/selectors/index.selectors';
+	currentWorldCollections } from 'lite/store/selectors/index.selectors';
 import {
 	Button,
 	ButtonGroup } from '../app/cp-button';
@@ -36,16 +41,24 @@ interface Props {
 	mode: MapControlMode;
 	glare: boolean;
 	offset: number;
+	layers: any[];
 	overview: boolean;
 	collections: CollectionData[];
 	setOverviewOffset: (offset: number) => void;
 }
 
-export const _Map = ({ mode, glare, offset, overview, collections, setOverviewOffset }: Props) => {
+export const _Map = ({ mode, glare, offset, overview, collections, setOverviewOffset, layers }: Props) => {
 	const className = mergeClasses(
 		'map-container',
 		`mode-${ mode }`
 	);
+
+	layers.forEach((layer: MapboxStyle) => {
+		const { sources, layers } = layer;
+
+		Object.keys(sources).forEach(key => MapControl.instance.addSource(key, sources[key]));
+		layers.forEach((layer: MapboxLayer) => MapControl.instance.addLayer(layer));
+	});
 
 	return (
 		<div>
@@ -113,6 +126,7 @@ const mapStateToProps = (state: State) => (
 	{
 		mode: mode(state),
 		glare: glare(state),
+		layers: visibleLayers(state),
 		offset: overviewOffset(state),
 		overview: overviewVisible(state),
 		collections: currentWorldCollections(state),

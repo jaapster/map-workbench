@@ -22,7 +22,7 @@ import {
 	ActionSetCollection,
 	ActionClearSelection,
 	ActionDeleteSelection,
-	ActionRequestSelection,
+	// ActionRequestSelection,
 	ActionSetMapControlMode } from 'lite/store/actions/actions';
 
 export class InteractionMode extends EventEmitter {
@@ -93,7 +93,7 @@ export class InteractionMode extends EventEmitter {
 			// 	geometry: getSelectionBuffer(point)
 			// }).then(res => console.log(res.data));
 
-			dispatch(ActionRequestSelection.create({ point }));
+			// dispatch(ActionRequestSelection.create({ point }));
 
 			if (!multi) {
 				dispatch(ActionSetMapControlMode.create({ mode: NAVIGATION_MODE }));

@@ -108,7 +108,7 @@
 $colorSelected: tomato;
 $colorRegular: dodgerblue;
 
-svg.geometries {
+svg {
 	position: absolute;
 	top: 0;
 	left: 0;
@@ -159,16 +159,14 @@ svg.geometries {
 			opacity: 0.3;
 		}
 
+		&.cross {
+			fill: none;
+			stroke: green;
+		}
+
 		&.bbox {
 			stroke: grey;
 			stroke-dasharray: 2;
-		}
-	}
-
-	.cross {
-		> * {
-			fill: none;
-			stroke: green;
 		}
 	}
 
@@ -190,6 +188,11 @@ svg.geometries {
 		&.vertex-selected {
 			fill: none;
 			stroke: $colorSelected;
+		}
+
+		&.cross {
+			fill: none;
+			stroke: green;
 		}
 	}
 }

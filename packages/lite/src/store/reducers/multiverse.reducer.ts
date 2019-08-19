@@ -1,5 +1,5 @@
-import { oc } from 'ts-optchain';
 import { addAtIndex } from './fn/add-at-index';
+import { GEOGRAPHIC } from 'lite/constants';
 import { moveGeometry } from './fn/move-geometry';
 import { deleteAtIndex } from './fn/delete-at-index';
 import { MultiverseData } from 'se';
@@ -12,7 +12,6 @@ import {
 	ActionGoToWorld,
 	ActionAddFeature,
 	ActionMoveGeometry,
-	ActionSetUniverses,
 	ActionSetCollection,
 	ActionClearSelection,
 	ActionDeleteSelection,
@@ -22,22 +21,28 @@ import {
 	ActionSetCurrentReferenceLayer } from 'lite/store/actions/actions';
 
 const STATE: MultiverseData = {
-	worlds: [],
-	universes: [],
+	worlds: [{
+		id: 'default',
+		maps: {},
+		collections: [{
+			name: 'trails',
+			featureCollection: {
+				type: 'FeatureCollection',
+				features: []
+			},
+			selection: []
+		}],
+		currentCRS: GEOGRAPHIC,
+		currentMapId: 'default',
+		currentCollectionId: 'trails'
+	}],
 	currentWorldId: 'default',
 	referenceLayers: [],
 	currentReferenceLayer: 'Empty'
 };
 
 export const multiverseReducer = (state: MultiverseData = STATE, action: Action): MultiverseData => {
-	const { universes, worlds, currentWorldId } = state;
-
-	if (ActionSetUniverses.validate(action)) {
-		return {
-			...state,
-			universes: ActionSetUniverses.data(action).universeData
-		};
-	}
+	const { worlds, currentWorldId } = state;
 
 	if (ActionSetReferenceLayers.validate(action)) {
 		return {
@@ -58,19 +63,16 @@ export const multiverseReducer = (state: MultiverseData = STATE, action: Action)
 			worldData,
 			worldData: {
 				id,
-				collections,
-				universeIndex
+				collections
 			}
 		} = ActionAddWorld.data(action);
-
-		const universe = universes[universeIndex];
 
 		return {
 			...state,
 			worlds: worlds.concat(
 				{
 					...worldData,
-					currentMapId: oc(universe.maps[0]).id(''),
+					currentMapId: '',
 					currentCollectionId: collections[0].name
 
 				}

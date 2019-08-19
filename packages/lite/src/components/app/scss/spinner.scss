@@ -10,7 +10,12 @@
 	align-items: center;
 
 	svg {
+		position: relative;
 		width: 4em;
 		height: 4em;
+
+		circle {
+			fill: none;
+		}
 	}
 }

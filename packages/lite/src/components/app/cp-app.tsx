@@ -3,6 +3,7 @@ import { Main } from './cp-main';
 import { State } from 'se';
 import { Login } from './cp-login';
 import { connect } from 'react-redux';
+import { AppPhase } from './cp-phase';
 import { Spinner } from 'lite/components/app/cp-spinner';
 import { DocumentTitle } from 'lite/components/app/cp-document-title';
 import {
@@ -15,7 +16,7 @@ interface Props {
 }
 
 export const _App = React.memo(({ appPhase, authorized }: Props) => (
-	<>
+	<div>
 		<DocumentTitle title={ 'Lite Light' } />
 		{
 			appPhase === 'loading'
@@ -24,7 +25,7 @@ export const _App = React.memo(({ appPhase, authorized }: Props) => (
 					? <Main />
 					: <Login />
 		}
-	</>
+	</div>
 ));
 
 const mapStateToProps = (state: State): Props => (

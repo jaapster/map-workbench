@@ -41,7 +41,8 @@ import {
 	Polygon,
 	Feature,
 	Geometry,
-	Location } from 'se';
+	Location, MapboxSource, MapboxLayer
+} from 'se';
 import {
 	llToCo,
 	coToLl,
@@ -473,5 +474,27 @@ export class MapControl {
 			center,
 			MapControl.unproject(add(MapControl.project(center), { x: 1, y: 0 }))
 		);
+	}
+
+	addSource(name: string, data: MapboxSource) {
+		if (!this._map.getSource(name)) {
+			this._map.addSource(name, data);
+		}
+	}
+
+	addLayer(layer: MapboxLayer) {
+		if (!this._map.getLayer(layer.id)) {
+			this._map.addLayer(layer);
+		}
+	}
+
+	// addImage(id: string, src: string) {
+	// 	this._map.loadImage(src, (err: any, img: any) => {
+	// 		this._map.addImage(id, img);
+	// 	});
+	// }
+
+	addImage(id: string, img: any) {
+		this._map.addImage(id, img);
 	}
 }

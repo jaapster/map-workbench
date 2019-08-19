@@ -1,5 +1,4 @@
 [
-
 	{
 		"id": "world1",
 		"extent": [],
@@ -232,6 +231,21 @@
 						]
 					}
 				]
+			}
+		]
+	},
+	{
+		"id": "world3",
+		"extent": [],
+		"universeIndex": 0,
+		"homeExtent": [],
+		"collections": [
+			{
+				"type": "FeatureCollection",
+				"properties": {
+					"name": "trails"
+				},
+				"features": []
 			}
 		]
 	}

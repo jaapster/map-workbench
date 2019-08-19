@@ -11,6 +11,7 @@ import { multiverseReducer as multiverse } from './multiverse.reducer';
 import { mapControlReducer as mapControl } from './map-control.reducer';
 import { geoLocationReducer as geoLocation } from './geo-location.reducer';
 import { applicationReducer as application } from './application.reducer';
+import { vectorStylesReducer as vectorStyles } from './vector-styles.reducer';
 import { serverSettingsReducer as serverSettings } from './server-settings.reducer';
 
 export const rootReducer = combineReducers({
@@ -26,5 +27,6 @@ export const rootReducer = combineReducers({
 	mapControl,
 	application,
 	geoLocation,
+	vectorStyles,
 	serverSettings
 });

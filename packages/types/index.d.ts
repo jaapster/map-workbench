@@ -114,36 +114,17 @@ interface CollectionData {
 	featureCollection: FeatureCollection;
 }
 
-interface LayerData {
-	id: string;
-	style: MapboxStyle;
-	opacity: number;
-	visible: boolean;
-}
-
-interface MapData {
-	id: string;
-	layers: LayerData[];
-	opacity: number;
-	visible: boolean;
-}
-
 interface WorldData {
 	id: string;
+	maps: Dict<{ layers: Dict<any> }>;
 	collections: CollectionData[];
+	currentCRS: number;
 	currentMapId: string;
-	universeIndex: number;
 	currentCollectionId: string;
-}
-
-interface UniverseData {
-	crs: EPSG;
-	maps: MapData[];
 }
 
 export interface MultiverseData {
 	worlds: WorldData[];
-	universes: UniverseData[];
 	currentWorldId: string;
 	referenceLayers: [string, (string | MapboxStyle)][];
 	currentReferenceLayer: string | MapboxStyle;
@@ -229,7 +210,7 @@ export interface UserData {
 }
 
 export interface WorldInfoData {
-	worldId: string;
+	id: string;
 	universeIndex: number;
 	defaultEnvelope: Polygon & {
 		crs: {
@@ -333,6 +314,7 @@ export interface ApplicationListData {
 }
 
 export interface ProjectData {
+	id: string;
 	businessFormRegistrations: {
 		description: string;
 		drawLocation: string;
@@ -377,6 +359,7 @@ export interface ProjectData {
 		name: string;
 		openOnStartup: boolean;
 		title: string;
+		universeIndex?: number;
 	}[];
 	plotOutputDefinitions: {
 		fileFilter: string;
@@ -483,12 +466,24 @@ export interface SystemData {
 	authenticationError: string | null;
 }
 
+export interface VectorStyle {
+	name: string;
+	modes: {
+		name: string;
+		style: MapboxStyle;
+	}[];
+}
+
 export interface State {
+	// received from xy server
+	// todo: put this in a subtree like "staticData"?
 	user: UserData | null;
 	server: ServerInfoData;
 	project: ProjectData;
 	application: ApplicationInfoData;
 	serverSettings: ServerSettingsData;
+
+	vectorStyles: VectorStyle[];
 
 	ui: UIData;
 	system: SystemData;

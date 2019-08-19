@@ -1,8 +1,15 @@
 import axios from 'axios';
 import { Dispatch } from 'redux';
-import { appId, projectId, selectionPath } from '../selectors/index.selectors';
+import { MapControl } from 'lite/misc/map-control/map-control';
+import { extractData } from 'lite/utils/util-extract-data';
+import { batchActions } from 'redux-batched-actions';
 import { getActionCreator } from './util-get-action-creator';
 import { getSelectionBuffer } from 'lite/utils/util-get-selection-buffer';
+import { SecondaryMapControl } from 'lite/misc/map-control/secondary-map-control';
+import {
+	appId,
+	projectPath,
+	selectionPath } from '../selectors/index.selectors';
 import {
 	Co,
 	Pt,
@@ -17,32 +24,23 @@ import {
 	WorldData,
 	UnitSystem,
 	MapboxStyle,
+	VectorStyle,
+	ProjectData,
 	LanguagePack,
-	UniverseData,
+	WorldInfoData,
 	ServerInfoData,
 	MapControlMode,
 	SelectionVector,
 	FeatureCollection,
-	ApplicationInfoData,
-	ApplicationListData,
 	ServerSettingsData,
-	ProjectData,
-	WorldInfoData
-} from 'se';
-import { batchActions } from 'redux-batched-actions';
-import { MapControl } from 'lite/misc/map-control/map-control';
-import { SecondaryMapControl } from 'lite/misc/map-control/secondary-map-control';
-import { extractData } from 'lite/utils/util-extract-data';
+	ApplicationInfoData,
+	ApplicationListData } from 'se';
 
 export interface Action {
 	type: string;
 	data: Dict<any>;
 	token: Symbol;
 }
-
-export const ActionSetUniverses = getActionCreator<{
-	universeData: UniverseData[]
-}>('ActionSetUniverses');
 
 export const ActionSetReferenceLayers = getActionCreator<{
 	layers: [string, (string | MapboxStyle)][]
@@ -226,6 +224,10 @@ export const ActionAddWorldInfo = getActionCreator<{
 	worldInfo: WorldInfoData;
 }>('ActionAddWorldInfo');
 
+export const ActionSetVectorLayers = getActionCreator<{
+	vectorLayers: VectorStyle[];
+}>('ActionSetVectorLayers');
+
 export const ActionRequestSelection = {
 	create({ point }: { point: Pt }) {
 		return (dispatch: Dispatch, getState: () => State) => {
@@ -241,22 +243,15 @@ export const ActionRequestSelection = {
 };
 
 export const ActionLoadWorldInfo = {
-	create({ universeIndex, worldId }: { universeIndex: number, worldId: string }) {
+	create({ universeIndex, id }: { universeIndex: number, id: string }) {
 		return (dispatch: Dispatch, getState: () => State) => {
 			const state = getState();
 
-			axios.get(`/api/v2/applications/${ 
-				appId(state) 
-			}/projects/${ 
-				projectId(state) 
-			}/universes/${
-				universeIndex
-			}/worlds/${
-				worldId
-			}`).then(({ data: worldInfo }: { data: WorldInfoData }) => {
+			axios.get(`${ projectPath(state) }/universes/${ universeIndex }/worlds/${ id }`)
+				.then(({ data: worldInfo }: { data: WorldInfoData }) => {
 				dispatch(ActionAddWorldInfo.create({ worldInfo: {
 					...worldInfo,
-					worldId,
+					id,
 					universeIndex
 				} as WorldInfoData }));
 			});
@@ -269,66 +264,94 @@ export const ActionLoadProject = {
 		return (dispatch: Dispatch, getState: () => State) => {
 			const state = getState();
 
-			axios
-				.get(`/api/v2/applications/${ appId(state) }/projects/${ projectId }`)
-				.then(({ data: project }: { data: ProjectData }) => {
-					dispatch(ActionSetProjectData.create({ project }));
-				});
+			Promise.all([
+				axios.get('/api/referencelayers'),
+				axios.get('/api/bookmarks'),
+				axios.get('/api/languages')
+			]).then((responses) => {
+				const [
+					layers,
+					bookmarks,
+					languagePacks
+				] = responses.map(extractData);
 
-			Promise
-				.all([
-					axios.get('/api/universes'),
-					axios.get('/api/worlds'),
-					axios.get('/api/referencelayers'),
-					axios.get('/api/bookmarks'),
-					axios.get('/api/languages')
-				])
-				.then((responses) => {
-					const [
-						universeData,
-						worlds,
-						layers,
-						bookmarks,
-						languagePacks
-					] = responses.map(extractData);
+				const [layer, style] = layers[1];
 
-					const [layer, style] = layers[1];
+				const controlConfig = {
+					location: bookmarks[0],
+					style
+				};
 
-					MapControl.create({
-						location: bookmarks[0],
-						style
-					});
+				MapControl.create(controlConfig);
 
-					SecondaryMapControl.create({
-						location: bookmarks[0],
-						style
-					});
+				SecondaryMapControl.create(controlConfig);
 
-					dispatch(
-						batchActions([
-							ActionSetUniverses.create({ universeData }),
-							ActionSetBookmarks.create({ bookmarks }),
-							ActionSetLanguagePacks.create({ languagePacks }),
-							ActionSetReferenceLayers.create({ layers }),
-							ActionSetCurrentReferenceLayer.create({ layer })
-						]
-						.concat(worlds.map((worldData: any) => ActionAddWorld.create({
-							worldData: {
-								...worldData,
-								collections: worldData.collections.map((collection: any) => (
-									{
-										name: collection.properties.name,
-										selection: [],
-										featureCollection: collection
-									}
+				dispatch(
+					batchActions([
+						ActionSetBookmarks.create({ bookmarks }),
+						ActionSetLanguagePacks.create({ languagePacks }),
+						ActionSetReferenceLayers.create({ layers }),
+						ActionSetCurrentReferenceLayer.create({ layer })
+					]
+				));
+			}).then(() => {
+				axios
+					.get(`/api/v2/applications/${ appId(state) }/projects/${ projectId }`)
+					.then(({ data: project }: { data: ProjectData }) => (
+						Promise.all(project.styleEndpoints.map(endpoint => (
+							Promise.all(endpoint.modes.map(mode => (
+								axios.get(mode.url).then(async ({ data: style }) => (
+									// add all sprites from style to mapbox as images
+									Promise.all(style.sprites.map(({ id, data }: any) => (
+										new Promise(resolve => Object.assign(new Image(), {
+											onload() { resolve(MapControl.instance.addImage(id, this)); },
+											src: `data:image/png;base64,${ data }`
+										}))
+									))).then(() => (
+										{
+											...mode,
+											style: {
+												...style,
+												sources: Object.keys(style.sources).reduce((m, key) => (
+													{
+														...m,
+														[key]: {
+															...style.sources[key],
+															tiles: style.sources[key].tiles.map((url: string) => (
+																// todo: shouldn't have to do this
+																url.replace(
+																	/.*\/v2/,
+																	// mapbox demands url includes the host
+																	`${ location.origin }/api/v2/applications/${ appId(state) }`
+																)
+															))
+														}
+													}
+												), {})
+											}
+										}
+									))
 								))
-							}
-						})))
-						.concat([
-							ActionSetAppPhase.create({ phase: 'booted' })
-						])
+							))).then(modes => (
+								{
+									...endpoint,
+									modes
+								}
+							))
+						))).then((vectorLayers: VectorStyle[]) => (
+							dispatch(batchActions([
+								ActionSetProjectData.create({
+									project: {
+										...project,
+										id: projectId
+									}
+								}),
+								ActionSetVectorLayers.create({ vectorLayers }),
+								ActionSetAppPhase.create({ phase: 'booted' })
+							]))
+						))
 					));
-				});
+			});
 		};
 	}
 };
@@ -361,6 +384,7 @@ export const ActionLoadInfo = {
 						ActionSetApplicationInfo.create({ application })
 					]));
 
+					// for now, just select first project in list
 					const project = application.projects[0];
 
 					if (project) {
@@ -409,10 +433,6 @@ export const ActionAuthorize = {
 
 							// @ts-ignore
 							dispatch(ActionLoadInfo.create());
-
-							// this is async so can't be in the above batch
-							// @ts-ignore
-							// dispatch(ActionLoadProject.create());
 						} else {
 							console.error('The authenticated' +
 								' user is not authorized for this' +
