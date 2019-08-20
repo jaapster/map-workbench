@@ -1,15 +1,17 @@
 import React from 'react';
 
+const size = 1.5;
+
 export const MarkerVertex = () => (
 	<marker
 		id="vertex"
-		refX="5"
-		refY="5"
+		refX={ size }
+		refY={ size }
 		orient="auto"
-		viewBox="0 0 10 10"
-		markerWidth="10"
-		markerHeight="10"
+		viewBox={ `0 0 ${ size * 2 } ${ size * 2 }` }
+		markerWidth={ size * 2 }
+		markerHeight={ size * 2 }
 	>
-		<circle cx="5" cy="5" r="3" className="vertex" />
+		<circle cx={ size } cy={ size } r={ size } className="vertex" />
 	</marker>
 );

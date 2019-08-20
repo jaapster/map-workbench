@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import { Properties } from './cp-properties';
 import { FeatureProperties } from './cp-feature-properties';
 import {
-	crs,
+	currentCRS,
 	lang,
 	currentSelectionFeatures } from 'lite/store/selectors/index.selectors';
 import {
@@ -28,7 +28,7 @@ export const _Selection = React.memo(({ CRS, lang, features }: Props) => (
 
 const mapStateToProps = (state: State) => (
 	{
-		CRS: crs(state),
+		CRS: currentCRS(state),
 		lang: lang(state),
 		features: currentSelectionFeatures(state)
 	}

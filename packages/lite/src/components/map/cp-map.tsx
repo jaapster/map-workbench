@@ -29,7 +29,7 @@ import {
 import {
 	mode,
 	glare,
-	visibleLayers,
+	currentlyVisibleLayers,
 	overviewOffset,
 	overviewVisible,
 	currentWorldCollections } from 'lite/store/selectors/index.selectors';
@@ -53,12 +53,12 @@ export const _Map = ({ mode, glare, offset, overview, collections, setOverviewOf
 		`mode-${ mode }`
 	);
 
-	layers.forEach((layer: MapboxStyle) => {
-		const { sources, layers } = layer;
-
-		Object.keys(sources).forEach(key => MapControl.instance.addSource(key, sources[key]));
-		layers.forEach((layer: MapboxLayer) => MapControl.instance.addLayer(layer));
-	});
+	// layers.forEach((layer: MapboxStyle) => {
+	// 	const { sources, layers } = layer;
+	//
+	// 	Object.keys(sources).forEach(key => MapControl.instance.addSource(key, sources[key]));
+	// 	layers.forEach((layer: MapboxLayer) => MapControl.instance.addLayer(layer));
+	// });
 
 	return (
 		<div>
@@ -126,7 +126,7 @@ const mapStateToProps = (state: State) => (
 	{
 		mode: mode(state),
 		glare: glare(state),
-		layers: visibleLayers(state),
+		layers: currentlyVisibleLayers(state),
 		offset: overviewOffset(state),
 		overview: overviewVisible(state),
 		collections: currentWorldCollections(state),

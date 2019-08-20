@@ -1,17 +1,17 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { Dispatch } from 'redux';
+import { Collapsible } from './cp-collapsible';
 import { RadioButtons } from './cp-radio-buttons';
 import { ActionGoToWorld } from 'lite/store/actions/actions';
 import {
 	lang,
-	currentWorldId, worldSettings
-} from 'lite/store/selectors/index.selectors';
+	worldSettings,
+	currentWorldId } from 'lite/store/selectors/index.selectors';
 import {
 	State,
 	WorldData,
 	LanguagePack } from 'se';
-import { Collapsible } from './cp-collapsible';
 
 interface Props {
 	lang: LanguagePack;

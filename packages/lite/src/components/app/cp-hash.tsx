@@ -6,7 +6,7 @@ import {
 	Co,
 	EPSG,
 	State } from 'se';
-import { center, crs, zoom } from 'lite/store/selectors/index.selectors';
+import { center, currentCRS, zoom } from 'lite/store/selectors/index.selectors';
 
 interface Props {
 	CRS: EPSG;
@@ -85,7 +85,7 @@ const mapStateToProps = (state: State) => (
 	{
 		zoom: zoom(state),
 		center: center(state),
-		CRS: crs(state)
+		CRS: currentCRS(state)
 	}
 );
 

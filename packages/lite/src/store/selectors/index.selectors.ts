@@ -1,8 +1,8 @@
-import { State } from 'se';
-import { createSelector } from 'reselect';
-import { getState } from 'lite/store/store';
 import { oc } from 'ts-optchain';
+import { State } from 'se';
+import { getState } from 'lite/store/store';
 import { GEOGRAPHIC } from 'lite/constants';
+import { createSelector } from 'reselect';
 
 export const zoom = (state: State) => state.mapControl.zoom;
 export const mode = (state: State) => state.mapControl.mode;
@@ -18,7 +18,7 @@ export const overviewVisible = (state: State) => state.mapControl.overviewVisibl
 
 export const worldSettings = (state: State) => state.multiverse.worlds;
 export const currentWorldId = (state: State) => state.multiverse.currentWorldId;
-export const referenceStyles = (state: State) => state.multiverse.referenceLayers;
+// export const referenceStyles = (state: State) => state.multiverse.referenceLayers;
 export const currentReferenceStyleId = (state: State) => state.multiverse.currentReferenceLayer;
 
 export const appId = (state: State) => state.system.appId;
@@ -49,20 +49,18 @@ export const lang = createSelector(
 
 export const maps = createSelector(
 	[mapDefinitions, vectorStyles],
-	(maps, vectors): any[] => maps.map((map) => {
+	(maps, styles): any[] => maps.map((map) => {
 		return {
 			...map,
 			layers: map.layers.map((layer) => {
-				const vectorStyle = vectors.find(vector => vector.name === layer.name);
+				const style = styles.find(style => style.name === layer.name);
 
-				if (vectorStyle) {
-					return {
+				return style
+					? {
 						...layer,
-						style: vectorStyle
-					};
-				}
-
-				return layer;
+						style
+					}
+					: layer;
 			})
 		};
 	})
@@ -78,9 +76,9 @@ export const currentWorldSettings = createSelector(
 	(id, worlds) => worlds.find(world => world.id === id)
 );
 
-export const world = createSelector(
-	[currentWorldId, currentWorldInfo, currentWorldSettings, maps],
-	(id, info, settings, maps) => {
+export const currentWorld = createSelector(
+	[currentWorldId, currentWorldInfo, currentWorldSettings, maps, universes],
+	(id, info, settings, maps, universes) => {
 		if (info == null || settings == null) {
 			return null;
 		}
@@ -93,13 +91,14 @@ export const world = createSelector(
 		return {
 			...info,
 			...settings,
+			universe: universes[info.universeIndex],
 			maps: universeMaps
 		};
 	}
 );
 
-export const visibleLayers = createSelector(
-	[world],
+export const currentlyVisibleLayers = createSelector(
+	[currentWorld],
 	(world) => {
 		if (!world) {
 			return [];
@@ -120,23 +119,23 @@ export const visibleLayers = createSelector(
 	}
 );
 
-export const crs = createSelector(
-	[world],
+export const currentCRS = createSelector(
+	[currentWorld],
 	world => world ? world.currentCRS : GEOGRAPHIC
 );
 
 export const currentCollectionId = createSelector(
-	[world],
+	[currentWorld],
 	world => world ? world.currentCollectionId : 'trails'
 );
 
 export const currentWorldCollections = createSelector(
-	[world],
+	[currentWorld],
 	world => world ? world.collections : []
 );
 
 export const currentMapId = createSelector(
-	[world],
+	[currentWorld],
 	world => world ? world.currentMapId : ''
 );
 
@@ -167,5 +166,47 @@ export const selectionPath = createSelector(
 	(projectPath, currentMapId) => `${ projectPath }/maps/${ currentMapId }/selection`
 );
 
+export const serviceProviders = (state: State) => state.server.serviceProviders;
+
+export const referenceStyles = createSelector(
+	[serviceProviders],
+	(serviceProviders) => {
+		return serviceProviders.tileProviders.reduce((m, p) => {
+			// todo: find out what's wrong with Bing template
+			if (p.name === 'Bing') {
+				return m;
+			}
+
+			const mode = p.modes[0];
+			const id = p.name.replace(' ', '_');
+
+			const key = { '{0}': '{z}', '{1}': '{x}', '{2}': '{y}', '{3}': '{quadkey}' };
+
+			return m.concat([[
+				mode.name,
+				p.type === 'vector'
+					? mode.servers[0]
+					: {
+						version: 8,
+						sources: {
+							[id]: {
+								type: 'raster',
+								// @ts-ignore
+								tiles: mode.servers.map(s => s.replace(/{[0-3]}/g, c => key[c]))
+							}
+						},
+						layers: [
+							{
+								id,
+								type: 'raster',
+								source: id
+							}
+						]
+					}
+			]]);
+		}, [] as any);
+	}
+);
+
 // @ts-ignore
-window.world = () => world(getState());
+window.world = () => currentWorld(getState());

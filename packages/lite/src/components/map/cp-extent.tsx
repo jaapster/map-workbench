@@ -9,9 +9,8 @@ interface Props {
 }
 
 export const Extent = ({ w, h, extent }: Props) => (
-	<svg className="cross">
+	<svg className="extent">
 		<path
-			className="extent"
 			d= { extent.geometry.coordinates[0]
 				.slice()
 				.reverse()

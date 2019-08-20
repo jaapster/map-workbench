@@ -1,5 +1,5 @@
 import React from 'react';
-import { crs } from 'lite/store/selectors/index.selectors';
+import { currentCRS } from 'lite/store/selectors/index.selectors';
 import { connect } from 'react-redux';
 import { Dispatch } from 'redux';
 import { ActionSetMapControlCRS } from 'lite/store/actions/actions';
@@ -37,7 +37,7 @@ export const _CRSSelector = React.memo(({ CRS, setCRS }: Props) => (
 
 const mapStateToProps = (state: State) => (
 	{
-		CRS: crs(state)
+		CRS: currentCRS(state)
 	}
 );
 

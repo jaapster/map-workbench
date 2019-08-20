@@ -1,7 +1,7 @@
 import React from 'react';
 import { Extent } from './cp-extent';
 import { connect } from 'react-redux';
-import { Crosshair } from './cp-crosshairs';
+import { Crosshair } from './cp-crosshair';
 import { MapControl } from 'lite/misc/map-control/map-control';
 import { SecondaryMapControl } from 'lite/misc/map-control/secondary-map-control';
 import {
