@@ -304,7 +304,11 @@ export const ActionLoadProject = {
 									// add all sprites from style to mapbox as images
 									Promise.all(style.sprites.map(({ id, data }: any) => (
 										new Promise(resolve => Object.assign(new Image(), {
-											onload() { resolve(MapControl.instance.addImage(id, this)); },
+											onload() {
+												MapControl.instance.addImage(id, this);
+												SecondaryMapControl.instance.addImage(id, this);
+												resolve();
+											},
 											src: `data:image/png;base64,${ data }`
 										}))
 									))).then(() => (

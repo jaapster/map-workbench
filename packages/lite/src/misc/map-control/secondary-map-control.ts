@@ -1,20 +1,16 @@
+import bind from 'autobind-decorator';
 import mapboxGL from 'mapbox-gl';
-import { DOM } from 'lite/utils/util-dom';
 import { token } from 'lite/constants/token';
-import { coToLl } from 'lite/utils/util-geo';
 import { dispatch } from 'lite/store/store';
 import { ActionSetGlare } from 'lite/store/actions/actions';
 import { KeyboardDevice } from './devices/device.keyboard';
-import { disableInteractions } from 'lite/utils/util-map';
+import { BaseMapControl } from 'lite/misc/map-control/base-control';
 import {
 	EMPTY_STYLE,
 	DEFAULT_LOCATION } from 'lite/constants';
 import {
 	Co,
-	Location,
-	MapboxStyle } from 'se';
-
-const GLOBAL_MAX_ZOOM = 20;
+	Location } from 'se';
 
 mapboxGL.accessToken = token;
 
@@ -28,7 +24,8 @@ const DEFAULT_PROPS: Props = {
 	location: DEFAULT_LOCATION
 };
 
-export class SecondaryMapControl {
+@bind
+export class SecondaryMapControl extends BaseMapControl {
 	static instance: SecondaryMapControl;
 
 	static create(props: Props) {
@@ -66,45 +63,20 @@ export class SecondaryMapControl {
 		}
 	}
 
-	private readonly _map: any;
 	private readonly _keyboardDevice: KeyboardDevice;
 
-	private _style: string | MapboxStyle;
-
 	constructor(props: Props = DEFAULT_PROPS) {
-		// add missing universeData
-		const {
-			style,
-			location
-		} = { ...DEFAULT_PROPS, ...props };
-
-		const { center, zoom } = location;
-		const container = DOM.create('div', 'map-container', document.body);
-
-		this._style = style;
-
-		this._map = new mapboxGL.Map({
-			zoom,
-			style,
-			center,
-			maxZoom: GLOBAL_MAX_ZOOM - 1,
-			container,
-			fadeDuration: 0
-		});
-
-		// container was only in DOM to prevent mapbox css sniffer error
-		DOM.remove(container);
+		super(props);
 
 		this._keyboardDevice = KeyboardDevice.create();
 		this._keyboardDevice.on('glareKeyDown', SecondaryMapControl.onGlareKeyDown);
 		this._keyboardDevice.on('glareKeyUp', SecondaryMapControl.onGlareKeyUp);
 
-		disableInteractions(this._map);
-
 		SecondaryMapControl.instance = this;
 	}
 
 	destroy() {
+		super.destroy();
 		this._keyboardDevice.destroy();
 	}
 
@@ -114,30 +86,5 @@ export class SecondaryMapControl {
 
 	static onGlareKeyUp() {
 		dispatch(ActionSetGlare.create({ glare: false }));
-	}
-
-	resize() {
-		this._map.resize();
-	}
-
-	getContainer() {
-		return this._map.getContainer();
-	}
-
-	setStyle(style: any) {
-		this._style = style;
-		this._map.setStyle(style);
-	}
-
-	setCenter(co: Co) {
-		this._map.setCenter(coToLl(co));
-	}
-
-	setZoom(zoom: number) {
-		this._map.setZoom(zoom - 1);
-	}
-
-	project(co: Co) {
-		return this._map.project(coToLl(co));
 	}
 }

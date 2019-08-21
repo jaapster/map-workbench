@@ -100,6 +100,7 @@ export interface MapboxSource {
 }
 
 export interface MapboxStyle {
+	name?: string;
 	layers: MapboxLayer[];
 	sources: Dict<MapboxSource>;
 }

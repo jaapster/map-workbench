@@ -18,7 +18,6 @@ export const overviewVisible = (state: State) => state.mapControl.overviewVisibl
 
 export const worldSettings = (state: State) => state.multiverse.worlds;
 export const currentWorldId = (state: State) => state.multiverse.currentWorldId;
-// export const referenceStyles = (state: State) => state.multiverse.referenceLayers;
 export const currentReferenceStyleId = (state: State) => state.multiverse.currentReferenceLayer;
 
 export const appId = (state: State) => state.system.appId;
@@ -170,42 +169,39 @@ export const serviceProviders = (state: State) => state.server.serviceProviders;
 
 export const referenceStyles = createSelector(
 	[serviceProviders],
-	(serviceProviders) => {
-		return serviceProviders.tileProviders.reduce((m, p) => {
-			// todo: find out what's wrong with Bing template
-			if (p.name === 'Bing') {
-				return m;
-			}
-
-			const mode = p.modes[0];
-			const id = p.name.replace(' ', '_');
-
-			const key = { '{0}': '{z}', '{1}': '{x}', '{2}': '{y}', '{3}': '{quadkey}' };
-
-			return m.concat([[
-				mode.name,
+	serviceProviders => (
+		serviceProviders.tileProviders.reduce((m, p) => (
+			m.concat(p.modes.map((mode) => ([
+				`${ p.name } - ${ mode.name }`,
 				p.type === 'vector'
+					// type is 'vector': assume this is a mapbox style definition url
 					? mode.servers[0]
+					// type is 'raster': create a valid mapbox style for raster tile providers
 					: {
 						version: 8,
+						// todo: create our own glyph fallback
+						glyphs: 'mapbox://fonts/mapbox/{fontstack}/{range}.pbf',
 						sources: {
-							[id]: {
+							[mode.name]: {
 								type: 'raster',
-								// @ts-ignore
-								tiles: mode.servers.map(s => s.replace(/{[0-3]}/g, c => key[c]))
+								tiles: mode.servers.map(s =>
+									// todo: change xy placeholders to z, x, y and quadkey, not 0, 1, 2 and 3
+									s.replace(/{(\d)}/g, (c, s) => `{${ ['z', 'x', 'y', 'quadkey'][s] }}`)
+								),
+								tileSize: 256
 							}
 						},
 						layers: [
 							{
-								id,
+								id: mode.name,
 								type: 'raster',
-								source: id
+								source: mode.name
 							}
 						]
 					}
-			]]);
-		}, [] as any);
-	}
+			])))
+		), [] as any)
+	)
 );
 
 // @ts-ignore

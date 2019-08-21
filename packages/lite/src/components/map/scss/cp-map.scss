@@ -158,6 +158,11 @@ svg {
 				stroke: grey;
 				stroke-dasharray: 2;
 			}
+
+			&.outline {
+				stroke: rgba(255, 255, 255, 1);
+				//stroke-width: 5;
+			}
 		}
 
 		circle {

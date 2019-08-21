@@ -8,7 +8,8 @@ import {
 	Co,
 	State,
 	Feature,
-	Polygon } from 'se';
+	Polygon, MapboxStyle
+} from 'se';
 import {
 	zoom,
 	mouse,
@@ -17,7 +18,9 @@ import {
 	center,
 	glareLevel,
 	overviewOffset,
-	overviewVisible } from 'lite/store/selectors/index.selectors';
+	overviewVisible, currentlyVisibleLayers
+} from 'lite/store/selectors/index.selectors';
+import { StyleRenderer } from 'lite/components/map/cp-style-renderer';
 
 interface GlareProps {
 	mouse: Co;
@@ -48,13 +51,14 @@ const GlareMap = connect(mapStateToPropsGlare)(_GlareMap);
 
 interface OverviewProps {
 	zoom: number;
+	layers: MapboxStyle[];
 	center: Co;
 	extent: Feature<Polygon>;
 	offset: number;
 }
 
 const _OverviewMap = React.memo((props: OverviewProps) => {
-	const { zoom, center, extent, offset } = props;
+	const { zoom, center, extent, offset, layers } = props;
 
 	SecondaryMapControl.setCenter(center);
 	SecondaryMapControl.setZoom(zoom - offset);
@@ -65,6 +69,15 @@ const _OverviewMap = React.memo((props: OverviewProps) => {
 
 	return (
 		<div className="overview" ref={ SecondaryMapControl.attachTo }>
+			{
+				layers.slice().reverse().map(style => (
+					<StyleRenderer
+						key={ style.name }
+						style={ style }
+						control={ SecondaryMapControl.instance }
+					/>
+				))
+			}
 			<Extent w={ width } h={ height } extent={ extent } />
 		</div>
 	);
@@ -73,6 +86,7 @@ const _OverviewMap = React.memo((props: OverviewProps) => {
 const mapStateToPropsOverview = (state: State): OverviewProps => (
 	{
 		zoom: zoom(state),
+		layers: currentlyVisibleLayers(state),
 		center: center(state),
 		extent: extent(state),
 		offset: overviewOffset(state)

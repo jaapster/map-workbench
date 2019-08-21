@@ -5,7 +5,6 @@ import { connect } from 'react-redux';
 import { Bearing } from './cp-bearing';
 import { Dispatch } from 'redux';
 import { ZoomLevel } from './cp-zoom-level';
-import { SecondaryMap } from './cp-overview';
 import { PopUpMenu } from './cp-pop-up-menu';
 import { HashParams } from '../app/cp-hash';
 import { SystemMenu } from '../app/cp-system-menu';
@@ -13,6 +12,8 @@ import { MapControl } from 'lite/misc/map-control/map-control';
 import { DrawingTools } from './cp-drawing-tool';
 import { mergeClasses } from 'lite/utils/util-merge-classes';
 import { MarkerVertex } from './cp-marker-vertex';
+import { SecondaryMap } from './cp-overview';
+import { StyleRenderer } from './cp-style-renderer';
 import { OverViewToggle } from './cp-overview-toggle';
 import { MarkerArrowHead } from './cp-marker-arrow-head';
 import { CenterCoordinate } from './cp-center-coordinate';
@@ -23,15 +24,14 @@ import {
 import {
 	State,
 	MapboxStyle,
-	MapboxLayer,
 	CollectionData,
 	MapControlMode } from 'se';
 import {
 	mode,
 	glare,
-	currentlyVisibleLayers,
 	overviewOffset,
 	overviewVisible,
+	currentlyVisibleLayers,
 	currentWorldCollections } from 'lite/store/selectors/index.selectors';
 import {
 	Button,
@@ -41,7 +41,7 @@ interface Props {
 	mode: MapControlMode;
 	glare: boolean;
 	offset: number;
-	layers: any[];
+	layers: MapboxStyle[];
 	overview: boolean;
 	collections: CollectionData[];
 	setOverviewOffset: (offset: number) => void;
@@ -53,16 +53,18 @@ export const _Map = ({ mode, glare, offset, overview, collections, setOverviewOf
 		`mode-${ mode }`
 	);
 
-	// layers.forEach((layer: MapboxStyle) => {
-	// 	const { sources, layers } = layer;
-	//
-	// 	Object.keys(sources).forEach(key => MapControl.instance.addSource(key, sources[key]));
-	// 	layers.forEach((layer: MapboxLayer) => MapControl.instance.addLayer(layer));
-	// });
-
 	return (
 		<div>
 			<div className={ className } ref={ MapControl.attachTo }/>
+			{
+				layers.slice().reverse().map(style => (
+					<StyleRenderer
+						key={ style.name }
+						style={ style }
+						control={ MapControl.instance }
+					/>
+				))
+			}
 			<svg className="geometries">
 				<MarkerVertex />
 				<MarkerArrowHead />

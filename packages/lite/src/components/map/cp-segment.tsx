@@ -29,12 +29,18 @@ export const _Segment = React.memo(({ coordinates, selected, id, unitSystem }: P
 	);
 
 	const [a, b] = coordinates;
+	const d = [a, b].reduce(addToPath, '');
 
 	return (
 		<g>
+			{/*<path*/}
+			{/*	d={ d }*/}
+			{/*	id={ `${ id }-o` }*/}
+			{/*	className="outline"*/}
+			{/*/>*/}
 			<path
-				d={ [a, b].reduce(addToPath, '') }
-				id={`${ id }-p`}
+				d={ d }
+				id={ `${ id }-p` }
 				className={ className }
 				markerEnd={ selected ? 'url(#vertex)' : '' }
 				markerStart={ selected ? 'url(#vertex)' : '' }
