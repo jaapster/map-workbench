@@ -2,7 +2,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { Dispatch } from 'redux';
 import { capitalize } from 'lite/utils/util-string';
-import { MapControl } from 'lite/misc/map-control/map-control';
+import { PrimaryMapControl } from '../../misc/map-control/primary-map-control';
 import { Properties } from './cp-properties';
 import { batchActions } from 'redux-batched-actions';
 import {
@@ -54,7 +54,7 @@ export const _LayerPanel = React.memo((props: Props) => {
 								select({ collectionId, vector: [j], multi: e.shiftKey });
 							} }
 							onDoubleClick={ () => {
-								MapControl.fitFeatures([featureCollection.features[j]]);
+								PrimaryMapControl.fitFeatures([featureCollection.features[j]]);
 							} }
 						>
 							{ feature.properties.type }

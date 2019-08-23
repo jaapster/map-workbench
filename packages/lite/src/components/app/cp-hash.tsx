@@ -1,7 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { debounce } from 'lodash';
-import { MapControl } from 'lite/misc/map-control/map-control';
+import { PrimaryMapControl } from '../../misc/map-control/primary-map-control';
 import {
 	Co,
 	EPSG,
@@ -64,7 +64,7 @@ const round = (v: number, d: number) => {
 };
 
 export const _HashParams = React.memo(({ zoom, center, CRS }: Props) => {
-	const c = MapControl.projectToCRS(center, CRS);
+	const c = PrimaryMapControl.projectToCRS(center, CRS);
 
 	if (c == null) {
 		return null;

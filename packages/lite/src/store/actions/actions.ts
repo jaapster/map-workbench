@@ -1,15 +1,16 @@
-import axios from 'axios';
+import axios, { AxiosResponse } from 'axios';
 import { Dispatch } from 'redux';
-import { MapControl } from 'lite/misc/map-control/map-control';
 import { extractData } from 'lite/utils/util-extract-data';
 import { batchActions } from 'redux-batched-actions';
 import { getActionCreator } from './util-get-action-creator';
 import { getSelectionBuffer } from 'lite/utils/util-get-selection-buffer';
+import { PrimaryMapControl } from 'lite/misc/map-control/primary-map-control';
 import { SecondaryMapControl } from 'lite/misc/map-control/secondary-map-control';
 import {
 	appId,
 	projectPath,
-	selectionPath } from '../selectors/index.selectors';
+	selectionPath,
+	referenceStyles } from '../selectors/index.selectors';
 import {
 	Co,
 	Pt,
@@ -49,6 +50,10 @@ export const ActionSetReferenceLayers = getActionCreator<{
 export const ActionSetCurrentReferenceLayer = getActionCreator<{
 	layer: string
 }>('ActionSetCurrentReferenceLayer');
+
+export const ActionSetCurrentMap = getActionCreator<{
+	mapId: string
+}>('ActionSetCurrentMap');
 
 export const ActionAddWorld = getActionCreator<{
 	worldData: WorldData
@@ -228,6 +233,10 @@ export const ActionSetVectorLayers = getActionCreator<{
 	vectorLayers: VectorStyle[];
 }>('ActionSetVectorLayers');
 
+export const ActionToggleLayerVisibility = getActionCreator<{
+	layerId: string;
+}>('ActionToggleLayerVisibility');
+
 export const ActionRequestSelection = {
 	create({ point }: { point: Pt }) {
 		return (dispatch: Dispatch, getState: () => State) => {
@@ -237,7 +246,7 @@ export const ActionRequestSelection = {
 				zoom: 10,
 				geometry: getSelectionBuffer(point)
 				// @ts-ignore
-			}).then(res => console.log(res.data));
+			}).then((res: AxiosResponse) => console.log(res.data));
 		};
 	}
 };
@@ -248,9 +257,9 @@ export const ActionLoadWorldInfo = {
 			const state = getState();
 
 			axios.get(`${ projectPath(state) }/universes/${ universeIndex }/worlds/${ id }`)
-				.then(({ data: worldInfo }: { data: WorldInfoData }) => {
+				.then(({ data }: AxiosResponse<WorldInfoData>) => {
 				dispatch(ActionAddWorldInfo.create({ worldInfo: {
-					...worldInfo,
+					...data,
 					id,
 					universeIndex
 				} as WorldInfoData }));
@@ -265,47 +274,42 @@ export const ActionLoadProject = {
 			const state = getState();
 
 			Promise.all([
-				axios.get('/api/referencelayers'),
 				axios.get('/api/bookmarks'),
 				axios.get('/api/languages')
-			]).then((responses) => {
+			]).then((responses: AxiosResponse[]) => {
 				const [
-					layers,
 					bookmarks,
 					languagePacks
 				] = responses.map(extractData);
 
-				const [layer, style] = layers[1];
+				const [, style] = referenceStyles(state)[0];
 
 				const controlConfig = {
 					location: bookmarks[0],
 					style
 				};
 
-				MapControl.create(controlConfig);
-
+				PrimaryMapControl.create(controlConfig);
 				SecondaryMapControl.create(controlConfig);
 
 				dispatch(
 					batchActions([
 						ActionSetBookmarks.create({ bookmarks }),
-						ActionSetLanguagePacks.create({ languagePacks }),
-						ActionSetReferenceLayers.create({ layers }),
-						ActionSetCurrentReferenceLayer.create({ layer })
+						ActionSetLanguagePacks.create({ languagePacks })
 					]
 				));
 			}).then(() => {
 				axios
 					.get(`/api/v2/applications/${ appId(state) }/projects/${ projectId }`)
-					.then(({ data: project }: { data: ProjectData }) => (
-						Promise.all(project.styleEndpoints.map(endpoint => (
+					.then(({ data }: AxiosResponse<ProjectData>) => (
+						Promise.all(data.styleEndpoints.map(endpoint => (
 							Promise.all(endpoint.modes.map(mode => (
-								axios.get(mode.url).then(async ({ data: style }) => (
+								axios.get(mode.url).then(async ({ data: style }: AxiosResponse) => (
 									// add all sprites from style to mapbox as images
 									Promise.all(style.sprites.map(({ id, data }: any) => (
 										new Promise(resolve => Object.assign(new Image(), {
 											onload() {
-												MapControl.instance.addImage(id, this);
+												PrimaryMapControl.instance.addImage(id, this);
 												SecondaryMapControl.instance.addImage(id, this);
 												resolve();
 											},
@@ -344,12 +348,7 @@ export const ActionLoadProject = {
 							))
 						))).then((vectorLayers: VectorStyle[]) => (
 							dispatch(batchActions([
-								ActionSetProjectData.create({
-									project: {
-										...project,
-										id: projectId
-									}
-								}),
+								ActionSetProjectData.create({ project: { ...data, id: projectId } }),
 								ActionSetVectorLayers.create({ vectorLayers }),
 								ActionSetAppPhase.create({ phase: 'booted' })
 							]))
@@ -371,7 +370,7 @@ export const ActionLoadInfo = {
 					axios.get(`/api/v2/applications/${ appId(state) }/store/settings`),
 					axios.get(`/api/v2/applications/${ appId(state) }`)
 				])
-				.then((responses: any[]) => {
+				.then((responses: AxiosResponse[]) => {
 					const [
 						server,
 						settings,
@@ -395,7 +394,7 @@ export const ActionLoadInfo = {
 						// @ts-ignore
 						dispatch(ActionLoadProject.create({ projectId: project.projectID }));
 					} else {
-						// uh-oh
+						console.error('There are no projects available for this application');
 					}
 				});
 		};
@@ -411,7 +410,7 @@ export const ActionAuthorize = {
 					axios.get('/api/v2/user'),
 					axios.get('/api/v2/applications')
 				])
-				.then((responses: any[]) => {
+				.then((responses: AxiosResponse[]) => {
 					const [
 						{ id: appId },
 						userData,
@@ -423,11 +422,10 @@ export const ActionAuthorize = {
 					];
 
 					if (userData.isAuthenticated) {
-						// check is user is authorized for the
-						// current application
-						const applicationData = applications.find(({ id }) => id === appId);
+						// check is user is authorized for the current application
+						const isAuthorized = applications.find(({ id }) => id === appId);
 
-						if (applicationData) {
+						if (isAuthorized) {
 							dispatch(batchActions([
 								ActionSetAppId.create({ appId }),
 								ActionSetUserData.create({ userData }),
@@ -438,9 +436,7 @@ export const ActionAuthorize = {
 							// @ts-ignore
 							dispatch(ActionLoadInfo.create());
 						} else {
-							console.error('The authenticated' +
-								' user is not authorized for this' +
-								' application');
+							console.error('The authenticated user is not authorized for this application');
 						}
 					}
 				});
@@ -455,18 +451,16 @@ export const ActionAuthenticate = {
 
 			axios
 				.post('/auth/xy', credentials)
-				.then(({ data }) => {
+				.then(({ data }: AxiosResponse) => {
 					if (data.isSuccess) {
 						// @ts-ignore
 						dispatch(ActionAuthorize.create());
 					} else {
-						// uh-oh
+						console.error('There was a problem authenticating');
 					}
 				})
 				.catch(({ response: { status } }: any) => {
-					dispatch(ActionSetAuthenticationError.create({
-						authenticationError: `${ status }`
-					}));
+					dispatch(ActionSetAuthenticationError.create({ authenticationError: `${ status }` }));
 				});
 		};
 	}

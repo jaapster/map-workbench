@@ -8,7 +8,7 @@ import { ZoomLevel } from './cp-zoom-level';
 import { PopUpMenu } from './cp-pop-up-menu';
 import { HashParams } from '../app/cp-hash';
 import { SystemMenu } from '../app/cp-system-menu';
-import { MapControl } from 'lite/misc/map-control/map-control';
+import { PrimaryMapControl } from '../../misc/map-control/primary-map-control';
 import { DrawingTools } from './cp-drawing-tool';
 import { mergeClasses } from 'lite/utils/util-merge-classes';
 import { MarkerVertex } from './cp-marker-vertex';
@@ -31,8 +31,8 @@ import {
 	glare,
 	overviewOffset,
 	overviewVisible,
-	currentlyVisibleLayers,
-	currentWorldCollections } from 'lite/store/selectors/index.selectors';
+	currentWorldCollections, currentMapLayers
+} from 'lite/store/selectors/index.selectors';
 import {
 	Button,
 	ButtonGroup } from '../app/cp-button';
@@ -41,13 +41,13 @@ interface Props {
 	mode: MapControlMode;
 	glare: boolean;
 	offset: number;
-	layers: MapboxStyle[];
+	layers: any[];
 	overview: boolean;
 	collections: CollectionData[];
 	setOverviewOffset: (offset: number) => void;
 }
 
-export const _Map = ({ mode, glare, offset, overview, collections, setOverviewOffset, layers }: Props) => {
+export const _Map = ({  mode, glare, offset, overview, collections, setOverviewOffset, layers }: Props) => {
 	const className = mergeClasses(
 		'map-container',
 		`mode-${ mode }`
@@ -55,15 +55,19 @@ export const _Map = ({ mode, glare, offset, overview, collections, setOverviewOf
 
 	return (
 		<div>
-			<div className={ className } ref={ MapControl.attachTo }/>
+			<div className={ className } ref={ PrimaryMapControl.attachTo }/>
 			{
-				layers.slice().reverse().map(style => (
-					<StyleRenderer
-						key={ style.name }
-						style={ style }
-						control={ MapControl.instance }
-					/>
-				))
+				layers
+					.slice()
+					.reverse()
+					.filter(layer => layer.visible)
+					.map(layer => (
+						<StyleRenderer
+							key={ layer.name }
+							style={ layer.currentStyle }
+							control={ PrimaryMapControl.instance }
+						/>
+					))
 			}
 			<svg className="geometries">
 				<MarkerVertex />
@@ -126,9 +130,9 @@ export const _Map = ({ mode, glare, offset, overview, collections, setOverviewOf
 
 const mapStateToProps = (state: State) => (
 	{
+		layers: currentMapLayers(state),
 		mode: mode(state),
 		glare: glare(state),
-		layers: currentlyVisibleLayers(state),
 		offset: overviewOffset(state),
 		overview: overviewVisible(state),
 		collections: currentWorldCollections(state),

@@ -1,7 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { Dispatch } from 'redux';
-import { MapControl } from 'lite/misc/map-control/map-control';
+import { PrimaryMapControl } from '../../misc/map-control/primary-map-control';
 import { ActionToggleUnitSystem } from 'lite/store/actions/actions';
 import {
 	center,
@@ -49,7 +49,7 @@ const getImperialScale = (m: number): [number, string] => {
 };
 
 export const _Scale = React.memo(({ center, unitSystem, toggle }: Props) => {
-	const mpp = MapControl.getMetersPerPixel(center);
+	const mpp = PrimaryMapControl.getMetersPerPixel(center);
 	const [scale, label] = unitSystem === METRIC
 		? getMetricScale(mpp * SCALE_BASE_WIDTH)
 		: getImperialScale(mpp * SCALE_BASE_WIDTH);

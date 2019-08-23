@@ -2,14 +2,13 @@ import React from 'react';
 import { Extent } from './cp-extent';
 import { connect } from 'react-redux';
 import { Crosshair } from './cp-crosshair';
-import { MapControl } from 'lite/misc/map-control/map-control';
+import { PrimaryMapControl } from '../../misc/map-control/primary-map-control';
 import { SecondaryMapControl } from 'lite/misc/map-control/secondary-map-control';
 import {
 	Co,
 	State,
 	Feature,
-	Polygon, MapboxStyle
-} from 'se';
+	Polygon } from 'se';
 import {
 	zoom,
 	mouse,
@@ -18,8 +17,8 @@ import {
 	center,
 	glareLevel,
 	overviewOffset,
-	overviewVisible, currentlyVisibleLayers
-} from 'lite/store/selectors/index.selectors';
+	overviewVisible,
+	currentMapLayers } from 'lite/store/selectors/index.selectors';
 import { StyleRenderer } from 'lite/components/map/cp-style-renderer';
 
 interface GlareProps {
@@ -51,7 +50,7 @@ const GlareMap = connect(mapStateToPropsGlare)(_GlareMap);
 
 interface OverviewProps {
 	zoom: number;
-	layers: MapboxStyle[];
+	layers: any[];
 	center: Co;
 	extent: Feature<Polygon>;
 	offset: number;
@@ -70,13 +69,17 @@ const _OverviewMap = React.memo((props: OverviewProps) => {
 	return (
 		<div className="overview" ref={ SecondaryMapControl.attachTo }>
 			{
-				layers.slice().reverse().map(style => (
-					<StyleRenderer
-						key={ style.name }
-						style={ style }
-						control={ SecondaryMapControl.instance }
-					/>
-				))
+				layers
+					.slice()
+					.reverse()
+					.filter(layer => layer.visible)
+					.map(layer => (
+						<StyleRenderer
+							key={ layer.name }
+							style={ layer.currentStyle }
+							control={ SecondaryMapControl.instance }
+						/>
+					))
 			}
 			<Extent w={ width } h={ height } extent={ extent } />
 		</div>
@@ -86,7 +89,7 @@ const _OverviewMap = React.memo((props: OverviewProps) => {
 const mapStateToPropsOverview = (state: State): OverviewProps => (
 	{
 		zoom: zoom(state),
-		layers: currentlyVisibleLayers(state),
+		layers: currentMapLayers(state),
 		center: center(state),
 		extent: extent(state),
 		offset: overviewOffset(state)
@@ -112,7 +115,7 @@ const _SecondaryMap = React.memo((props: SecondaryMapProps) => {
 
 		if (width === 0) {
 			// todo: find a way to force update of functional component
-			setTimeout(() => MapControl.setZoom(MapControl.getZoom() + 0.0001));
+			setTimeout(() => PrimaryMapControl.setZoom(PrimaryMapControl.getZoom() + 0.0001));
 		}
 
 		return glare ? <GlareMap /> : <OverviewMap />;

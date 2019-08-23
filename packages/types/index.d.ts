@@ -1,3 +1,7 @@
+export interface Response {
+	data: any;
+}
+
 export interface Ev {
 	merc: Pt;
 	point: Pt;
@@ -118,6 +122,7 @@ interface CollectionData {
 interface WorldData {
 	id: string;
 	maps: Dict<{ layers: Dict<any> }>;
+	mapSettings: Dict<any>;
 	collections: CollectionData[];
 	currentCRS: number;
 	currentMapId: string;

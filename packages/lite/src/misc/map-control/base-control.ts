@@ -2,17 +2,19 @@ import bind from 'autobind-decorator';
 import mapboxGL from 'mapbox-gl';
 import { DOM } from 'lite/utils/util-dom';
 import { token } from 'lite/constants/token';
-import { coToLl, llToCo } from 'lite/utils/util-geo';
+import { coToLl, geoDistance, llToCo } from 'lite/utils/util-geo';
 import { disableInteractions } from 'lite/utils/util-map';
 import {
 	EMPTY_STYLE,
 	DEFAULT_LOCATION } from 'lite/constants';
 import {
-	Co,
+	Co, Feature,
 	Location, MapboxLayer, MapboxSource,
-	MapboxStyle, Pt
+	MapboxStyle, Polygon, Pt
 } from 'se';
 import { EventEmitter } from 'lite/misc/events/event-emitter';
+import { newPolygon } from 'lite/utils/util-geo-json';
+import { add } from 'lite/utils/util-point';
 
 const GLOBAL_MAX_ZOOM = 20;
 
@@ -113,6 +115,39 @@ export class BaseMapControl extends EventEmitter {
 		return this._map.setPitch(pitch);
 	}
 
+	zoomIn() {
+		this.setZoom(Math.round(this.getZoom() + 1));
+	}
+
+	zoomOut() {
+		this.setZoom(Math.round(this.getZoom() - 1));
+	}
+
+	getExtent(): Feature<Polygon> {
+		const { width, height } = this.getBoundingClientRect();
+		const p = 0;
+
+		const c1 = this.unproject({ x: p, y: p });
+		const c2 = this.unproject({ x: width - p, y: p });
+		const c3 = this.unproject({ x: width - p, y: height - p });
+		const c4 = this.unproject({ x: p, y: height - p });
+
+		return newPolygon([[c1, c2, c3, c4, c1]]);
+	}
+
+	getBoundingClientRect() {
+		return this.getContainer().getBoundingClientRect();
+	}
+
+	getMetersPerPixel(co?: Co) {
+		const center = co || this.getCenter();
+
+		return geoDistance(
+			center,
+			this.unproject(add(this.project(center), { x: 1, y: 0 }))
+		);
+	}
+
 	project(co: Co) {
 		return this._map.project(coToLl(co));
 	}
@@ -131,8 +166,8 @@ export class BaseMapControl extends EventEmitter {
 	removeStyle(style: MapboxStyle) {
 		const { sources, layers } = style;
 
-		layers.forEach(layer => this.removeLayer(layer));
-		Object.keys(sources).forEach(key => this.removeSource(key, sources[key]));
+		layers.forEach(layer => this.removeLayer(layer.id));
+		Object.keys(sources).forEach(key => this.removeSource(key));
 	}
 
 	addSource(name: string, data: MapboxSource) {
@@ -147,15 +182,15 @@ export class BaseMapControl extends EventEmitter {
 		}
 	}
 
-	removeSource(name: string, data: MapboxSource) {
-		if (this._map.getSource(name)) {
-			this._map.removeSource(name, data);
+	removeSource(id: string) {
+		if (this._map.getSource(id)) {
+			this._map.removeSource(id);
 		}
 	}
 
-	removeLayer(layer: MapboxLayer) {
-		if (this._map.getLayer(layer.id)) {
-			this._map.removeLayer(layer);
+	removeLayer(id: string) {
+		if (this._map.getLayer(id)) {
+			this._map.removeLayer(id);
 		}
 	}
 

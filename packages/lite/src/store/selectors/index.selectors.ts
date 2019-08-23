@@ -3,6 +3,7 @@ import { State } from 'se';
 import { getState } from 'lite/store/store';
 import { GEOGRAPHIC } from 'lite/constants';
 import { createSelector } from 'reselect';
+import { createRasterStyle } from 'lite/utils/util-create-raster-style';
 
 export const zoom = (state: State) => state.mapControl.zoom;
 export const mode = (state: State) => state.mapControl.mode;
@@ -39,30 +40,43 @@ export const vectorStyles = (state: State) => state.vectorStyles;
 export const language = (state: State) => state.languages.language;
 export const languages = (state: State) => state.languages.languagePacks;
 
+export const serviceProviders = (state: State) => state.server.serviceProviders;
+
 export const lang = createSelector(
 	[language, languages],
-	(language, languages) => (
-		languages.find(e => e.id === language) || languages[0]
-	)
+	(language, languages) => languages.find(e => e.id === language) || languages[0]
 );
 
-export const maps = createSelector(
-	[mapDefinitions, vectorStyles],
-	(maps, styles): any[] => maps.map((map) => {
-		return {
-			...map,
-			layers: map.layers.map((layer) => {
-				const style = styles.find(style => style.name === layer.name);
+export const projectPath = createSelector(
+	[appId, projectId],
+	(appId, projectId) => `/api/v2/applications/${ appId }/projects/${ projectId }`
+);
 
-				return style
-					? {
-						...layer,
-						style
-					}
-					: layer;
-			})
-		};
-	})
+// make sure that all map layers have a "style" property containing "modes"
+// each mode has a "style" property which is a MapboxStyle (vector or raster)
+// todo: do not use "style" as property name twice in tree
+export const maps = createSelector(
+	[mapDefinitions, vectorStyles, projectPath],
+	(maps, styles, projectPath): any[] => maps.map(map => (
+		{
+			...map,
+			layers: map.layers.map(l => (
+				{
+					...l,
+					style: styles.find(style => style.name === l.name) ||
+						{
+							modes: [
+								{
+									style: createRasterStyle(l.name, [
+										`${ projectPath }/tiles/xy/${ l.name }/default?token=&quadkey={quadkey}`
+									])
+								}
+							]
+						}
+				}
+			))
+		}
+	))
 );
 
 export const currentWorldInfo = createSelector(
@@ -76,8 +90,8 @@ export const currentWorldSettings = createSelector(
 );
 
 export const currentWorld = createSelector(
-	[currentWorldId, currentWorldInfo, currentWorldSettings, maps, universes],
-	(id, info, settings, maps, universes) => {
+	[currentWorldInfo, currentWorldSettings, maps, universes],
+	(info, settings, maps, universes) => {
 		if (info == null || settings == null) {
 			return null;
 		}
@@ -96,26 +110,37 @@ export const currentWorld = createSelector(
 	}
 );
 
-export const currentlyVisibleLayers = createSelector(
+export const currentMap = createSelector(
 	[currentWorld],
 	(world) => {
 		if (!world) {
-			return [];
+			return null;
 		}
 
 		const map = world.maps.find(map => map.name === world.currentMapId);
 
 		if (!map) {
-			return [];
+			return null;
 		}
 
-		// @ts-ignore
-		const mapSettings = world.maps[world.currentMapId];
+		const mapSettings = world.mapSettings[map.name];
 
-		return map.layers
-			.filter((layer: any) => oc(mapSettings).layers[layer.name].visible(true))
-			.map((layer: any) => layer.style.modes[oc(mapSettings).layers[layer.name].mode(0)].style);
+		return {
+			...map,
+			layers: map.layers.map((layer: any) => (
+				{
+					...layer,
+					...(mapSettings && mapSettings[layer.name] || { visible: true }),
+					currentStyle: layer.style.modes[0].style
+				}
+			))
+		};
 	}
+);
+
+export const currentMapLayers = createSelector(
+	[currentMap],
+	map => map ? map.layers : []
 );
 
 export const currentCRS = createSelector(
@@ -155,50 +180,25 @@ export const currentSelectionFeatures = createSelector(
 	}
 );
 
-export const projectPath = createSelector(
-	[appId, projectId],
-	(appId, projectId) => `/api/v2/applications/${ appId }/projects/${ projectId }`
-);
-
 export const selectionPath = createSelector(
 	[projectPath, currentMapId],
 	(projectPath, currentMapId) => `${ projectPath }/maps/${ currentMapId }/selection`
 );
 
-export const serviceProviders = (state: State) => state.server.serviceProviders;
-
 export const referenceStyles = createSelector(
 	[serviceProviders],
 	serviceProviders => (
 		serviceProviders.tileProviders.reduce((m, p) => (
-			m.concat(p.modes.map((mode) => ([
+			m.concat(p.modes.map(mode => ([
 				`${ p.name } - ${ mode.name }`,
 				p.type === 'vector'
 					// type is 'vector': assume this is a mapbox style definition url
 					? mode.servers[0]
 					// type is 'raster': create a valid mapbox style for raster tile providers
-					: {
-						version: 8,
-						// todo: create our own glyph fallback
-						glyphs: 'mapbox://fonts/mapbox/{fontstack}/{range}.pbf',
-						sources: {
-							[mode.name]: {
-								type: 'raster',
-								tiles: mode.servers.map(s =>
-									// todo: change xy placeholders to z, x, y and quadkey, not 0, 1, 2 and 3
-									s.replace(/{(\d)}/g, (c, s) => `{${ ['z', 'x', 'y', 'quadkey'][s] }}`)
-								),
-								tileSize: 256
-							}
-						},
-						layers: [
-							{
-								id: mode.name,
-								type: 'raster',
-								source: mode.name
-							}
-						]
-					}
+					: createRasterStyle(mode.name, mode.servers.map(s =>
+						// todo: change xy placeholders to z, x, y and quadkey, not 0, 1, 2 and 3
+						s.replace(/{(\d)}/g, (c, s) => `{${ ['z', 'x', 'y', 'quadkey'][s] }}`)
+					))
 			])))
 		), [] as any)
 	)

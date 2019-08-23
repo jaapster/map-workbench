@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { MapControl } from 'lite/misc/map-control/map-control';
+import { PrimaryMapControl } from '../../misc/map-control/primary-map-control';
 import { Properties } from './cp-properties';
 import {
 	State,
@@ -23,7 +23,7 @@ export const _Bookmarks = React.memo(({ lang, bookmarks }: Props) => {
 						<div
 							key={ location.title }
 							className="list-item"
-							onClick={() => MapControl.setLocation(location)}
+							onClick={() => PrimaryMapControl.setLocation(location)}
 						>
 							{ location.title }
 						</div>

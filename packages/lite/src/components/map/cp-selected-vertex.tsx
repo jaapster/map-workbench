@@ -1,7 +1,7 @@
 import React from 'react';
 import { extent } from 'lite/store/selectors/index.selectors';
 import { connect } from 'react-redux';
-import { MapControl } from 'lite/misc/map-control/map-control';
+import { PrimaryMapControl } from '../../misc/map-control/primary-map-control';
 import {
 	Co,
 	State } from 'se';
@@ -12,7 +12,7 @@ interface Props {
 }
 
 export const _SelectedVertex = React.memo(({ coordinates, animate }: Props) => {
-	const { x, y } = MapControl.project(coordinates);
+	const { x, y } = PrimaryMapControl.project(coordinates);
 
 	return (
 		<g>

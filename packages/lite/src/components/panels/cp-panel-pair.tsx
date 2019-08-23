@@ -2,9 +2,9 @@ import React from 'react';
 import bind from 'autobind-decorator';
 import './scss/cp-panel-pair.scss';
 import { clamp } from 'lite/utils/util-clamp';
-import { mergeClasses } from 'lite/utils/util-merge-classes';
 import { connect } from 'react-redux';
 import { Dispatch } from 'redux';
+import { mergeClasses } from 'lite/utils/util-merge-classes';
 import { ActionSetPanelCollapsed } from 'lite/store/actions/actions';
 
 interface Props {

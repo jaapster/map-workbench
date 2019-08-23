@@ -1,7 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { Dispatch } from 'redux';
-import { MapControl } from 'lite/misc/map-control/map-control';
+import { PrimaryMapControl } from '../../misc/map-control/primary-map-control';
 import { mergeClasses } from 'lite/utils/util-merge-classes';
 import {
 	ActionClearSelection,
@@ -30,7 +30,7 @@ interface P2 {
 }
 
 const foo = (co: Co) => {
-	const { x: left, y: top } = MapControl.project(co);
+	const { x: left, y: top } = PrimaryMapControl.project(co);
 
 	return { top, left };
 };

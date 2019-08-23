@@ -18,12 +18,15 @@ import {
 	ActionUpdateCoordinates,
 	ActionSetCollectionData,
 	ActionSetReferenceLayers,
-	ActionSetCurrentReferenceLayer } from 'lite/store/actions/actions';
+	ActionSetCurrentReferenceLayer, ActionToggleLayerVisibility, ActionSetCurrentMap
+} from 'lite/store/actions/actions';
+import { act } from 'react-dom/test-utils';
 
 const STATE: MultiverseData = {
 	worlds: [{
 		id: 'default',
 		maps: {},
+		mapSettings: {},
 		collections: [{
 			name: 'trails',
 			featureCollection: {
@@ -377,6 +380,57 @@ export const multiverseReducer = (state: MultiverseData = STATE, action: Action)
 								}
 								: collection
 						))
+					}
+					: world
+			))
+		};
+	}
+
+	if (ActionSetCurrentMap.validate(action)) {
+		return {
+			...state,
+			worlds: worlds.map(world => (
+				world.id === currentWorldId
+					? {
+						...world,
+						currentMapId: ActionSetCurrentMap.data(action).mapId
+					}
+					: world
+			))
+		};
+	}
+
+	if (ActionToggleLayerVisibility.validate(action)) {
+		const { layerId } = ActionToggleLayerVisibility.data(action);
+
+		return {
+			...state,
+			worlds: worlds.map(world => (
+				world.id === currentWorldId
+					? {
+						...world,
+						mapSettings: {
+							...world.mapSettings,
+							[world.currentMapId]: world.mapSettings[world.currentMapId]
+								? {
+									...world.mapSettings[world.currentMapId],
+									[layerId]: world.mapSettings[world.currentMapId][layerId]
+										? {
+											...world.mapSettings[world.currentMapId][layerId],
+											visible: !world.mapSettings[world.currentMapId][layerId].visible
+										}
+										: {
+											visible: false,
+											opacity: 1
+										}
+								}
+								: {
+									[layerId]: {
+										visible: false,
+										opacity: 1
+									}
+								}
+						}
 					}
 					: world
 			))

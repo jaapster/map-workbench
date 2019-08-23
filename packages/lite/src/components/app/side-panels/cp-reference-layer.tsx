@@ -1,9 +1,9 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { Dispatch } from 'redux';
-import { MapControl } from 'lite/misc/map-control/map-control';
-import { Collapsible } from './cp-collapsible';
-import { RadioButtons } from './cp-radio-buttons';
+import { PrimaryMapControl } from 'lite/misc/map-control/primary-map-control';
+import { Collapsible } from '../cp-collapsible';
+import { RadioButtons } from '../cp-radio-buttons';
 import { SecondaryMapControl } from 'lite/misc/map-control/secondary-map-control';
 import { ActionSetCurrentReferenceLayer } from 'lite/store/actions/actions';
 import {
@@ -24,7 +24,7 @@ interface Props {
 	setStyle: (style: Foo) => void;
 }
 
-export const _StyleSelector = React.memo(({ lang, styles, setStyle, style }: Props) => {
+export const _ReferenceLayer = React.memo(({ lang, styles, setStyle, style }: Props) => {
 	const set = (style: string) => {
 		const s = styles.find(([id]) => id === style);
 
@@ -34,7 +34,7 @@ export const _StyleSelector = React.memo(({ lang, styles, setStyle, style }: Pro
 	};
 
 	return (
-		<Collapsible title={ lang.multiverse.referenceLayer }>
+		<Collapsible title={ lang.map.referenceLayer }>
 			<RadioButtons
 				value={ style }
 				options={ styles.map(([style]) => [style, style]) as any }
@@ -55,7 +55,7 @@ const mapStateToProps = (state: State) => (
 const mapDispatchToProps = (dispatch: Dispatch) => (
 	{
 		setStyle([layer, style]: Foo) {
-			MapControl.setStyle(style);
+			PrimaryMapControl.setStyle(style);
 			SecondaryMapControl.setStyle(style);
 
 			dispatch(ActionSetCurrentReferenceLayer.create({ layer }));
@@ -63,4 +63,4 @@ const mapDispatchToProps = (dispatch: Dispatch) => (
 	}
 );
 
-export const StyleSelector = connect(mapStateToProps, mapDispatchToProps)(_StyleSelector);
+export const ReferenceLayer = connect(mapStateToProps, mapDispatchToProps)(_ReferenceLayer);

@@ -1,14 +1,11 @@
 import bind from 'autobind-decorator';
 import mapboxGL from 'mapbox-gl';
-// import { DOM } from 'lite/utils/util-dom';
-import { add } from 'lite/utils/util-point';
 import { token } from 'lite/constants/token';
 import { clamp } from 'lite/utils/util-clamp';
 import { MenuMode } from './modes/mode.menu';
 import { getCenter } from 'lite/utils/util-get-center';
 import { ModeUpdate } from './modes/mode.update';
 import { getBounds } from 'lite/utils/util-get-bounds';
-import { newPolygon } from 'lite/utils/util-geo-json';
 import { getTargetZoom } from 'lite/utils/util-get-target-zoom';
 import { PointerDevice } from './devices/device.pointer';
 import { DrawPointMode } from './modes/mode.draw-point';
@@ -17,7 +14,6 @@ import { ModeNavigation } from './modes/mode.navigation';
 import { DrawCircleMode } from './modes/mode.draw-circle';
 import { DrawSegmentedMode } from './modes/mode.draw-segmented';
 import { DrawRectangleMode } from './modes/mode.draw-rectangle';
-// import { disableInteractions } from 'lite/utils/util-map';
 import { ActionSetMapControlMetrics } from 'lite/store/actions/actions';
 import {
 	dispatch,
@@ -41,24 +37,17 @@ import {
 	Polygon,
 	Feature,
 	Geometry,
-	Location,
-	// MapboxLayer,
-	// MapboxStyle,
-	// MapboxSource
-} from 'se';
+	Location } from 'se';
 import {
 	llToCo,
 	coToLl,
 	geoProject,
-	geoDistance,
 	geoUnproject } from 'lite/utils/util-geo';
-// import { EventEmitter } from 'lite/misc/events/event-emitter';
 import { BaseMapControl } from 'lite/misc/map-control/base-control';
 
 const FIT_PADDING = 64;
 const FIT_MIN_ZOOM = 14;
 const FIT_MAX_ZOOM = 19;
-// const GLOBAL_MAX_ZOOM = 20;
 
 mapboxGL.accessToken = token;
 
@@ -73,67 +62,63 @@ const DEFAULT_PROPS: Props = {
 };
 
 @bind
-export class MapControl extends BaseMapControl {
-	static instance: MapControl;
+export class PrimaryMapControl extends BaseMapControl {
+	static instance: PrimaryMapControl;
 
 	static create(props: Props) {
-		return MapControl.instance || new MapControl(props);
-	}
-
-	static getContainer() {
-		return MapControl.instance.getContainer();
+		return PrimaryMapControl.instance || new PrimaryMapControl(props);
 	}
 
 	static resize() {
-		MapControl.instance.resize();
+		PrimaryMapControl.instance.resize();
 	}
 
 	static fitFeatures(features: Feature<Geometry>[]) {
-		MapControl.instance.bringInView(features);
+		PrimaryMapControl.instance.bringInView(features);
 	}
 
 	static setLocation(location: Location) {
-		MapControl.instance.setLocation(location);
+		PrimaryMapControl.instance.setLocation(location);
 	}
 
 	static getZoom() {
-		return MapControl.instance.getZoom();
+		return PrimaryMapControl.instance.getZoom();
 	}
 
 	static setZoom(zoom: number) {
-		MapControl.instance.setZoom(zoom);
+		PrimaryMapControl.instance.setZoom(zoom);
 	}
 
 	static zoomIn() {
-		MapControl.instance.zoomIn();
+		PrimaryMapControl.instance.zoomIn();
 	}
 
 	static zoomOut() {
-		MapControl.instance.zoomOut();
+		PrimaryMapControl.instance.zoomOut();
 	}
 
 	static setBearing(bearing: number) {
-		MapControl.instance.setBearing(bearing);
+		PrimaryMapControl.instance.setBearing(bearing);
 	}
 
 	static setPitch(pitch: number) {
-		MapControl.instance.setPitch(pitch);
+		PrimaryMapControl.instance.setPitch(pitch);
 	}
 
 	static setStyle(style: any) {
-		MapControl.instance.setStyle(style);
+		PrimaryMapControl.instance.setStyle(style);
 	}
 
 	static project(co: Co) {
-		return MapControl.instance.project(co);
+		return PrimaryMapControl.instance.project(co);
 	}
 
 	static unproject(p: Pt) {
-		return MapControl.instance.unproject(p);
+		return PrimaryMapControl.instance.unproject(p);
 	}
 
 	static getMetersPerPixel(co?: Co) {
-		return MapControl.instance.getMetersPerPixel(co);
+		return PrimaryMapControl.instance.getMetersPerPixel(co);
 	}
 
 	static projectToCRS(co: Co, CRS: EPSG) {
@@ -154,17 +139,17 @@ export class MapControl extends BaseMapControl {
 	}
 
 	static onMapMove() {
-		MapControl.instance.persistMetrics();
+		PrimaryMapControl.instance.persistMetrics();
 	}
 
 	static onMapZoom() {
-		MapControl.instance.persistMetrics();
+		PrimaryMapControl.instance.persistMetrics();
 	}
 
 	static attachTo(e: any) {
 		if (e) {
-			e.appendChild(MapControl.instance.getContainer());
-			MapControl.instance.resize();
+			e.appendChild(PrimaryMapControl.instance.getContainer());
+			PrimaryMapControl.instance.resize();
 		}
 	}
 
@@ -183,26 +168,6 @@ export class MapControl extends BaseMapControl {
 
 	constructor(props: Props = DEFAULT_PROPS) {
 		super(props);
-
-		// add missing universeData
-		// const {
-		// 	style,
-		// 	location
-		// } = { ...DEFAULT_PROPS, ...props };
-		//
-		// const { center, zoom } = location;
-		// const container = DOM.create('div', 'map-container', document.body);
-		//
-		// this._map = new mapboxGL.Map({
-		// 	zoom: zoom - 1,
-		// 	style,
-		// 	center,
-		// 	maxZoom: GLOBAL_MAX_ZOOM - 1,
-		// 	// temporarily attach container element to body to keep
-		// 	// mapbox from complaining about missing CSS file
-		// 	container,
-		// 	fadeDuration: 0
-		// });
 
 		this.persistMetrics();
 
@@ -236,13 +201,10 @@ export class MapControl extends BaseMapControl {
 		this._keyboardDevice.on('deleteKeyDown', this._onDeleteKey);
 		this._keyboardDevice.on('escapeKeyDown', this._onEscapeKey);
 
-		this._map.on('move', MapControl.onMapMove);
-		this._map.on('zoom', MapControl.onMapZoom);
-		// this._map.on('styledata', this._onStyleDataLoaded);
+		this._map.on('move', PrimaryMapControl.onMapMove);
+		this._map.on('zoom', PrimaryMapControl.onMapZoom);
 
-		// disableInteractions(this._map);
-
-		MapControl.instance = this;
+		PrimaryMapControl.instance = this;
 	}
 
 	destroy() {
@@ -253,9 +215,8 @@ export class MapControl extends BaseMapControl {
 		this._navigationMode.destroy();
 		this._keyboardDevice.destroy();
 
-		this._map.off('move', MapControl.onMapMove);
-		this._map.off('zoom', MapControl.onMapZoom);
-		// this._map.off('styledata', this._onStyleDataLoaded);
+		this._map.off('move', PrimaryMapControl.onMapMove);
+		this._map.off('zoom', PrimaryMapControl.onMapZoom);
 	}
 
 	private _mode() {
@@ -275,10 +236,6 @@ export class MapControl extends BaseMapControl {
 								? this._updateMode
 								: this._menuMode;
 	}
-
-	// private _onStyleDataLoaded() {
-	// 	this.trigger('style-loaded');
-	// }
 
 	private _onPointerDown(e: Ev) {
 		this._mode().onPointerDown(e);
@@ -349,10 +306,6 @@ export class MapControl extends BaseMapControl {
 		}));
 	}
 
-	// resize() {
-	// 	this._map.resize();
-	// }
-
 	bringInView(features: Feature<Geometry>[]) {
 		if (!this.isInView(features)) {
 			const { width, height } = this.getBoundingClientRect();
@@ -398,14 +351,6 @@ export class MapControl extends BaseMapControl {
 		);
 	}
 
-	// getContainer() {
-	// 	return this._map.getContainer();
-	// }
-
-	// setStyle(style: MapboxStyle) {
-	// 	this._map.setStyle(style);
-	// }
-
 	setLocation(location: Location) {
 		const { center: [x, y], zoom, epsg } = location;
 
@@ -420,119 +365,4 @@ export class MapControl extends BaseMapControl {
 		this.setCenter(co as Co);
 		this.setZoom(zoom);
 	}
-
-	// getCenter() {
-	// 	return llToCo(this._map.getCenter());
-	// }
-
-	// setCenter(co: Co) {
-	// 	this._map.setCenter(coToLl(co));
-	// }
-
-	// getZoom() {
-	// 	return this._map.getZoom() + 1;
-	// }
-
-	// setZoom(zoom: number) {
-	// 	this._map.setZoom(zoom - 1);
-	// }
-
-	zoomIn() {
-		this.setZoom(Math.round(this.getZoom() + 1));
-	}
-
-	zoomOut() {
-		this.setZoom(Math.round(this.getZoom() - 1));
-	}
-
-	// getBearing() {
-	// 	return this._map.getBearing();
-	// }
-	//
-	// setBearing(bearing: number) {
-	// 	this._map.setBearing(bearing);
-	// }
-	//
-	// getPitch() {
-	// 	return this._map.getPitch();
-	// }
-	//
-	// setPitch(pitch: number) {
-	// 	return this._map.setPitch(pitch);
-	// }
-
-	getExtent(): Feature<Polygon> {
-		const { width, height } = this.getBoundingClientRect();
-		const p = 0;
-
-		const c1 = this.unproject({ x: p, y: p });
-		const c2 = this.unproject({ x: width - p, y: p });
-		const c3 = this.unproject({ x: width - p, y: height - p });
-		const c4 = this.unproject({ x: p, y: height - p });
-
-		return newPolygon([[c1, c2, c3, c4, c1]]);
-	}
-
-	getBoundingClientRect() {
-		return this.getContainer().getBoundingClientRect();
-	}
-
-	// project(co: Co) {
-	// 	return this._map.project(coToLl(co));
-	// }
-
-	// unproject(p: Pt) {
-	// 	return llToCo(this._map.unproject(p));
-	// }
-
-	getMetersPerPixel(co?: Co) {
-		const center = co || this.getCenter();
-
-		return geoDistance(
-			center,
-			MapControl.unproject(add(MapControl.project(center), { x: 1, y: 0 }))
-		);
-	}
-
-	// addStyle(style: MapboxStyle) {
-	// 	const { sources, layers } = style;
-	//
-	// 	Object.keys(sources).forEach(key => this.addSource(key, sources[key]));
-	// 	layers.forEach(layer => this.addLayer(layer));
-	// }
-	//
-	// removeStyle(style: MapboxStyle) {
-	// 	const { sources, layers } = style;
-	//
-	// 	layers.forEach(layer => this.removeLayer(layer));
-	// 	Object.keys(sources).forEach(key => this.removeSource(key, sources[key]));
-	// }
-	//
-	// addSource(name: string, data: MapboxSource) {
-	// 	if (!this._map.getSource(name)) {
-	// 		this._map.addSource(name, data);
-	// 	}
-	// }
-	//
-	// addLayer(layer: MapboxLayer) {
-	// 	if (!this._map.getLayer(layer.id)) {
-	// 		this._map.addLayer(layer);
-	// 	}
-	// }
-	//
-	// removeSource(name: string, data: MapboxSource) {
-	// 	if (this._map.getSource(name)) {
-	// 		this._map.removeSource(name, data);
-	// 	}
-	// }
-	//
-	// removeLayer(layer: MapboxLayer) {
-	// 	if (this._map.getLayer(layer.id)) {
-	// 		this._map.removeLayer(layer);
-	// 	}
-	// }
-	//
-	// addImage(id: string, img: any) {
-	// 	this._map.addImage(id, img);
-	// }
 }

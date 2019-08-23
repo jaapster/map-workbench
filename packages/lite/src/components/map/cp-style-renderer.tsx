@@ -1,12 +1,12 @@
 import bind from 'autobind-decorator';
 import React from 'react';
-import { MapControl } from 'lite/misc/map-control/map-control';
+import { PrimaryMapControl } from '../../misc/map-control/primary-map-control';
 import { MapboxStyle } from 'se';
 import { SecondaryMapControl } from 'lite/misc/map-control/secondary-map-control';
 
 interface Props {
 	style: MapboxStyle;
-	control: MapControl | SecondaryMapControl;
+	control: PrimaryMapControl | SecondaryMapControl;
 }
 
 @bind

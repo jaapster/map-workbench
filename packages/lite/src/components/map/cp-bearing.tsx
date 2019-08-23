@@ -1,7 +1,7 @@
 import React from 'react';
 import { State } from 'se';
 import { connect } from 'react-redux';
-import { MapControl } from 'lite/misc/map-control/map-control';
+import { PrimaryMapControl } from '../../misc/map-control/primary-map-control';
 import { Button, ButtonGroup } from 'lite/components/app/cp-button';
 import { bearing, pitch } from 'lite/store/selectors/index.selectors';
 
@@ -11,8 +11,8 @@ interface Props {
 }
 
 const reset = () => {
-	MapControl.setBearing(0);
-	MapControl.setPitch(0);
+	PrimaryMapControl.setBearing(0);
+	PrimaryMapControl.setPitch(0);
 };
 
 export const _Bearing = React.memo(({ pitch, bearing }: Props) => (

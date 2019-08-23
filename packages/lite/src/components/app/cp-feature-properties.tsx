@@ -3,7 +3,7 @@ import './scss/feature-card.scss';
 import { lang } from 'lite/store/selectors/index.selectors';
 import { Value } from './cp-value';
 import { connect } from 'react-redux';
-import { MapControl } from 'lite/misc/map-control/map-control';
+import { PrimaryMapControl } from '../../misc/map-control/primary-map-control';
 import {
 	EPSG,
 	State,
@@ -106,7 +106,7 @@ export const _FeatureProperties = React.memo((props: Props) => {
 						<Value
 							value={
 								features.length === 1 && center
-									? MapControl.projectToCRS(center, CRS)
+									? PrimaryMapControl.projectToCRS(center, CRS)
 									: null
 							}
 						/>

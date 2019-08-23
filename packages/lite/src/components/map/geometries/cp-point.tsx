@@ -1,7 +1,7 @@
 import React from 'react';
 import { extent } from 'lite/store/selectors/index.selectors';
 import { connect } from 'react-redux';
-import { MapControl } from 'lite/misc/map-control/map-control';
+import { PrimaryMapControl } from '../../../misc/map-control/primary-map-control';
 import { mergeClasses } from 'lite/utils/util-merge-classes';
 import {
 	Co,
@@ -14,7 +14,7 @@ interface Props {
 }
 
 export const _Point = React.memo(({ coordinates, selected }: Props) => {
-	const { x, y } = MapControl.project(coordinates);
+	const { x, y } = PrimaryMapControl.project(coordinates);
 
 	const className = mergeClasses(
 		'point',

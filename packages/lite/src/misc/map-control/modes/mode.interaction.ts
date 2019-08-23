@@ -1,7 +1,7 @@
 import * as mapboxgl from 'mapbox-gl';
 import { DOM } from 'lite/utils/util-dom';
 import { getHit } from 'lite/utils/util-get-hit';
-import { MapControl } from 'lite/misc/map-control/map-control';
+import { PrimaryMapControl } from '../primary-map-control';
 import { batchActions } from 'redux-batched-actions';
 import { EventEmitter } from 'lite/misc/events/event-emitter';
 import {
@@ -79,7 +79,7 @@ export class InteractionMode extends EventEmitter {
 
 		const collectionId = currentCollectionId(state);
 		const featureCollection = currentFeatureCollection(state);
-		const vector = getHit(lngLat, point, featureCollection, MapControl);
+		const vector = getHit(lngLat, point, featureCollection, PrimaryMapControl);
 
 		if (vector != null) {
 			dispatch(batchActions([

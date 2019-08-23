@@ -7,10 +7,10 @@ import { Settings } from './cp-settings';
 import { Selection } from './cp-selection';
 import { PanelPair } from '../panels/cp-panel-pair';
 import { Bookmarks } from './cp-locations';
-import { MapControl } from 'lite/misc/map-control/map-control';
+import { PrimaryMapControl } from '../../misc/map-control/primary-map-control';
 import { LayerPanels } from '../map/cp-layer-panels';
 import { PanelTabbed } from '../panels/cp-panel-tabbed';
-import { MultiverseSettings } from './cp-multiverse';
+import { MapsAndLayers } from './side-panels/cp-maps-and-layers';
 import { State } from 'se';
 import { scale } from 'lite/store/selectors/index.selectors';
 import { connect } from 'react-redux';
@@ -27,8 +27,8 @@ export const _Main = React.memo(({ scale }: Props) => {
 				horizontal
 				max={ 500 }
 				min={ 300 }
-				initial={ 300 }
-				onResize={ MapControl.resize }
+				initial={ 400 }
+				onResize={ PrimaryMapControl.resize }
 			>
 				<Panel>
 					<PanelPair
@@ -36,7 +36,7 @@ export const _Main = React.memo(({ scale }: Props) => {
 						fixed
 						horizontal
 						initial={ 0 }
-						onResize={ MapControl.resize }
+						onResize={ PrimaryMapControl.resize }
 					>
 						<Panel primary />
 						<Panel>
@@ -45,7 +45,7 @@ export const _Main = React.memo(({ scale }: Props) => {
 								fixed
 								vertical
 								initial={ 0 }
-								onResize={ MapControl.resize }
+								onResize={ PrimaryMapControl.resize }
 							>
 								<Panel primary />
 								<Panel>
@@ -63,7 +63,7 @@ export const _Main = React.memo(({ scale }: Props) => {
 							[<i className="icon-list" />, <Selection />],
 							[<i className="icon-box" />, <LayerPanels />],
 							[<i className="icon-star" />, <Bookmarks />],
-							[<i className="icon-layers" />, <MultiverseSettings />],
+							[<i className="icon-layers" />, <MapsAndLayers />],
 							[<i className="icon-settings" />, <Settings />]
 						]
 					}

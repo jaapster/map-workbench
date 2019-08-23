@@ -10,9 +10,9 @@
 			"metric": "Metric",
 			"imperial": "Imperial"
 		},
-		"multiverse": {
-			"title": "Multiverse",
-			"worlds": "Worlds",
+		"map": {
+			"title": "Maps and layers",
+			"mapLayers": "Layers",
 			"referenceLayer": "Reference layer"
 		},
 		"bookmarks": {
@@ -48,10 +48,10 @@
 			"metric": "Metrisch",
 			"imperial": "Imperiaal"
 		},
-		"multiverse": {
-			"title": "Multiversum",
-			"worlds": "Werelden",
-			"referenceLayer": "Referentie laag"
+		"map": {
+			"title": "Kaarten en lagen",
+			"mapLayers": "Lagen",
+			"referenceLayer": "Referenctielaag"
 		},
 		"bookmarks": {
 			"title": "Bladwijzers"
@@ -86,9 +86,9 @@
 			"metric": "Métrique",
 			"imperial": "Impérial"
 		},
-		"multiverse": {
-			"title": "Multivers",
-			"worlds": "Mondes",
+		"map": {
+			"title": "Cartes et couches",
+			"mapLayers": "Couches",
 			"referenceLayer": "Couche de référence"
 		},
 		"bookmarks": {
@@ -124,10 +124,10 @@
 			"metric": "Metrisch",
 			"imperial": "Imperial"
 		},
-		"multiverse": {
-			"title": "Multiversum",
-			"worlds": "Welten",
-			"referenceLayer": "Referenzschichte"
+		"map": {
+			"title": "Karten und Ebenen",
+			"mapLayers": "Ebenen",
+			"referenceLayer": "Referenzebene"
 		},
 		"bookmarks": {
 			"title": "Lesezeichen"
